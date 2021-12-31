@@ -1,6 +1,5 @@
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
-import * as TE from 'fp-ts/TaskEither';
 
 import { logError, logInfo } from '../logger';
 import { pipe } from 'fp-ts/function';
@@ -22,24 +21,22 @@ const safeParseInt = (text: string): O.Option<number> =>
 		O.fromEither
 	);
 
-const port = pipe(
-	O.fromNullable(process.env.EXPRESS_PORT),
-	O.chain(safeParseInt),
-	O.getOrElse(() => 8080)
-);
-
 const expressListen = (port: number): E.Either<Error, Server> =>
 	E.tryCatch(
-		() => app.listen(port, logInfo(`Market Tracker API listening on port ${port}`)),
+		() =>
+			app.listen(
+				port,
+				logInfo(`Market Tracker API listening on port ${port}`)
+			),
 		unknownToError
 	);
 
 export const startExpressServer = (): E.Either<Error, Server> => {
-    const port = pipe(
-        O.fromNullable(process.env.EXPRESS_PORT),
-        O.chain(safeParseInt),
-        O.getOrElse(() => 8080)
-    );
+	const port = pipe(
+		O.fromNullable(process.env.EXPRESS_PORT),
+		O.chain(safeParseInt),
+		O.getOrElse(() => 8080)
+	);
 
-    return expressListen(port);
-}
+	return expressListen(port);
+};

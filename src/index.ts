@@ -4,6 +4,6 @@ import * as TE from 'fp-ts/TaskEither';
 import { startExpressServer } from './express';
 
 pipe(
-    connectToMongo(),
-    TE.chain(() => TE.fromEither(startExpressServer()))
+	connectToMongo(),
+	TE.chain(() => TE.fromEither(startExpressServer()))
 )();
