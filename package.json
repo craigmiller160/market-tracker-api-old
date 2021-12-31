@@ -6,6 +6,7 @@
     "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
   },
   "scripts": {
+    "start": "ts-node src",
     "build": "yarn lint && yarn test && yarn forceBuild",
     "lint": "craig-lint",
     "test": "craig-test",
@@ -23,6 +24,7 @@
     "@craigmiller160/jest-config": "^1.0.0-beta.4",
     "@craigmiller160/jest-config-ts": "^1.0.0-beta.2",
     "@craigmiller160/prettier-config": "^1.0.0-beta.1",
+    "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
   }
 }
