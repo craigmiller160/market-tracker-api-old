@@ -50,7 +50,10 @@ export const connectToMongo = (): TE.TaskEither<Error, typeof mongoose> =>
 		]),
 		O.map(envToMongoEnv),
 		O.map(createConnectionString),
-		TE.fromOption(() => new Error('Missing environment variables for Mongo connection')),
+		TE.fromOption(
+			() =>
+				new Error('Missing environment variables for Mongo connection')
+		),
 		TE.chain(connectToMongoose),
 		TE.chainFirst(() => TE.fromIO(logInfo('Connected to MongoDB')))
 	);
