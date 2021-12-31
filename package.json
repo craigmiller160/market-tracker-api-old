@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@craigmiller160/eslint-config-js": "^1.0.0-beta.4",
-    "@craigmiller160/eslint-config-ts": "^1.0.0-beta.1"
+    "@craigmiller160/eslint-config-prettier": "^1.0.0-beta.1",
+    "@craigmiller160/eslint-config-ts": "^1.0.0-beta.1",
+    "@craigmiller160/prettier-config": "^1.0.0-beta.1"
   }
 }
