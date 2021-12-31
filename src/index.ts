@@ -1,5 +1,8 @@
 import express from 'express';
 import { logInfo } from './logger';
+import { connectToMongo } from './mongo';
+
+connectToMongo();
 
 const app = express();
 
