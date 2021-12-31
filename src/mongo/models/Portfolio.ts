@@ -1,6 +1,6 @@
 export interface Portfolio {
-    userId: number;
-    portfolioName: string;
-    stocks: string[];
-    cryptos: string[];
+	userId: number;
+	portfolioName: string;
+	stocks: string[];
+	cryptos: string[];
 }
