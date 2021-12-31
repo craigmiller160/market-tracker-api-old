@@ -1,4 +1,4 @@
-import { createLogger, transports, format, Logger } from 'winston';
+import { createLogger, transports, format } from 'winston';
 import * as IO from 'fp-ts/IO';
 
 const myFormat = format.printf(
@@ -25,7 +25,30 @@ const logger = createLogger({
 	transports: [new transports.Console()]
 });
 
-export const info =
-	(message: string): IO.IO<Logger> =>
-	() =>
+export const logInfo =
+	(message: string): IO.IO<string> =>
+	() => {
 		logger.info(message);
+		return message;
+	};
+
+export const logDebug =
+	(message: string): IO.IO<string> =>
+	() => {
+		logger.debug(message);
+		return message;
+	};
+
+export const logWarn =
+	(message: string): IO.IO<string> =>
+	() => {
+		logger.warn(message);
+		return message;
+	};
+
+export const logError =
+	(message: string): IO.IO<string> =>
+	() => {
+		logger.error(message);
+		return message;
+	};
