@@ -1,3 +1,9 @@
-export {};
+import express from 'express';
 
-console.log('Hello World');
+const app = express();
+
+const port = 8080;
+
+app.listen(port, () => {
+    console.log(`Market Tracker API listening on port ${port}`); // TODO replace with real logging
+});
