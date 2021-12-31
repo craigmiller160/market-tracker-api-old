@@ -1,3 +1,6 @@
 import { connectToMongo } from './mongo';
+import { pipe } from 'fp-ts/function';
+import * as TE from 'fp-ts/TaskEither';
+import { startExpressServer } from './express';
 
-connectToMongo()();
+pipe(connectToMongo(), TE.chain(startExpressServer));

@@ -30,13 +30,14 @@ const port = pipe(
 
 const expressListen = (port: number): TE.TaskEither<Error, Server> =>
 	TE.tryCatch(
-		() => new Promise((resolve) => app.listen(resolve)),
+		() => new Promise((resolve) => app.listen(port, resolve)),
 		unknownToError
 	);
 
-export const startExpressServer = pipe(
-	expressListen(port),
-	TE.chainFirst(() =>
-		TE.fromIO(logInfo(`Market Tracker API listening on port ${port}`))
-	)
-);
+export const startExpressServer = (): TE.TaskEither<Error, Server> =>
+	pipe(
+		expressListen(port),
+		TE.chainFirst(() =>
+			TE.fromIO(logInfo(`Market Tracker API listening on port ${port}`))
+		)
+	);
