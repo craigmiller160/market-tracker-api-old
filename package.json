@@ -5,13 +5,19 @@
   "publishConfig": {
     "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
   },
-  "devDependencies": {
-    "typescript": "^4.5.4"
+  "scripts": {
+    "lint": "craig-lint"
   },
-  "dependencies": {
+  "resolutions": {
+    "@babel/code-frame": "^7.16.0",
+    "@babel/helper-validator-identifier": "^7.15.7"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4",
     "@craigmiller160/eslint-config-js": "^1.0.0-beta.4",
     "@craigmiller160/eslint-config-prettier": "^1.0.0-beta.1",
     "@craigmiller160/eslint-config-ts": "^1.0.0-beta.1",
+    "@craigmiller160/jest-config": "^1.0.0-beta.4",
     "@craigmiller160/prettier-config": "^1.0.0-beta.1"
   }
 }
