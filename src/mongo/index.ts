@@ -15,7 +15,7 @@ interface MongoEnv {
 }
 
 const createConnectionString = (env: MongoEnv): string =>
-	`mongodb://${env.user}:${env.password}@${env.hostname}:${env.port}/${env.db}?authSource=admin`;
+	`mongodb://${env.user}:${env.password}@${env.hostname}:${env.port}/${env.db}?authSource=${env.adminDb}`;
 
 const envToMongoEnv = ([
 	hostname,
