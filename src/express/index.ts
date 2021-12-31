@@ -28,16 +28,18 @@ const port = pipe(
 	O.getOrElse(() => 8080)
 );
 
-const expressListen = (port: number): TE.TaskEither<Error, Server> =>
-	TE.tryCatch(
-		() => new Promise((resolve) => app.listen(port, resolve)),
+const expressListen = (port: number): E.Either<Error, Server> =>
+	E.tryCatch(
+		() => app.listen(port, logInfo(`Market Tracker API listening on port ${port}`)),
 		unknownToError
 	);
 
-export const startExpressServer = (): TE.TaskEither<Error, Server> =>
-	pipe(
-		expressListen(port),
-		TE.chainFirst(() =>
-			TE.fromIO(logInfo(`Market Tracker API listening on port ${port}`))
-		)
-	);
+export const startExpressServer = (): E.Either<Error, Server> => {
+    const port = pipe(
+        O.fromNullable(process.env.EXPRESS_PORT),
+        O.chain(safeParseInt),
+        O.getOrElse(() => 8080)
+    );
+
+    return expressListen(port);
+}
