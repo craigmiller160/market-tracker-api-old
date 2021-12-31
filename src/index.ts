@@ -8,4 +8,4 @@ const port = parseInt(process.env.EXPRESS_PORT ?? '8080');
 
 
 
-app.listen(port, flow(logInfo(`Market Tracker API listening on port ${port}`)));
+app.listen(port, logInfo(`Market Tracker API listening on port ${port}`));
