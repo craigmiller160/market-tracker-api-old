@@ -6,7 +6,10 @@
     "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
   },
   "scripts": {
-    "lint": "craig-lint"
+    "build": "yarn lint && yarn test && yarn forceBuild",
+    "lint": "craig-lint",
+    "test": "craig-test",
+    "forceBuild": "tsc"
   },
   "resolutions": {
     "@babel/code-frame": "^7.16.0",
