@@ -9,7 +9,10 @@ const findPortfolioModel = (): TE.TaskEither<Error, Portfolio[]> =>
 	TE.tryCatch(() => PortfolioModel.find().exec(), unknownToError);
 
 export const getPortfolios: RouteCreator = (app) => {
-	app.get('/portfolios', async (req, res) => {
-		pipe(findPortfolioModel(), TE.map(res.json));
-	});
+	app.get('/portfolios', (req, res) =>
+		pipe(
+			findPortfolioModel(),
+			TE.map((_) => res.json(_))
+		)()
+	);
 };
