@@ -1,6 +1,6 @@
 import * as TE from 'fp-ts/TaskEither';
-import { Portfolio } from '../../mongo/models/Portfolio';
 import {
+	Portfolio,
 	PortfolioModel,
 	PortfolioModelInstanceType
 } from '../../mongo/models/PortfolioModel';

@@ -1,5 +1,11 @@
 import { model, Schema } from 'mongoose';
-import { Portfolio } from './Portfolio';
+
+export interface Portfolio {
+	userId: number;
+	portfolioName: string;
+	stocks: string[];
+	cryptos: string[];
+}
 
 const portfolioSchema = new Schema<Portfolio>({
 	userId: {

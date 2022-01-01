@@ -1,6 +1,6 @@
 import { RouteCreator } from './RouteCreator';
 import * as TE from 'fp-ts/TaskEither';
-import { Portfolio } from '../../mongo/models/Portfolio';
+import { Portfolio } from '../../mongo/models/PortfolioModel';
 import { pipe } from 'fp-ts/function';
 import { Request } from 'express';
 import {
