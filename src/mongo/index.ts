@@ -1,8 +1,8 @@
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
+import * as TEU from '../function/TaskEitherUtils';
 import mongoose from 'mongoose';
-import { unknownToError } from '../function/unknownToError';
 import { logInfo } from '../logger';
 
 interface MongoEnv {
@@ -35,10 +35,10 @@ const envToMongoEnv = ([
 
 const connectToMongoose = (
 	connectionString: string
-): TE.TaskEither<Error, typeof mongoose> =>
-	TE.tryCatch(() => mongoose.connect(connectionString), unknownToError);
+): TEU.TaskEither<typeof mongoose> =>
+	TEU.tryCatch(() => mongoose.connect(connectionString));
 
-export const connectToMongo = (): TE.TaskEither<Error, typeof mongoose> =>
+export const connectToMongo = (): TEU.TaskEither<typeof mongoose> =>
 	pipe(
 		O.sequenceArray([
 			O.fromNullable(process.env.MONGO_HOSTNAME),
