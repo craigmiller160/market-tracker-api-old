@@ -5,11 +5,12 @@ import { unknownToError } from '../../function/unknownToError';
 import { pipe } from 'fp-ts/function';
 import * as A from 'fp-ts/Array';
 import * as E from 'fp-ts/Either';
+import * as EU from '../../function/EitherUtils';
+import * as TEU from '../../function/TaskEitherUtils';
 
 const getCurrentUserId = () => 1;
 
-export const findPortfoliosForUser = (): TE.TaskEither<
-	Error,
+export const findPortfoliosForUser = (): TEU.TaskEither<
 	ReadonlyArray<Portfolio>
 > => {
 	const userId = getCurrentUserId();
@@ -19,12 +20,9 @@ export const findPortfoliosForUser = (): TE.TaskEither<
 	);
 };
 
-const tryCatch = <T>(fn: () => Promise<T>): TE.TaskEither<Error, T> =>
-	TE.tryCatch(fn, unknownToError);
-
 export const savePortfoliosForUser = (
 	portfolios: Portfolio[]
-): TE.TaskEither<Error, Portfolio[]> => {
+): TEU.TaskEither<Portfolio[]> => {
 	const userId = getCurrentUserId();
 
 	const portfolioModels = pipe(
@@ -39,16 +37,16 @@ export const savePortfoliosForUser = (
 	);
 
 	return pipe(
-		tryCatch(PortfolioModel.startSession),
+		TEU.tryCatch(PortfolioModel.startSession),
 		TE.bindTo('session'),
 		TE.bind('portfolios', ({ session }) => {
 			const promise = session.withTransaction<
 				E.Either<Error, Portfolio[]>
 			>(() =>
 				pipe(
-					tryCatch(PortfolioModel.deleteOne({ userId }).exec),
+					TEU.tryCatch(PortfolioModel.deleteOne({ userId }).exec),
 					TE.chain(() =>
-						tryCatch(() =>
+						TEU.tryCatch(() =>
 							PortfolioModel.insertMany(portfolioModels)
 						)
 					)
@@ -56,11 +54,11 @@ export const savePortfoliosForUser = (
 			);
 
 			return pipe(
-				tryCatch(() => promise),
+				TEU.tryCatch(() => promise),
 				TE.chain((_) => TE.fromEither(_))
 			);
 		}),
-		TE.chainFirst(({ session }) => tryCatch(session.endSession)),
+		TE.chainFirst(({ session }) => TEU.tryCatch(session.endSession)),
 		TE.map(({ portfolios }): Portfolio[] => portfolios)
 	);
 };
