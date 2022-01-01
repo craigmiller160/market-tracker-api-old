@@ -6,8 +6,10 @@ import { pipe } from 'fp-ts/function';
 import express from 'express';
 import { Server } from 'http';
 import { unknownToError } from '../function/unknownToError';
+import { createRoutes } from './routes';
 
 const app = express();
+createRoutes(app);
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
