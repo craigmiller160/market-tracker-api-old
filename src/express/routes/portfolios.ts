@@ -18,6 +18,10 @@ export const getPortfolios: RouteCreator = (app) =>
     );
 
 export const savePortfolios: RouteCreator = (app) =>
-    app.post('/portfolios', (req: Request<Portfolio[]>, res) => {
-        req.body
+    app.post('/portfolios', async (req: Request<{},{},Portfolio[]>, res) => {
+        const portfolioModels = req.body
+            .map((_) => new PortfolioModel(_));
+        await PortfolioModel.insertMany(portfolioModels);
+        const result = PortfolioModel.find().exec();
+        res.json(result);
     });
