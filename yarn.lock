@@ -325,11 +325,12 @@
     "@types/jest" "^27.0.3"
     ts-jest "^27.1.2"
 
-"@craigmiller160/jest-config@^1.0.0-beta.4":
-  version "1.0.0-beta.4"
-  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/@craigmiller160/jest-config/-/jest-config-1.0.0-beta.4.tgz#ed111f07928c47d229fba6764b212a4ea65cc62d"
-  integrity sha512-rGooBT5zA5T+H1NJAG5fn/GQFlDDEwzCkQ97qmJNTIbQk5BfHi6XbCfpcr/345hUNrJEv+mYOeqlS6SHdZB0pg==
+"@craigmiller160/jest-config@^1.0.0-beta.5":
+  version "1.0.0-beta.5"
+  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/@craigmiller160/jest-config/-/jest-config-1.0.0-beta.5.tgz#996b8748bc3167d694a6418e4b3e5922c8249106"
+  integrity sha512-CMlapiNpicHY96rv2anjREzQvKInq0aChNtUf4iu+ejTogZl0ffI785ziueNMM4c5pB2yLb7w9Gs8GqiCUYszg==
   dependencies:
+    cross-env "^7.0.3"
     cross-spawn "^7.0.3"
     identity-obj-proxy "^3.0.0"
     jest "^27.4.5"
@@ -1369,7 +1370,14 @@ create-require@^1.1.0:
   resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/create-require/-/create-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
-cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
+cross-env@^7.0.3:
+  version "7.0.3"
+  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/cross-env/-/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
+  integrity sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==
+  dependencies:
+    cross-spawn "^7.0.1"
+
+cross-spawn@^7.0.0, cross-spawn@^7.0.1, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
   resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/cross-spawn/-/cross-spawn-7.0.3.tgz#f73a85b9d5d41d045551c177e2882d4ac85728a6"
   integrity sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
