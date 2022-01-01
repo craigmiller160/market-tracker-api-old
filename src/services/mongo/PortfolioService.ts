@@ -1,7 +1,7 @@
 import * as TE from 'fp-ts/TaskEither';
 import { Portfolio } from '../../mongo/models/Portfolio';
 import {
-	PortfolioModel,
+	PortfolioModel, PortfolioModelInstanceType,
 	PortfolioModelType
 } from '../../mongo/models/PortfolioModel';
 import { unknownToError } from '../../function/unknownToError';
@@ -26,7 +26,7 @@ export const findPortfoliosForUser = (): TEU.TaskEither<
 
 const replacePortfoliosForUser = (
 	userId: number,
-	portfolioModels: PortfolioModelType[]
+	portfolioModels: PortfolioModelInstanceType[]
 ): TEU.TaskEither<Portfolio[]> =>
 	pipe(
 		TEU.tryCatch(PortfolioModel.deleteOne({ userId }).exec),
