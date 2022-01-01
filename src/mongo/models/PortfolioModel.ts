@@ -15,3 +15,4 @@ const portfolioSchema = new Schema<Portfolio>({
 });
 
 export const PortfolioModel = model<Portfolio>('portfolio', portfolioSchema);
+export type PortfolioModelType = typeof PortfolioModel;

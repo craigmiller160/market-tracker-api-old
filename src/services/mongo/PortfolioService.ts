@@ -1,6 +1,6 @@
 import * as TE from 'fp-ts/TaskEither';
 import { Portfolio } from '../../mongo/models/Portfolio';
-import { PortfolioModel } from '../../mongo/models/PortfolioModel';
+import { PortfolioModel, PortfolioModelType } from '../../mongo/models/PortfolioModel';
 import { unknownToError } from '../../function/unknownToError';
 import { pipe } from 'fp-ts/function';
 import * as A from 'fp-ts/Array';
@@ -20,6 +20,26 @@ export const findPortfoliosForUser = (): TE.TaskEither<
 
 const tryCatch = <T>(fn: () => Promise<T>): TE.TaskEither<Error,T> =>
 	TE.tryCatch(fn, unknownToError);
+
+// TODO delete this
+const temp = async (portfolios: PortfolioModelType[]) => {
+	const session = await PortfolioModel.startSession();
+	const results: Portfolio[] = await session.withTransaction<Portfolio[]>(() => {
+		return PortfolioModel.insertMany(portfolios);
+	});
+	await session.endSession();
+};
+
+const temp2 = (portfolios: PortfolioModelType[]) => {
+	pipe(
+		tryCatch(PortfolioModel.startSession),
+		TE.bindTo('session'),
+		TE.bind('portfolios', ({ session }) => {
+			return tryCatch(PortfolioModel.startSession)
+		}),
+		TE.map(({ session }) => session.endSession())
+	)
+}
 
 export const savePortfoliosForUser = (
 	portfolios: Portfolio[]
