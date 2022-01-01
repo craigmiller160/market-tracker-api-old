@@ -44,7 +44,7 @@ export const savePortfoliosForUser = (
 	const portfolioModels = pipe(
 		portfolios,
 		A.map(
-			(_: Portfolio) =>
+			(_) =>
 				new PortfolioModel({
 					..._,
 					userId
