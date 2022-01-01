@@ -56,11 +56,9 @@ export const savePortfoliosForUser = (
 		TEU.tryCatch(PortfolioModel.startSession),
 		TE.bindTo('session'),
 		TE.bind('portfolios', ({ session }) =>
-			pipe(
-				TE.of(session),
-				MO.withTransaction(
-					replacePortfoliosForUser(userId, portfolioModels)
-				)
+			MO.withTransaction(
+				session,
+				replacePortfoliosForUser(userId, portfolioModels)
 			)
 		),
 		TE.chainFirst(({ session }) => TEU.tryCatch(session.endSession)),
