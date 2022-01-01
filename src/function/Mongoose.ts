@@ -10,6 +10,9 @@ export const withTransaction =
 		pipe(
 			sessionTE,
 			TE.chain((session) =>
-				pipe(TEU.tryCatch(fn), TE.chain(TE.fromEither))
+				pipe(
+					TEU.tryCatch(() => session.withTransaction<EU.Either<T>>(fn)),
+					TE.chain(TE.fromEither)
+				)
 			)
 		);
