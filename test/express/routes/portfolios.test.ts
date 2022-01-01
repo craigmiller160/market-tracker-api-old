@@ -18,8 +18,8 @@ describe('portfolios', () => {
 		)();
 	});
 
-	afterAll(() => {
-		stopMongoTestServer(mongoTestServer);
+	afterAll(async () => {
+		await stopMongoTestServer(mongoTestServer)();
 	});
 
 	it('getPortfolios', () => {
