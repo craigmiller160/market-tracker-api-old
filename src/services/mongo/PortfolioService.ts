@@ -54,7 +54,7 @@ const temp2 = (portfolios: PortfolioModelType[]): TE.TaskEither<Error, Portfolio
 
 export const savePortfoliosForUser = (
 	portfolios: Portfolio[]
-): TE.TaskEither<Error, void> => {
+): TE.TaskEither<Error, Portfolio[]> => {
 	const userId = getCurrentUserId();
 
 	const portfolioModels = pipe(
@@ -67,12 +67,19 @@ export const savePortfoliosForUser = (
 
 	return pipe(
 		tryCatch(PortfolioModel.startSession),
-		TE.map((session) => session.withTransaction(() => {
-			return pipe(
+		TE.bindTo('session'),
+		TE.bind('portfolios', ({ session }) => {
+			const promise = session.withTransaction<E.Either<Error,Portfolio[]>>(() => pipe(
 				tryCatch(PortfolioModel.deleteOne({ userId }).exec),
 				TE.chain(() => tryCatch(() => PortfolioModel.insertMany(portfolioModels)))
-			)()
-		})),
-		TE.chain((session) => tryCatch(() => session.endSession()))
+			)());
+
+			return pipe(
+				tryCatch(() => promise),
+				TE.chain((_) => TE.fromEither(_))
+			);
+		}),
+		TE.chainFirst(({ session }) => tryCatch(session.endSession)),
+		TE.map(({ portfolios }): Portfolio[] => portfolios)
 	);
 };
