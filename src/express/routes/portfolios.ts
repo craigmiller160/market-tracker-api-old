@@ -17,8 +17,11 @@ export const getPortfolios: RouteCreator = (app) =>
 export const savePortfolios: RouteCreator = (app) =>
 	app.post(
 		'/portfolios',
-		async (req: Request<unknown, unknown, Portfolio[]>, res) => {
-			const result = await savePortfoliosForUser(req.body)();
-			res.json(result);
+		(req: Request<unknown, unknown, Portfolio[]>, res) => {
+			pipe(
+				savePortfoliosForUser(req.body),
+				TE.chain(findPortfoliosForUser),
+				TE.map((_) => res.json(_))
+			)();
 		}
 	);
