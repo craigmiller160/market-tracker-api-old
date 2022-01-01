@@ -8,14 +8,13 @@ export const tryCatch = <T>(fn: () => Promise<T>): TE.TaskEither<Error, T> =>
 
 export type TaskEither<T> = TE.TaskEither<Error, T>;
 
-export const throwIfLeft =
-	<T>(te: TaskEither<T>): T.Task<T> =>
-		pipe(
-			te,
-			TE.fold(
-				(_) => {
-					throw _;
-				},
-				(_) => T.of(_)
-			)
-		);
+export const throwIfLeft = <T>(te: TaskEither<T>): T.Task<T> =>
+	pipe(
+		te,
+		TE.fold(
+			(_) => {
+				throw _;
+			},
+			(_) => T.of(_)
+		)
+	);

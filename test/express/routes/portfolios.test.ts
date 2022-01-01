@@ -7,12 +7,12 @@ import { pipe } from 'fp-ts/function';
 import * as TEU from '../../../src/function/TaskEitherUtils';
 import { Server } from 'http';
 import * as T from 'fp-ts/Task';
-import * as EU from '../../../src/function/EitherUtils'
-import { startExpressServer } from '../../../src/express';
+import * as EU from '../../../src/function/EitherUtils';
+import { ExpressServer, startExpressServer } from '../../../src/express';
 
 describe('portfolios', () => {
 	let mongoTestServer: MongoTestServer;
-	let expressServer: Server
+	let expressServer: ExpressServer;
 	beforeAll(async () => {
 		await pipe(
 			createMongoTestServer(),
@@ -22,15 +22,12 @@ describe('portfolios', () => {
 			})
 		)();
 
-		expressServer = pipe(
-			startExpressServer(),
-			EU.throwIfLeft
-		);
+		expressServer = pipe(startExpressServer(), EU.throwIfLeft);
 	});
 
 	afterAll(async () => {
 		await stopMongoTestServer(mongoTestServer)();
-		expressServer.close();
+		expressServer[0].close();
 	});
 
 	it('getPortfolios', () => {
