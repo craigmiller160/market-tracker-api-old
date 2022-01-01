@@ -1,7 +1,7 @@
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import * as TEU from '../function/TaskEitherUtils';
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 import { logInfo } from '../logger';
 import { getConnectionString } from './connectionString';
 
@@ -10,7 +10,7 @@ const connectToMongoose = (
 ): TEU.TaskEither<typeof mongoose> =>
 	TEU.tryCatch(() => mongoose.connect(connectionString));
 
-export const connectToMongo = (): TEU.TaskEither<typeof mongoose> =>
+export const connectToMongo = (): TEU.TaskEither<Mongoose> =>
 	pipe(
 		getConnectionString(),
 		TE.fromEither,
