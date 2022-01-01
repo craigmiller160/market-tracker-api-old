@@ -3,7 +3,10 @@ import * as TE from 'fp-ts/TaskEither';
 import { Portfolio } from '../../mongo/models/Portfolio';
 import { pipe } from 'fp-ts/function';
 import { Request } from 'express';
-import { findPortfoliosForUser, savePortfoliosForUser } from '../../services/mongo/PortfolioService';
+import {
+	findPortfoliosForUser,
+	savePortfoliosForUser
+} from '../../services/mongo/PortfolioService';
 
 export const getPortfolios: RouteCreator = (app) =>
 	app.get('/portfolios', (req, res) =>
