@@ -19,8 +19,10 @@ export const getPortfolios: RouteCreator = (app) =>
 
 export const savePortfolios: RouteCreator = (app) =>
     app.post('/portfolios', async (req: Request<{},{},Portfolio[]>, res) => {
+        // TODO how to do transactions?
         const portfolioModels = req.body
             .map((_) => new PortfolioModel(_));
+        await PortfolioModel.deleteOne({ userId: 1 }).exec();
         await PortfolioModel.insertMany(portfolioModels);
         const result = await PortfolioModel.find().exec();
         res.json(result);
