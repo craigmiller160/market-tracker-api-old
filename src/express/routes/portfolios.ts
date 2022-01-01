@@ -22,6 +22,6 @@ export const savePortfolios: RouteCreator = (app) =>
         const portfolioModels = req.body
             .map((_) => new PortfolioModel(_));
         await PortfolioModel.insertMany(portfolioModels);
-        const result = PortfolioModel.find().exec();
+        const result = await PortfolioModel.find().exec();
         res.json(result);
     });

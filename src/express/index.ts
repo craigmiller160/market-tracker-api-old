@@ -10,8 +10,10 @@ import { unknownToError } from '../function/unknownToError';
 import { createRoutes } from './routes';
 
 const app = express();
-createRoutes(app);
 app.use(bodyParer.json());
+createRoutes(app);
+
+// TODO how do I prevent errors from crashing the whole app?
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
