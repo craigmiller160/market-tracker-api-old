@@ -52,7 +52,7 @@ export const savePortfoliosForUser = (
 		)
 	);
 
-	pipe(
+	return pipe(
 		TEU.tryCatch(PortfolioModel.startSession),
 		TE.bindTo('session'),
 		TE.bind('portfolios', ({ session }) =>
@@ -63,32 +63,6 @@ export const savePortfoliosForUser = (
 				)
 			)
 		),
-		TE.chainFirst(({ session }) => TEU.tryCatch(session.endSession)),
-		TE.map(({ portfolios }): Portfolio[] => portfolios)
-	);
-
-	return pipe(
-		TEU.tryCatch(PortfolioModel.startSession),
-		TE.bindTo('session'),
-		TE.bind('portfolios', ({ session }) => {
-			const promise = session.withTransaction<
-				E.Either<Error, Portfolio[]>
-			>(() =>
-				pipe(
-					TEU.tryCatch(PortfolioModel.deleteOne({ userId }).exec),
-					TE.chain(() =>
-						TEU.tryCatch(() =>
-							PortfolioModel.insertMany(portfolioModels)
-						)
-					)
-				)()
-			);
-
-			return pipe(
-				TEU.tryCatch(() => promise),
-				TE.chain((_) => TE.fromEither(_))
-			);
-		}),
 		TE.chainFirst(({ session }) => TEU.tryCatch(session.endSession)),
 		TE.map(({ portfolios }): Portfolio[] => portfolios)
 	);
