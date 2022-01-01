@@ -4,6 +4,7 @@ import { PortfolioModel, PortfolioModelType } from '../../mongo/models/Portfolio
 import { unknownToError } from '../../function/unknownToError';
 import { pipe } from 'fp-ts/function';
 import * as A from 'fp-ts/Array';
+import * as E from 'fp-ts/Either'
 
 const getCurrentUserId = () => 1;
 
@@ -36,12 +37,15 @@ const temp2 = (portfolios: PortfolioModelType[]): TE.TaskEither<Error, Portfolio
 		tryCatch(PortfolioModel.startSession),
 		TE.bindTo('session'),
 		TE.bind('portfolios', ({ session }) => {
-			const promise = session.withTransaction<Portfolio[]>(() => pipe(
+			const promise = session.withTransaction<E.Either<Error,Portfolio[]>>(() => pipe(
 				tryCatch(PortfolioModel.deleteOne({ userId }).exec),
 				TE.chain(() => tryCatch(() => PortfolioModel.insertMany(portfolios)))
 			)());
 
-			return tryCatch(() => promise);
+			return pipe(
+				tryCatch(() => promise),
+				TE.chain((_) => TE.fromEither(_))
+			);
 		}),
 		TE.chainFirst(({ session }) => tryCatch(session.endSession)),
 		TE.map(({ portfolios }): Portfolio[] => portfolios)
