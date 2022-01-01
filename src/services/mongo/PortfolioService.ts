@@ -4,7 +4,6 @@ import {
 	PortfolioModel,
 	PortfolioModelInstanceType
 } from '../../mongo/models/PortfolioModel';
-import { unknownToError } from '../../function/unknownToError';
 import { pipe } from 'fp-ts/function';
 import * as A from 'fp-ts/Array';
 import * as TEU from '../../function/TaskEitherUtils';
@@ -12,14 +11,9 @@ import * as MO from '../../function/Mongoose';
 
 const getCurrentUserId = () => 1;
 
-export const findPortfoliosForUser = (): TEU.TaskEither<
-	ReadonlyArray<Portfolio>
-> => {
+export const findPortfoliosForUser = (): TEU.TaskEither<Portfolio[]> => {
 	const userId = getCurrentUserId();
-	return TE.tryCatch(
-		() => PortfolioModel.find({ userId }).exec(),
-		unknownToError
-	);
+	return TEU.tryCatch(() => PortfolioModel.find({ userId }).exec());
 };
 
 const replacePortfoliosForUser = (
