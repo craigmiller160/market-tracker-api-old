@@ -9,6 +9,7 @@ import { Server } from 'http';
 import * as T from 'fp-ts/Task';
 import * as EU from '../../../src/function/EitherUtils';
 import { ExpressServer, startExpressServer } from '../../../src/express';
+import request from 'supertest';
 
 describe('portfolios', () => {
 	let mongoTestServer: MongoTestServer;
@@ -30,8 +31,10 @@ describe('portfolios', () => {
 		expressServer[0].close();
 	});
 
-	it('getPortfolios', () => {
-		throw new Error();
+	it('getPortfolios', async () => {
+		await request(expressServer[0])
+			.get('/portfolios')
+			.expect(200);
 	});
 
 	it('savePortfolios', () => {
