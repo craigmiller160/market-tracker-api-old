@@ -1,6 +1,7 @@
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 
+import bodyParer from 'body-parser';
 import { logError, logInfo } from '../logger';
 import { pipe } from 'fp-ts/function';
 import express from 'express';
@@ -10,6 +11,7 @@ import { createRoutes } from './routes';
 
 const app = express();
 createRoutes(app);
+app.use(bodyParer.json());
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
