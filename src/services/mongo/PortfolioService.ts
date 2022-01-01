@@ -1,7 +1,8 @@
 import * as TE from 'fp-ts/TaskEither';
 import { Portfolio } from '../../mongo/models/Portfolio';
 import {
-	PortfolioModel, PortfolioModelInstanceType,
+	PortfolioModel,
+	PortfolioModelInstanceType,
 	PortfolioModelType
 } from '../../mongo/models/PortfolioModel';
 import { unknownToError } from '../../function/unknownToError';
