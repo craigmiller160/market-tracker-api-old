@@ -18,7 +18,7 @@ export const findPortfoliosForUser = (): TE.TaskEither<
 
 export const savePortfoliosForUser = (
 	portfolios: ReadonlyArray<Portfolio>
-): TE.TaskEither<Error, ReadonlyArray<Portfolio>> => {
+): TE.TaskEither<Error, void> => {
 	// TODO how to do transactions?
 	const userId = getCurrentUserId();
 	const portfolioModels = portfolios.map((_) => new PortfolioModel({
@@ -27,9 +27,12 @@ export const savePortfoliosForUser = (
 	}));
 	return TE.tryCatch(
 		async () => {
-			await PortfolioModel.deleteOne({ userId }).exec();
-			await PortfolioModel.insertMany(portfolioModels);
-			return await PortfolioModel.find().exec();
+			const session = await PortfolioModel.startSession();
+			session.withTransaction(async () => {
+				await PortfolioModel.deleteOne({ userId }).exec();
+				await PortfolioModel.insertMany(portfolioModels);
+			});
+			await session.endSession();
 		},
 		unknownToError
 	)
