@@ -36,10 +36,10 @@ const temp2 = (portfolios: PortfolioModelType[]): TE.TaskEither<Error, Portfolio
 		tryCatch(PortfolioModel.startSession),
 		TE.bindTo('session'),
 		TE.bind('portfolios', ({ session }) => {
-			const promise = session.withTransaction<Portfolio[]>(async () => {
-				await PortfolioModel.deleteOne({ userId }).exec();
-				return await PortfolioModel.insertMany(portfolios);
-			});
+			const promise = session.withTransaction<Portfolio[]>(() => pipe(
+				tryCatch(PortfolioModel.deleteOne({ userId }).exec),
+				TE.chain(() => tryCatch(() => PortfolioModel.insertMany(portfolios)))
+			)());
 
 			return tryCatch(() => promise);
 		}),
