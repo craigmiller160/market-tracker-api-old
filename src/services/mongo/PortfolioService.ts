@@ -13,7 +13,7 @@ const getCurrentUserId = () => 1;
 
 export const findPortfoliosForUser = (): TEU.TaskEither<Portfolio[]> => {
 	const userId = getCurrentUserId();
-	return TEU.tryCatch(() => PortfolioModel.find({ userId }).exec());
+	return TEU.tryCatch(PortfolioModel.find({ userId }).exec);
 };
 
 const replacePortfoliosForUser = (
@@ -53,6 +53,6 @@ export const savePortfoliosForUser = (
 			)
 		),
 		TE.chainFirst(({ session }) => TEU.tryCatch(session.endSession)),
-		TE.map(({ portfolios }): Portfolio[] => portfolios)
+		TE.map(({ portfolios }) => portfolios)
 	);
 };
