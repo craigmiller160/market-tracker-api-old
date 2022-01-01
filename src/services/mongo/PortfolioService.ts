@@ -15,3 +15,22 @@ export const findPortfoliosForUser = (): TE.TaskEither<
 		unknownToError
 	);
 };
+
+export const savePortfoliosForUser = (
+	portfolios: ReadonlyArray<Portfolio>
+): TE.TaskEither<Error, ReadonlyArray<Portfolio>> => {
+	// TODO how to do transactions?
+	const userId = getCurrentUserId();
+	const portfolioModels = portfolios.map((_) => new PortfolioModel({
+		..._,
+		userId
+	}));
+	return TE.tryCatch(
+		async () => {
+			await PortfolioModel.deleteOne({ userId }).exec();
+			await PortfolioModel.insertMany(portfolioModels);
+			return await PortfolioModel.find().exec();
+		},
+		unknownToError
+	)
+};
