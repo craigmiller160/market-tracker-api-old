@@ -30,9 +30,9 @@ const temp = async (portfolios: PortfolioModelType[]) => {
 	await session.endSession();
 };
 
-const temp2 = (portfolios: PortfolioModelType[]) => {
+const temp2 = (portfolios: PortfolioModelType[]): TE.TaskEither<Error, Portfolio[]> => {
 	const userId = 1;
-	pipe(
+	return pipe(
 		tryCatch(PortfolioModel.startSession),
 		TE.bindTo('session'),
 		TE.bind('portfolios', ({ session }) => {
@@ -43,7 +43,8 @@ const temp2 = (portfolios: PortfolioModelType[]) => {
 
 			return tryCatch(() => promise);
 		}),
-		TE.map(({ session }) => session.endSession())
+		TE.chainFirst(({ session }) => tryCatch(session.endSession)),
+		TE.map(({ portfolios }): Portfolio[] => portfolios)
 	)
 }
 
