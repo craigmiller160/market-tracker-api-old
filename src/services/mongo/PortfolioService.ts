@@ -31,11 +31,17 @@ const temp = async (portfolios: PortfolioModelType[]) => {
 };
 
 const temp2 = (portfolios: PortfolioModelType[]) => {
+	const userId = 1;
 	pipe(
 		tryCatch(PortfolioModel.startSession),
 		TE.bindTo('session'),
 		TE.bind('portfolios', ({ session }) => {
-			return tryCatch(PortfolioModel.startSession)
+			const promise = session.withTransaction<Portfolio[]>(async () => {
+				await PortfolioModel.deleteOne({ userId }).exec();
+				return await PortfolioModel.insertMany(portfolios);
+			});
+
+			return tryCatch(() => promise);
 		}),
 		TE.map(({ session }) => session.endSession())
 	)
