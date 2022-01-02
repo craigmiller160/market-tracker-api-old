@@ -6,13 +6,22 @@ import * as TEU from '../function/TaskEitherUtils'
 import bodyParer from 'body-parser';
 import { logError, logInfo } from '../logger';
 import { pipe } from 'fp-ts/function';
-import express, { Express } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import { Server } from 'http';
 import { createRoutes } from './routes';
 
 const app = express();
 app.use(bodyParer.json());
 createRoutes(app);
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+	// TODO improve this
+	res.status(500);
+	res.send(err.message);
+});
+// TODO improve this too
+process.on('uncaughtException', (err) => {
+	console.log('UncaughtException', err);
+});
 
 // TODO how do I prevent errors from crashing the whole app?
 
