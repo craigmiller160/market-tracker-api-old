@@ -5,7 +5,6 @@ import {
 } from '../../testutils/mongoServer';
 import { pipe } from 'fp-ts/function';
 import * as TEU from '../../../src/function/TaskEitherUtils';
-import { Server } from 'http';
 import * as T from 'fp-ts/Task';
 import * as EU from '../../../src/function/EitherUtils';
 import { ExpressServer, startExpressServer } from '../../../src/express';
@@ -32,9 +31,7 @@ describe('portfolios', () => {
 	});
 
 	it('getPortfolios', async () => {
-		await request(expressServer[0])
-			.get('/portfolios')
-			.expect(200);
+		await request(expressServer[0]).get('/portfolios').expect(200);
 	});
 
 	it('savePortfolios', () => {
