@@ -49,6 +49,17 @@ describe('portfolios', () => {
 		];
 		const user1Models = user1InitPortfolios.map((_) => new PortfolioModel(_));
 		PortfolioModel.insertMany(user1Models);
+
+		const user2Portfolios = [
+			{
+				userId: 2,
+				portfolioName: 'Three',
+				stocks: ['ABC2', 'DEF2'],
+				cryptos: ['GHI2']
+			}
+		];
+		const user2Models = user2Portfolios.map((_) => new PortfolioModel(_));
+		PortfolioModel.insertMany(user2Models);
 	});
 
 	afterEach(() => {
