@@ -4,7 +4,8 @@ import * as TE from 'fp-ts/TaskEither';
 import {
 	Watchlist,
 	WatchlistModel,
-	WatchlistModelInstanceType
+	WatchlistModelInstanceType,
+	watchlistToModel
 } from '../../mongo/models/WatchlistModel';
 import { pipe } from 'fp-ts/function';
 
@@ -33,12 +34,11 @@ export const saveWatchlistsForUser = (
 
 	const watchlistModels = pipe(
 		watchlists,
-		A.map(
-			(_) =>
-				new WatchlistModel({
-					..._,
-					userId
-				})
+		A.map((_) =>
+			watchlistToModel({
+				..._,
+				userId
+			})
 		)
 	);
 

@@ -5,7 +5,8 @@ import {
 } from '../../testutils/fullTestServer';
 import {
 	Watchlist,
-	WatchlistModel
+	WatchlistModel,
+	watchlistToModel
 } from '../../../src/mongo/models/WatchlistModel';
 import request from 'supertest';
 
@@ -35,9 +36,7 @@ describe('watchlists route', () => {
 				cryptos: ['WXYZ']
 			}
 		];
-		const user1Watchlists = user1InitWatchlists.map(
-			(_) => new WatchlistModel(_)
-		);
+		const user1Watchlists = user1InitWatchlists.map(watchlistToModel);
 		await WatchlistModel.insertMany(user1Watchlists);
 
 		const user2Watchlists: Watchlist[] = [
@@ -48,7 +47,7 @@ describe('watchlists route', () => {
 				cryptos: ['GHI2']
 			}
 		];
-		const user2Models = user2Watchlists.map((_) => new WatchlistModel(_));
+		const user2Models = user2Watchlists.map(watchlistToModel);
 		await WatchlistModel.insertMany(user2Models);
 	});
 

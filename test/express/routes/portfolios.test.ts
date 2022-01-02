@@ -1,7 +1,8 @@
 import request from 'supertest';
 import {
 	Portfolio,
-	PortfolioModel
+	PortfolioModel,
+	portfolioToModel
 } from '../../../src/mongo/models/PortfolioModel';
 import {
 	createFullTestServer,
@@ -35,9 +36,7 @@ describe('portfolios', () => {
 				cryptos: ['WXYZ']
 			}
 		];
-		const user1Models = user1InitPortfolios.map(
-			(_) => new PortfolioModel(_)
-		);
+		const user1Models = user1InitPortfolios.map(portfolioToModel);
 		await PortfolioModel.insertMany(user1Models);
 
 		const user2Portfolios: Portfolio[] = [
@@ -48,7 +47,7 @@ describe('portfolios', () => {
 				cryptos: ['GHI2']
 			}
 		];
-		const user2Models = user2Portfolios.map((_) => new PortfolioModel(_));
+		const user2Models = user2Portfolios.map(portfolioToModel);
 		await PortfolioModel.insertMany(user2Models);
 	});
 

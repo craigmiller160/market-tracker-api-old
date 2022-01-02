@@ -26,3 +26,7 @@ export type WatchlistModelType = typeof WatchlistModel;
 const exampleWatchlist = new WatchlistModel();
 
 export type WatchlistModelInstanceType = typeof exampleWatchlist;
+
+export const watchlistToModel = (
+	watchlist: Watchlist
+): WatchlistModelInstanceType => new WatchlistModel(watchlist);

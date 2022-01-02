@@ -2,7 +2,8 @@ import * as TE from 'fp-ts/TaskEither';
 import {
 	Portfolio,
 	PortfolioModel,
-	PortfolioModelInstanceType
+	PortfolioModelInstanceType,
+	portfolioToModel
 } from '../../mongo/models/PortfolioModel';
 import { pipe } from 'fp-ts/function';
 import * as A from 'fp-ts/Array';
@@ -33,12 +34,11 @@ export const savePortfoliosForUser = (
 
 	const portfolioModels = pipe(
 		portfolios,
-		A.map(
-			(_) =>
-				new PortfolioModel({
-					..._,
-					userId
-				})
+		A.map((_) =>
+			portfolioToModel({
+				..._,
+				userId
+			})
 		)
 	);
 
