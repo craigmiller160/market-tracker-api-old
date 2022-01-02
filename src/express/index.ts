@@ -17,6 +17,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 	// TODO improve this
 	res.status(500);
 	res.send(err.message);
+	next();
 });
 // TODO improve this too
 process.on('uncaughtException', (err) => {
