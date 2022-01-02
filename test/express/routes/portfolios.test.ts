@@ -81,7 +81,24 @@ describe('portfolios', () => {
 		]);
 	});
 
-	it('savePortfolios', () => {
-		throw new Error();
+	it('savePortfolios', async () => {
+		const newPortfolios: Portfolio[] = [
+			{
+				userId: 10,
+				portfolioName: 'Ten',
+				stocks: ['atv'],
+				cryptos: []
+			}
+		];
+		const res = await request(expressServer[0])
+			.post('/portfolios')
+			.send(newPortfolios)
+			.expect(200);
+		expect(res.body).toEqual([
+			expect.objectContaining({
+				...newPortfolios[0],
+				userId: 1
+			})
+		])
 	});
 });
