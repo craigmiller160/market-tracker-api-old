@@ -30,12 +30,20 @@ const safeParseInt = (text: string): O.Option<number> =>
 
 const expressListen = (port: number): TEU.TaskEither<Server> =>
 	TEU.tryCatch(
-		() => new Promise((resolve) => {
+		() => new Promise((resolve, reject) => {
 			const server = app.listen(
 				port,
-				() => {
-					logInfo(`Market Tracker API listening on port ${port}`)();
-					resolve(server);
+				(err?: Error) => {
+					pipe(
+						O.fromNullable(err),
+						O.fold(
+							() => {
+								logInfo(`Market Tracker API listening on port ${port}`)();
+								resolve(server);
+							},
+							(_) => reject(_)
+						)
+					)
 				}
 			)
 		})
