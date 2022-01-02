@@ -21,10 +21,11 @@ const replaceWatchlistsForUser = (
 	watchlistModels: WatchlistModelInstanceType[]
 ): TEU.TaskEither<Watchlist[]> =>
 	pipe(
-		TEU.tryCatch(() => WatchlistModel.deleteMany({ userId }).exec()),
-		TE.chain(() =>
+		TEU.multiTypeSequence(
+			TEU.tryCatch(() => WatchlistModel.deleteMany({ userId }).exec()),
 			TEU.tryCatch(() => WatchlistModel.insertMany(watchlistModels))
-		)
+		),
+		TE.map(([, _]) => _)
 	);
 
 export const saveWatchlistsForUser = (

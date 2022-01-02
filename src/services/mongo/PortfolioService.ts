@@ -21,10 +21,11 @@ const replacePortfoliosForUser = (
 	portfolioModels: PortfolioModelInstanceType[]
 ): TEU.TaskEither<Portfolio[]> =>
 	pipe(
-		TEU.tryCatch(() => PortfolioModel.deleteMany({ userId }).exec()),
-		TE.chain(() =>
+		TEU.multiTypeSequence(
+			TEU.tryCatch(() => PortfolioModel.deleteMany({ userId }).exec()),
 			TEU.tryCatch(async () => PortfolioModel.insertMany(portfolioModels))
-		)
+		),
+		TE.map(([, _]) => _)
 	);
 
 export const savePortfoliosForUser = (
