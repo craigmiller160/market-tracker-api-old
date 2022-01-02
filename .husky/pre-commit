@@ -1,6 +1,9 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+GREEN='\033[0;32m'
+NC='\033[0m'
+
 old_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
 
 yarn lint
@@ -17,7 +20,7 @@ for newFile in $new_untracked; do
   done
 
   if [ $match = false ] ; then
-    echo "Adding lint formatting changes: $newFile"
+    printf "${GREEN}Adding lint formatting changes: $newFile\n${NC}"
     git add $newFile
   fi
 done
