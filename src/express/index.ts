@@ -11,7 +11,7 @@ import { Server } from 'http';
 import { createRoutes } from './routes';
 import { setupErrorHandler } from './errorHandler';
 import https from 'https';
-import {httpsOptions} from './tls';
+import { httpsOptions } from './tls';
 
 const app = express();
 app.use(bodyParer.json());
