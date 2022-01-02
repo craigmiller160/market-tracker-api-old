@@ -77,6 +77,8 @@ export function multiTypeSequence<A, B, C, D, E, F, G>(
 		TE.bind('e', () => e ?? TE.of(null)),
 		TE.bind('f', () => f ?? TE.of(null)),
 		TE.bind('g', () => g ?? TE.of(null)),
-		TE.map(({ a, b, c }) => [a, b, c].filter((_) => !!_))
+		TE.map(({ a, b, c, d, e, f, g }) =>
+			[a, b, c, d, e, f, g].filter((_) => !!_)
+		)
 	);
 }
