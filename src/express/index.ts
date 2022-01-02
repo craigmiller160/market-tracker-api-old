@@ -9,16 +9,12 @@ import { pipe } from 'fp-ts/function';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import { Server } from 'http';
 import { createRoutes } from './routes';
+import { setupErrorHandler } from './errorHandler';
 
 const app = express();
 app.use(bodyParer.json());
 createRoutes(app);
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-	// TODO improve this
-	res.status(500);
-	res.send(err.message);
-	next();
-});
+setupErrorHandler(app);
 // TODO improve this too
 process.on('uncaughtException', (err) => {
 	console.log('UncaughtException', err);
