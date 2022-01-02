@@ -35,7 +35,7 @@ describe('portfolios', () => {
 		await stopMongoTestServer(mongoTestServer)();
 		await new Promise((resolve, reject) => {
 			expressServer.server.close((err?: Error) => {
-				console.log('Express closed', err);
+				console.error('Express closed', err);
 				err === undefined ? resolve('') : reject(err);
 			});
 		});
