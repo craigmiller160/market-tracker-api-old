@@ -26,11 +26,11 @@
     "@craigmiller160/prettier-config": "^1.0.0-beta.1",
     "@relmify/jest-fp-ts": "^1.1.1",
     "@types/express": "^4.17.13",
-    "@types/supertest": "^2.0.10",
+    "@types/supertest": "^2.0.11",
     "env-cmd": "^10.1.0",
     "mongodb-memory-server": "^8.1.0",
-    "supertest": "^6.1.6",
     "ts-node": "^10.4.0",
+    "supertest": "^6.1.6",
     "typescript": "^4.5.4"
   },
   "dependencies": {
