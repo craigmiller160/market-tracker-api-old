@@ -16,7 +16,7 @@ describe('portfolios', () => {
 	let user1InitPortfolios: Portfolio[];
 	beforeAll(async () => {
 		await createFullTestServer();
-	})
+	});
 
 	afterAll(async () => {
 		await stopFullTestServer(fullTestServer);

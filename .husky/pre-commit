@@ -6,16 +6,10 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 old_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
-echo "OLD UNTRACKED" # TODO delete this
-echo "$old_untracked"
-echo "" # TODO delete this
 
 yarn lint
 
-echo "NEW UNTRACKED" # TODO delete this
 new_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
-echo "$new_untracked"
-echo "" # TODO delete this
 
 for newFile in $new_untracked; do
   match=false
