@@ -9,8 +9,6 @@ import {
 	stopFullTestServer
 } from '../../testutils/fullTestServer';
 
-// TODO simplify re-use of test setup/cleanup logic
-
 describe('portfolios', () => {
 	let fullTestServer: FullTestServer;
 	let user1InitPortfolios: Portfolio[];
