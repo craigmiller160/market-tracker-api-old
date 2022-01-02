@@ -6,13 +6,14 @@ import {
 import { pipe } from 'fp-ts/function';
 import * as TEU from '../../../src/function/TaskEitherUtils';
 import * as T from 'fp-ts/Task';
-import * as EU from '../../../src/function/EitherUtils';
 import { ExpressServer, startExpressServer } from '../../../src/express';
 import request from 'supertest';
 import {
 	Portfolio,
 	PortfolioModel
 } from '../../../src/mongo/models/PortfolioModel';
+
+// TODO simplify re-use of test setup/cleanup logic
 
 describe('portfolios', () => {
 	let mongoTestServer: MongoTestServer;
@@ -27,15 +28,23 @@ describe('portfolios', () => {
 			})
 		)();
 
-		expressServer = pipe(startExpressServer(), EU.throwIfLeft);
+		expressServer = await pipe(startExpressServer(), TEU.throwIfLeft)();
 	});
 
 	afterAll(async () => {
 		console.log('Running AfterAll')
-		await stopMongoTestServer(mongoTestServer)();
-		expressServer.server.close((err?: Error) => {
-			console.log('Express closed', err);
+		await new Promise((resolve, reject) => {
+			expressServer.server.close((err?: Error) => {
+				console.log('Express closed', err);
+				err !== undefined ? resolve('') : reject(err);
+			});
 		});
+		await stopMongoTestServer(mongoTestServer)();
+
+		console.log('Done with stopping things');
+
+		await new Promise(resolve => setTimeout(() => resolve(''), 500));
+
 		console.log('DoneWith AfterAll')
 	});
 
