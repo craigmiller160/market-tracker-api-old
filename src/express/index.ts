@@ -1,7 +1,7 @@
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
-import * as TE from 'fp-ts/TaskEither'
-import * as TEU from '../function/TaskEitherUtils'
+import * as TE from 'fp-ts/TaskEither';
+import * as TEU from '../function/TaskEitherUtils';
 
 import bodyParer from 'body-parser';
 import { logError, logInfo } from '../logger';
@@ -39,23 +39,23 @@ const safeParseInt = (text: string): O.Option<number> =>
 
 const expressListen = (port: number): TEU.TaskEither<Server> =>
 	TEU.tryCatch(
-		() => new Promise((resolve, reject) => {
-			const server = app.listen(
-				port,
-				(err?: Error) => {
+		() =>
+			new Promise((resolve, reject) => {
+				const server = app.listen(port, (err?: Error) => {
 					pipe(
 						O.fromNullable(err),
 						O.fold(
 							() => {
-								logInfo(`Market Tracker API listening on port ${port}`)();
+								logInfo(
+									`Market Tracker API listening on port ${port}`
+								)();
 								resolve(server);
 							},
 							(_) => reject(_)
 						)
-					)
-				}
-			)
-		})
+					);
+				});
+			})
 	);
 
 export interface ExpressServer {

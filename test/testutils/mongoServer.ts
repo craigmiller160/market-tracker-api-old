@@ -9,8 +9,7 @@ export interface MongoTestServer {
 
 export const createMongoTestServer = (): TEU.TaskEither<MongoTestServer> =>
 	TEU.tryCatch(async () => {
-		const mongoServer: MongoMemoryServer =
-			await MongoMemoryServer.create();
+		const mongoServer: MongoMemoryServer = await MongoMemoryServer.create();
 		const mongooseInstance: Mongoose = await mongoose.connect(
 			mongoServer.getUri()
 		);
