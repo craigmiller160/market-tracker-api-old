@@ -9,7 +9,10 @@ import * as T from 'fp-ts/Task';
 import * as EU from '../../../src/function/EitherUtils';
 import { ExpressServer, startExpressServer } from '../../../src/express';
 import request from 'supertest';
-import { Portfolio, PortfolioModel } from '../../../src/mongo/models/PortfolioModel';
+import {
+	Portfolio,
+	PortfolioModel
+} from '../../../src/mongo/models/PortfolioModel';
 
 describe('portfolios', () => {
 	let mongoTestServer: MongoTestServer;
@@ -47,7 +50,9 @@ describe('portfolios', () => {
 				cryptos: ['WXYZ']
 			}
 		];
-		const user1Models = user1InitPortfolios.map((_) => new PortfolioModel(_));
+		const user1Models = user1InitPortfolios.map(
+			(_) => new PortfolioModel(_)
+		);
 		PortfolioModel.insertMany(user1Models);
 
 		const user2Portfolios = [
@@ -64,7 +69,7 @@ describe('portfolios', () => {
 
 	afterEach(() => {
 		PortfolioModel.deleteMany().exec();
-	})
+	});
 
 	it('getPortfolios', async () => {
 		const res = await request(expressServer[0])
