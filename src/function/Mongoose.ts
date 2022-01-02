@@ -9,6 +9,15 @@ export const withTransaction = <T>(
 	fn: () => Promise<EU.Either<T>>
 ): TEU.TaskEither<T> =>
 	pipe(
-		TEU.tryCatch(() => session.withTransaction<EU.Either<T>>(fn)),
-		TE.chain(TE.fromEither)
+		TEU.tryCatch(async () => {
+			const result = await session.withTransaction<EU.Either<T>>(fn);
+			console.log('WithTransactionResult', result);
+			return result;
+		}),
+		TE.chain((_) => {
+			console.log('FromEither', _)
+			const result = TE.fromEither(_)
+			console.log('AfterFromEither');
+			return result
+		})
 	);
