@@ -99,6 +99,8 @@ describe('portfolios', () => {
 		];
 		const res = await request(expressServer.server)
 			.post('/portfolios')
+			.timeout(2000)
+			.set('Content-Type', 'application/json')
 			.send(newPortfolios)
 			.expect(200);
 		expect(res.body).toEqual([
