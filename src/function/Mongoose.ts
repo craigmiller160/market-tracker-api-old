@@ -4,20 +4,10 @@ import * as EU from './EitherUtils';
 import { ClientSession } from 'mongoose';
 import { pipe } from 'fp-ts/function';
 
-export const withTransaction = <T>(
+export const withTransaction = (
 	session: ClientSession,
-	fn: () => Promise<EU.Either<T>>
-): TEU.TaskEither<T> =>
+	fn: () => Promise<any>
+): TEU.TaskEither<void> =>
 	pipe(
-		TEU.tryCatch(async () => {
-			const result = await session.withTransaction<EU.Either<T>>(fn);
-			console.log('WithTransactionResult', result);
-			return result;
-		}),
-		TE.chain((_) => {
-			console.log('FromEither', _);
-			const result = TE.fromEither(_);
-			console.log('AfterFromEither');
-			return result;
-		})
+		TEU.tryCatch(() => session.withTransaction(fn))
 	);

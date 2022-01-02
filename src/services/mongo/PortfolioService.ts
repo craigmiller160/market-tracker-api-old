@@ -34,7 +34,7 @@ const replacePortfoliosForUser = (
 
 export const savePortfoliosForUser = (
 	portfolios: Portfolio[]
-): TEU.TaskEither<Portfolio[]> => {
+): TEU.TaskEither<void> => {
 	const userId = getCurrentUserId();
 
 	const portfolioModels = pipe(
@@ -50,17 +50,10 @@ export const savePortfoliosForUser = (
 
 	return pipe(
 		TEU.tryCatch(() => PortfolioModel.startSession()),
-		TE.bindTo('session'),
-		TE.bind('portfolios', ({ session }) =>
-			MO.withTransaction(
-				session,
-				replacePortfoliosForUser(userId, portfolioModels)
-			)
-		),
-		TE.chainFirst(({ session }) => {
-			console.log('EndingSession');
-			return TEU.tryCatch(() => session.endSession());
-		}),
-		TE.map(({ portfolios }) => portfolios)
+		TE.chainFirst((session) => MO.withTransaction(
+			session,
+			replacePortfoliosForUser(userId, portfolioModels)
+		)),
+		TE.chain((session) => TEU.tryCatch(() => session.endSession()))
 	);
 };

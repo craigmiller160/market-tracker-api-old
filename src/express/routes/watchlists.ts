@@ -22,6 +22,7 @@ export const saveWatchlists: RouteCreator = (app) =>
 		(req: Request<unknown, unknown, Watchlist[]>, res) =>
 			pipe(
 				saveWatchlistsForUser(req.body),
+				TE.chain(findWatchlistsForUser),
 				TE.map((_) => res.json(_))
 			)()
 	);

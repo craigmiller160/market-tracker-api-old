@@ -29,7 +29,7 @@ const replaceWatchlistsForUser = (
 
 export const saveWatchlistsForUser = (
 	watchlists: Watchlist[]
-): TEU.TaskEither<Watchlist[]> => {
+): TEU.TaskEither<void> => {
 	const userId = getCurrentUserId();
 
 	const watchlistModels = pipe(
@@ -44,15 +44,11 @@ export const saveWatchlistsForUser = (
 	);
 
 	return pipe(
-		TEU.tryCatch(WatchlistModel.startSession),
-		TE.bindTo('session'),
-		TE.bind('watchlists', ({ session }) =>
-			MO.withTransaction(
-				session,
-				replaceWatchlistsForUser(userId, watchlistModels)
-			)
-		),
-		TE.chainFirst(({ session }) => TEU.tryCatch(session.endSession)),
-		TE.map(({ watchlists }) => watchlists)
+		TEU.tryCatch(() => WatchlistModel.startSession()),
+		TE.chainFirst((session) => MO.withTransaction(
+			session,
+			replaceWatchlistsForUser(userId, watchlistModels)
+		)),
+		TE.chain((session) => TEU.tryCatch(() => session.endSession()))
 	);
 };
