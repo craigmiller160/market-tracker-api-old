@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import https, { ServerOptions } from 'https';
+import { ServerOptions } from 'https';
 import { constants } from 'crypto';
 
 const keyPath = path.join(__dirname, '..', 'cert', 'market-tracker.key.pem');
@@ -18,8 +18,6 @@ const ciphers = [
 	'ECDHE-ECDSA-AES128-SHA256',
 	'ECDHE-RSA-AES128-SHA256'
 ];
-
-https.createServer({});
 
 export const httpsOptions: ServerOptions = {
 	key: fs.readFileSync(keyPath),

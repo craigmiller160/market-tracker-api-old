@@ -10,6 +10,8 @@ import express, { Express } from 'express';
 import { Server } from 'http';
 import { createRoutes } from './routes';
 import { setupErrorHandler } from './errorHandler';
+import https from 'https';
+import {httpsOptions} from './tls';
 
 const app = express();
 app.use(bodyParer.json());
@@ -32,20 +34,22 @@ const expressListen = (port: number): TEU.TaskEither<Server> =>
 	TEU.tryCatch(
 		() =>
 			new Promise((resolve, reject) => {
-				const server = app.listen(port, (err?: Error) => {
-					pipe(
-						O.fromNullable(err),
-						O.fold(
-							() => {
-								logInfo(
-									`Market Tracker API listening on port ${port}`
-								)();
-								resolve(server);
-							},
-							(_) => reject(_)
-						)
-					);
-				});
+				const server = https
+					.createServer(httpsOptions, app)
+					.listen(port, (err?: Error) => {
+						pipe(
+							O.fromNullable(err),
+							O.fold(
+								() => {
+									logInfo(
+										`Market Tracker API listening on port ${port}`
+									)();
+									resolve(server);
+								},
+								(_) => reject(_)
+							)
+						);
+					});
 			})
 	);
 
