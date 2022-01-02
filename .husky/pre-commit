@@ -1,12 +1,18 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
 old_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
 
 yarn lint
+
+if [ $? -ne 0 ]; then
+  printf "${RED}Lint errors exist, aborting\n${NC}"
+  exit 1
+fi
 
 new_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
 
