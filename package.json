@@ -14,7 +14,8 @@
   },
   "resolutions": {
     "@babel/code-frame": "^7.16.0",
-    "@babel/helper-validator-identifier": "^7.15.7"
+    "@babel/helper-validator-identifier": "^7.15.7",
+    "mime": "^2.4.6"
   },
   "devDependencies": {
     "@craigmiller160/config-merge": "^1.0.0",
