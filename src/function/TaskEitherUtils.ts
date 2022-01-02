@@ -44,31 +44,10 @@ export function multiTypeSequence<A, B, C, D, E, F, G>(
 		TE.bindTo('a'),
 		TE.bind('b', () => b ?? TE.of(null)),
 		TE.bind('c', () => c ?? TE.of(null)),
-		TE.map(({ a,b,c }) => [a,b,c].filter((_) => !!_))
-	)
-
-
-	// switch (arguments.length) {
-	// 	case 1:
-	// 		return a;
-	// 	case 2:
-	// 		return pipe(
-	// 			a,
-	// 			TE.bindTo('a'),
-	// 			TE.bind('b', () => b!),
-	// 			TE.map(({ a, b }) => [a, b])
-	// 		);
-	// 	case 3:
-	// 		return pipe(
-	// 			a,
-	// 			TE.bindTo('a'),
-	// 			TE.bind('b', () => b!),
-	// 			TE.bind('c', () => c!),
-	// 			TE.map(({ a, b, c }) => [a, b, c])
-	// 		);
-	// 	default:
-	// 		throw new Error(
-	// 			`Unsupported number of arguments: ${arguments.length}`
-	// 		);
-	// }
+		TE.bind('d', () => d ?? TE.of(null)),
+		TE.bind('e', () => e ?? TE.of(null)),
+		TE.bind('f', () => f ?? TE.of(null)),
+		TE.bind('g', () => g ?? TE.of(null)),
+		TE.map(({ a, b, c }) => [a, b, c].filter((_) => !!_))
+	);
 }

@@ -22,5 +22,21 @@ describe('TaskEitherUtils', () => {
 			)();
 			expect(result).toEqualRight(['A', 2, 'C']);
 		});
+
+		it('four arguments', async () => {
+			throw new Error();
+		});
+
+		it('five arguments', async () => {
+			throw new Error();
+		});
+
+		it('six arguments', async () => {
+			throw new Error();
+		});
+
+		it('seven arguments', async () => {
+			throw new Error();
+		});
 	});
 });
