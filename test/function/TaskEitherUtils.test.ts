@@ -6,7 +6,7 @@ describe('TaskEitherUtils', () => {
 	describe('multiTypeSequence', () => {
 		it('one argument', async () => {
 			const result = await multiTypeSequence(TE.of('A'))();
-			expect(result).toEqualRight('A');
+			expect(result).toEqualRight(['A']);
 		});
 
 		it('two arguments', async () => {

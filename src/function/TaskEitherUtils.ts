@@ -20,7 +20,7 @@ export const throwIfLeft = <V>(te: TaskEither<V>): T.Task<V> =>
 		)
 	);
 
-export function multiTypeSequence<A>(a: TaskEither<A>): TaskEither<A>;
+export function multiTypeSequence<A>(a: TaskEither<A>): TaskEither<[A]>;
 export function multiTypeSequence<A, B>(
 	a: TaskEither<A>,
 	b: TaskEither<B>
@@ -39,27 +39,36 @@ export function multiTypeSequence<A, B, C, D, E, F, G>(
 	f?: TaskEither<F>,
 	g?: TaskEither<G>
 ): TaskEither<unknown> {
-	switch (arguments.length) {
-		case 1:
-			return a;
-		case 2:
-			return pipe(
-				a,
-				TE.bindTo('a'),
-				TE.bind('b', () => b!),
-				TE.map(({ a, b }) => [a, b])
-			);
-		case 3:
-			return pipe(
-				a,
-				TE.bindTo('a'),
-				TE.bind('b', () => b!),
-				TE.bind('c', () => c!),
-				TE.map(({ a, b, c }) => [a, b, c])
-			);
-		default:
-			throw new Error(
-				`Unsupported number of arguments: ${arguments.length}`
-			);
-	}
+	return pipe(
+		a,
+		TE.bindTo('a'),
+		TE.bind('b', () => b ?? TE.of(null)),
+		TE.bind('c', () => c ?? TE.of(null)),
+		TE.map(({ a,b,c }) => [a,b,c].filter((_) => !!_))
+	)
+
+
+	// switch (arguments.length) {
+	// 	case 1:
+	// 		return a;
+	// 	case 2:
+	// 		return pipe(
+	// 			a,
+	// 			TE.bindTo('a'),
+	// 			TE.bind('b', () => b!),
+	// 			TE.map(({ a, b }) => [a, b])
+	// 		);
+	// 	case 3:
+	// 		return pipe(
+	// 			a,
+	// 			TE.bindTo('a'),
+	// 			TE.bind('b', () => b!),
+	// 			TE.bind('c', () => c!),
+	// 			TE.map(({ a, b, c }) => [a, b, c])
+	// 		);
+	// 	default:
+	// 		throw new Error(
+	// 			`Unsupported number of arguments: ${arguments.length}`
+	// 		);
+	// }
 }
