@@ -1,0 +1,23 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+old_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
+
+yarn lint
+
+new_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
+
+for newFile in $new_untracked; do
+  match=false
+  for oldFile in $old_untracked; do
+    if [ $oldFile = $newFile ]; then
+      match=true
+      break
+    fi
+  done
+
+  if [ $match = false ] ; then
+    echo "Adding lint formatting changes: $newFile"
+    git add $newFile
+  fi
+done
