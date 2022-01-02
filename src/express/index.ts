@@ -6,7 +6,7 @@ import * as TEU from '../function/TaskEitherUtils';
 import bodyParer from 'body-parser';
 import { logError, logInfo } from '../logger';
 import { pipe } from 'fp-ts/function';
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express, { Express } from 'express';
 import { Server } from 'http';
 import { createRoutes } from './routes';
 import { setupErrorHandler } from './errorHandler';
@@ -15,12 +15,6 @@ const app = express();
 app.use(bodyParer.json());
 createRoutes(app);
 setupErrorHandler(app);
-// TODO improve this too
-process.on('uncaughtException', (err) => {
-	console.log('UncaughtException', err);
-});
-
-// TODO how do I prevent errors from crashing the whole app?
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(

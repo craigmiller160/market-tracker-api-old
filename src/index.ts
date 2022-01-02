@@ -1,3 +1,4 @@
+import './processErrorHandling';
 import { connectToMongo } from './mongo';
 import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
