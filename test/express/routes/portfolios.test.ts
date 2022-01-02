@@ -32,7 +32,7 @@ describe('portfolios', () => {
 
 	afterAll(async () => {
 		await stopMongoTestServer(mongoTestServer)();
-		expressServer[0].close();
+		expressServer.server.close();
 	});
 
 	beforeEach(() => {
@@ -72,7 +72,7 @@ describe('portfolios', () => {
 	});
 
 	it('getPortfolios', async () => {
-		const res = await request(expressServer[0])
+		const res = await request(expressServer.server)
 			.get('/portfolios')
 			.expect(200);
 		expect(res.body).toEqual([
@@ -90,7 +90,7 @@ describe('portfolios', () => {
 				cryptos: []
 			}
 		];
-		const res = await request(expressServer[0])
+		const res = await request(expressServer.server)
 			.post('/portfolios')
 			.send(newPortfolios)
 			.expect(200);

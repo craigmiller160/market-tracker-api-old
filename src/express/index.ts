@@ -37,7 +37,10 @@ const expressListen = (port: number): E.Either<Error, Server> =>
 		unknownToError
 	);
 
-export type ExpressServer = [Server, Express];
+export interface ExpressServer {
+	readonly server: Server;
+	readonly app: Express;
+}
 
 export const startExpressServer = (): E.Either<Error, ExpressServer> => {
 	const port = pipe(
@@ -48,6 +51,9 @@ export const startExpressServer = (): E.Either<Error, ExpressServer> => {
 
 	return pipe(
 		expressListen(port),
-		E.map((_) => [_, app])
+		E.map((_) => ({
+			server: _,
+			app
+		}))
 	);
 };
