@@ -21,7 +21,7 @@ const replacePortfoliosForUser = (
 	portfolioModels: PortfolioModelInstanceType[]
 ): TEU.TaskEither<Portfolio[]> =>
 	pipe(
-		TEU.tryCatch(() => PortfolioModel.deleteOne({ userId }).exec()),
+		TEU.tryCatch(() => PortfolioModel.deleteMany({ userId }).exec()),
 		TE.chain(() => {
 			console.log('InsertingMany');
 			return TEU.tryCatch(async () => {
