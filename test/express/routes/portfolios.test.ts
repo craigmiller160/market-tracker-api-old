@@ -31,11 +31,15 @@ describe('portfolios', () => {
 	});
 
 	afterAll(async () => {
+		console.log('Running AfterAll')
 		await stopMongoTestServer(mongoTestServer)();
-		expressServer.server.close();
+		expressServer.server.close((err?: Error) => {
+			console.log('Express closed', err);
+		});
+		console.log('DoneWith AfterAll')
 	});
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		user1InitPortfolios = [
 			{
 				userId: 1,
@@ -53,7 +57,7 @@ describe('portfolios', () => {
 		const user1Models = user1InitPortfolios.map(
 			(_) => new PortfolioModel(_)
 		);
-		PortfolioModel.insertMany(user1Models);
+		await PortfolioModel.insertMany(user1Models);
 
 		const user2Portfolios = [
 			{
@@ -64,11 +68,11 @@ describe('portfolios', () => {
 			}
 		];
 		const user2Models = user2Portfolios.map((_) => new PortfolioModel(_));
-		PortfolioModel.insertMany(user2Models);
+		await PortfolioModel.insertMany(user2Models);
 	});
 
-	afterEach(() => {
-		PortfolioModel.deleteMany().exec();
+	afterEach(async () => {
+		await PortfolioModel.deleteMany().exec();
 	});
 
 	it('getPortfolios', async () => {

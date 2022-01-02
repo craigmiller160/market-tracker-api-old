@@ -8,7 +8,7 @@ logInfo('Starting application')();
 
 pipe(
 	connectToMongo(),
-	TE.chain(() => TE.fromEither(startExpressServer())),
+	TE.chain(startExpressServer),
 	TE.mapLeft((_) => {
 		logError('Error starting application', _)();
 		process.exit(1);
