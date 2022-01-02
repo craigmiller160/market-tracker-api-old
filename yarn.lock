@@ -325,10 +325,10 @@
     "@types/jest" "^27.0.3"
     ts-jest "^27.1.2"
 
-"@craigmiller160/jest-config@^1.0.0-beta.6":
-  version "1.0.0-beta.6"
-  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/@craigmiller160/jest-config/-/jest-config-1.0.0-beta.6.tgz#4c8c31005e92dce1c00a3a7704a2510dfa62dd9b"
-  integrity sha512-XL3plyPn+M3bcQoovCKobLJGR0hIsJjMsdeMDjon3F8FPL8yC/xgobod0SJr5WJ924aV/BRx7a4mcMbeU5EjfQ==
+"@craigmiller160/jest-config@^1.0.0-beta.9":
+  version "1.0.0-beta.9"
+  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/@craigmiller160/jest-config/-/jest-config-1.0.0-beta.9.tgz#09f82b8de92db10ce9cf3917df33dbbf2b1c9b66"
+  integrity sha512-eivkM3kQvMlfgqUCzqlPKH6vURAExHsgSkV4kgYQHrpfUges6Ql7tXLQjqGwBSj2D/B2IA/vGptUEDJY/bi4LQ==
   dependencies:
     cross-env "^7.0.3"
     cross-spawn "^7.0.3"
