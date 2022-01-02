@@ -9,11 +9,6 @@ old_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
 
 yarn lint
 
-if [ $? -ne 0 ]; then
-  printf "${RED}Lint errors exist, aborting\n${NC}"
-  exit 1
-fi
-
 new_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
 
 for newFile in $new_untracked; do

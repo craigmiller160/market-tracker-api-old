@@ -293,10 +293,8 @@
   dependencies:
     lodash.merge "^4.6.2"
 
-"@craigmiller160/eslint-config-js@^1.0.0-beta.4":
-  version "1.0.0-beta.4"
-  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/@craigmiller160/eslint-config-js/-/eslint-config-js-1.0.0-beta.4.tgz#c8ba0517a0699fea7862750606adf4d290cc1e3d"
-  integrity sha512-7rCeyUZUUCSacb8Y04FllLqTKWlj0AexldmXyRuvjLipnrJCBMPZ051MOycTQ0WkdL5aO/L8e/cf67nMZWcoMA==
+"@craigmiller160/eslint-config-js@file:.yalc/@craigmiller160/eslint-config-js":
+  version "1.0.0-beta"
   dependencies:
     cross-spawn "^7.0.3"
     eslint "^8.5.0"
