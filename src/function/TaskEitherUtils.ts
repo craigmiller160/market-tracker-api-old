@@ -2,7 +2,6 @@ import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import { unknownToError } from './unknownToError';
 import { pipe } from 'fp-ts/function';
-import { match } from 'ts-pattern';
 
 export const tryCatch = <T>(fn: () => Promise<T>): TE.TaskEither<Error, T> =>
 	TE.tryCatch(fn, unknownToError);
@@ -30,6 +29,36 @@ export function multiTypeSequence<A, B, C>(
 	b: TaskEither<B>,
 	c: TaskEither<C>
 ): TaskEither<[A, B, C]>;
+export function multiTypeSequence<A, B, C, D>(
+	a: TaskEither<A>,
+	b: TaskEither<B>,
+	c: TaskEither<C>,
+	d: TaskEither<D>
+): TaskEither<[A, B, C, D]>;
+export function multiTypeSequence<A, B, C, D, E>(
+	a: TaskEither<A>,
+	b: TaskEither<B>,
+	c: TaskEither<C>,
+	d: TaskEither<D>,
+	e: TaskEither<E>
+): TaskEither<[A, B, C, D, E]>;
+export function multiTypeSequence<A, B, C, D, E, F>(
+	a: TaskEither<A>,
+	b: TaskEither<B>,
+	c: TaskEither<C>,
+	d: TaskEither<D>,
+	e: TaskEither<E>,
+	f: TaskEither<F>
+): TaskEither<[A, B, C, D, E, F]>;
+export function multiTypeSequence<A, B, C, D, E, F, G>(
+	a: TaskEither<A>,
+	b: TaskEither<B>,
+	c: TaskEither<C>,
+	d: TaskEither<D>,
+	e: TaskEither<E>,
+	f: TaskEither<F>,
+	g: TaskEither<G>
+): TaskEither<[A, B, C, D, E, F, G]>;
 export function multiTypeSequence<A, B, C, D, E, F, G>(
 	a: TaskEither<A>,
 	b?: TaskEither<B>,

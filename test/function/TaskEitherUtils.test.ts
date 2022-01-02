@@ -24,19 +24,49 @@ describe('TaskEitherUtils', () => {
 		});
 
 		it('four arguments', async () => {
-			throw new Error();
+			const result = await multiTypeSequence(
+				TE.of('A'),
+				TE.of(2),
+				TE.of('C'),
+				TE.of('D')
+			)();
+			expect(result).toEqualRight(['A', 2, 'C', 'D']);
 		});
 
 		it('five arguments', async () => {
-			throw new Error();
+			const result = await multiTypeSequence(
+				TE.of('A'),
+				TE.of(2),
+				TE.of('C'),
+				TE.of('D'),
+				TE.of('E')
+			)();
+			expect(result).toEqualRight(['A', 2, 'C', 'D', 'E']);
 		});
 
 		it('six arguments', async () => {
-			throw new Error();
+			const result = await multiTypeSequence(
+				TE.of('A'),
+				TE.of(2),
+				TE.of('C'),
+				TE.of('D'),
+				TE.of('E'),
+				TE.of('F')
+			)();
+			expect(result).toEqualRight(['A', 2, 'C', 'D', 'E', 'F']);
 		});
 
 		it('seven arguments', async () => {
-			throw new Error();
+			const result = await multiTypeSequence(
+				TE.of('A'),
+				TE.of(2),
+				TE.of('C'),
+				TE.of('D'),
+				TE.of('E'),
+				TE.of('F'),
+				TE.of('G')
+			)();
+			expect(result).toEqualRight(['A', 2, 'C', 'D', 'E', 'F', 'G']);
 		});
 	});
 });
