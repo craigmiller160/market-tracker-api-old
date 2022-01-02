@@ -4,6 +4,5 @@ const merge = require('@craigmiller160/config-merge');
 const path = require('path');
 
 module.exports = merge(jestConfig, jestTsConfig, {
-    testEnvironment: 'node',
-    globalTeardown: path.join(process.cwd(), 'test', 'teardown.ts')
+    testEnvironment: 'node'
 });

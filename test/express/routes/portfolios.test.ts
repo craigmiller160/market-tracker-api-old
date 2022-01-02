@@ -32,20 +32,13 @@ describe('portfolios', () => {
 	});
 
 	afterAll(async () => {
-		console.log('Running AfterAll')
+		await stopMongoTestServer(mongoTestServer)();
 		await new Promise((resolve, reject) => {
 			expressServer.server.close((err?: Error) => {
 				console.log('Express closed', err);
-				err !== undefined ? resolve('') : reject(err);
+				err === undefined ? resolve('') : reject(err);
 			});
 		});
-		await stopMongoTestServer(mongoTestServer)();
-
-		console.log('Done with stopping things');
-
-		await new Promise(resolve => setTimeout(() => resolve(''), 500));
-
-		console.log('DoneWith AfterAll')
 	});
 
 	beforeEach(async () => {
@@ -87,6 +80,7 @@ describe('portfolios', () => {
 	it('getPortfolios', async () => {
 		const res = await request(expressServer.server)
 			.get('/portfolios')
+			.timeout(2000)
 			.expect(200);
 		expect(res.body).toEqual([
 			expect.objectContaining(user1InitPortfolios[0]),
