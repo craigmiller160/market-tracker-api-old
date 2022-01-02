@@ -16,7 +16,7 @@ describe('portfolios', () => {
 	let user1InitPortfolios: Portfolio[];
 	beforeAll(async () => {
 		await createFullTestServer();
-	});
+	})
 
 	afterAll(async () => {
 		await stopFullTestServer(fullTestServer);
@@ -59,7 +59,7 @@ describe('portfolios', () => {
 	});
 
 	it('getPortfolios', async () => {
-		const res = await request(expressServer.server)
+		const res = await request(fullTestServer.expressServer.server)
 			.get('/portfolios')
 			.timeout(2000)
 			.expect(200);
@@ -78,7 +78,7 @@ describe('portfolios', () => {
 				cryptos: []
 			}
 		];
-		const res = await request(expressServer.server)
+		const res = await request(fullTestServer.expressServer.server)
 			.post('/portfolios')
 			.timeout(2000)
 			.set('Content-Type', 'application/json')
