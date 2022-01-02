@@ -6,4 +6,4 @@ import { startExpressServer } from './express';
 pipe(
 	connectToMongo(),
 	TE.chain(() => TE.fromEither(startExpressServer()))
-)()
+)();
