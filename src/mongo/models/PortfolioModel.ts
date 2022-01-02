@@ -26,3 +26,5 @@ export type PortfolioModelType = typeof PortfolioModel;
 const exampleModel = new PortfolioModel();
 
 export type PortfolioModelInstanceType = typeof exampleModel;
+
+// TODO model creation utility functions

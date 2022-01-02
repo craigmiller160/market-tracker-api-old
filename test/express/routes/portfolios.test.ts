@@ -13,7 +13,7 @@ describe('portfolios', () => {
 	let fullTestServer: FullTestServer;
 	let user1InitPortfolios: Portfolio[];
 	beforeAll(async () => {
-		await createFullTestServer();
+		fullTestServer = await createFullTestServer();
 	});
 
 	afterAll(async () => {
@@ -40,7 +40,7 @@ describe('portfolios', () => {
 		);
 		await PortfolioModel.insertMany(user1Models);
 
-		const user2Portfolios = [
+		const user2Portfolios: Portfolio[] = [
 			{
 				userId: 2,
 				portfolioName: 'Three',
