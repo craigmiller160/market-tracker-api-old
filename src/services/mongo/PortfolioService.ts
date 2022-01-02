@@ -23,12 +23,12 @@ const replacePortfoliosForUser = (
 	pipe(
 		TEU.tryCatch(() => PortfolioModel.deleteOne({ userId }).exec()),
 		TE.chain(() => {
-			console.log('InsertingMany')
+			console.log('InsertingMany');
 			return TEU.tryCatch(async () => {
 				const result = await PortfolioModel.insertMany(portfolioModels);
-				console.log('InsertManyResult', result)
+				console.log('InsertManyResult', result);
 				return result;
-			})
+			});
 		})
 	);
 

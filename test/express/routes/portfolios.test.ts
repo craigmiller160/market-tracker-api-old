@@ -99,6 +99,6 @@ describe('portfolios', () => {
 				...newPortfolios[0],
 				userId: 1
 			})
-		])
+		]);
 	});
 });

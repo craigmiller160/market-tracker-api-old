@@ -15,9 +15,9 @@ export const withTransaction = <T>(
 			return result;
 		}),
 		TE.chain((_) => {
-			console.log('FromEither', _)
-			const result = TE.fromEither(_)
+			console.log('FromEither', _);
+			const result = TE.fromEither(_);
 			console.log('AfterFromEither');
-			return result
+			return result;
 		})
 	);
