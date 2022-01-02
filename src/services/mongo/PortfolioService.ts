@@ -21,7 +21,7 @@ const replacePortfoliosForUser = (
 	portfolioModels: PortfolioModelInstanceType[]
 ): TEU.TaskEither<Portfolio[]> =>
 	pipe(
-		TEU.tryCatch(PortfolioModel.deleteOne({ userId }).exec),
+		TEU.tryCatch(() => PortfolioModel.deleteOne({ userId }).exec()),
 		TE.chain(() =>
 			TEU.tryCatch(() => PortfolioModel.insertMany(portfolioModels))
 		)
@@ -44,7 +44,7 @@ export const savePortfoliosForUser = (
 	);
 
 	return pipe(
-		TEU.tryCatch(PortfolioModel.startSession),
+		TEU.tryCatch(() => PortfolioModel.startSession()),
 		TE.bindTo('session'),
 		TE.bind('portfolios', ({ session }) =>
 			MO.withTransaction(
@@ -52,7 +52,7 @@ export const savePortfoliosForUser = (
 				replacePortfoliosForUser(userId, portfolioModels)
 			)
 		),
-		TE.chainFirst(({ session }) => TEU.tryCatch(session.endSession)),
+		TE.chainFirst(({ session }) => TEU.tryCatch(() => session.endSession())),
 		TE.map(({ portfolios }) => portfolios)
 	);
 };
