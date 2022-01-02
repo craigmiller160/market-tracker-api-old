@@ -1,13 +1,20 @@
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
+import * as TEU from '../function/TaskEitherUtils';
 
+import bodyParer from 'body-parser';
 import { logError, logInfo } from '../logger';
 import { pipe } from 'fp-ts/function';
-import express from 'express';
+import express, { Express } from 'express';
 import { Server } from 'http';
-import { unknownToError } from '../function/unknownToError';
+import { createRoutes } from './routes';
+import { setupErrorHandler } from './errorHandler';
 
 const app = express();
+app.use(bodyParer.json());
+createRoutes(app);
+setupErrorHandler(app);
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
@@ -21,22 +28,44 @@ const safeParseInt = (text: string): O.Option<number> =>
 		O.fromEither
 	);
 
-const expressListen = (port: number): E.Either<Error, Server> =>
-	E.tryCatch(
+const expressListen = (port: number): TEU.TaskEither<Server> =>
+	TEU.tryCatch(
 		() =>
-			app.listen(
-				port,
-				logInfo(`Market Tracker API listening on port ${port}`)
-			),
-		unknownToError
+			new Promise((resolve, reject) => {
+				const server = app.listen(port, (err?: Error) => {
+					pipe(
+						O.fromNullable(err),
+						O.fold(
+							() => {
+								logInfo(
+									`Market Tracker API listening on port ${port}`
+								)();
+								resolve(server);
+							},
+							(_) => reject(_)
+						)
+					);
+				});
+			})
 	);
 
-export const startExpressServer = (): E.Either<Error, Server> => {
+export interface ExpressServer {
+	readonly server: Server;
+	readonly app: Express;
+}
+
+export const startExpressServer = (): TEU.TaskEither<ExpressServer> => {
 	const port = pipe(
 		O.fromNullable(process.env.EXPRESS_PORT),
 		O.chain(safeParseInt),
 		O.getOrElse(() => 8080)
 	);
 
-	return expressListen(port);
+	return pipe(
+		expressListen(port),
+		TE.map((_) => ({
+			server: _,
+			app
+		}))
+	);
 };

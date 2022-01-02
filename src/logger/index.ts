@@ -1,5 +1,7 @@
 import { createLogger, transports, format } from 'winston';
 import * as IO from 'fp-ts/IO';
+import { pipe } from 'fp-ts/function';
+import * as O from 'fp-ts/Option';
 
 const myFormat = format.printf(
 	({ level, message, timestamp, stack }) =>
@@ -47,8 +49,11 @@ export const logWarn =
 	};
 
 export const logError =
-	(message: string): IO.IO<string> =>
+	(message: string, error?: Error): IO.IO<string> =>
 	() => {
 		logger.error(message);
+
+		pipe(O.fromNullable(error), O.map(logger.error));
+
 		return message;
 	};
