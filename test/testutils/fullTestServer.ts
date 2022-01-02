@@ -15,4 +15,4 @@ export const createFullTestServer = (): Promise<FullTestServer> =>
 		TE.bindTo('mongoServer'),
 		TE.bind('expressServer', startExpressServer),
 		TEU.throwIfLeft
-	)()
+	)();
