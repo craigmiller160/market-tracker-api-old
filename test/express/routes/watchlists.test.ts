@@ -1,7 +1,13 @@
-import {createFullTestServer, FullTestServer, stopFullTestServer} from '../../testutils/fullTestServer';
-import {Watchlist, WatchlistModel} from '../../../src/mongo/models/WatchlistModel';
-
-export {};
+import {
+	createFullTestServer,
+	FullTestServer,
+	stopFullTestServer
+} from '../../testutils/fullTestServer';
+import {
+	Watchlist,
+	WatchlistModel
+} from '../../../src/mongo/models/WatchlistModel';
+import request from 'supertest';
 
 describe('watchlists route', () => {
 	let fullTestServer: FullTestServer;
@@ -29,7 +35,9 @@ describe('watchlists route', () => {
 				cryptos: ['WXYZ']
 			}
 		];
-		const user1Watchlists = user1InitWatchlists.map((_) => new WatchlistModel(_));
+		const user1Watchlists = user1InitWatchlists.map(
+			(_) => new WatchlistModel(_)
+		);
 		await WatchlistModel.insertMany(user1Watchlists);
 
 		const user2Watchlists: Watchlist[] = [
@@ -49,10 +57,37 @@ describe('watchlists route', () => {
 	});
 
 	it('getWatchlists', async () => {
-		throw new Error();
+		const res = await request(fullTestServer.expressServer.server)
+			.get('/watchlists')
+			.timeout(2000)
+			.expect(200);
+		expect(res.body).toEqual([
+			expect.objectContaining(user1InitWatchlists[0]),
+			expect.objectContaining(user1InitWatchlists[1])
+		]);
 	});
 
 	it('saveWatchlists', async () => {
-		throw new Error();
+		const newWatchlists: Watchlist[] = [
+			{
+				userId: 10,
+				watchlistName: 'Ten',
+				stocks: ['atv'],
+				cryptos: []
+			}
+		];
+
+		const res = await request(fullTestServer.expressServer.server)
+			.post('/watchlists')
+			.timeout(2000)
+			.set('Content-Type', 'application/json')
+			.send(newWatchlists)
+			.expect(200);
+		expect(res.body).toEqual([
+			expect.objectContaining({
+				...newWatchlists[0],
+				userId: 1
+			})
+		]);
 	});
 });

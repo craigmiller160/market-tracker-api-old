@@ -11,7 +11,8 @@
     "lint": "craig-lint",
     "test": "craig-test",
     "forceBuild": "tsc",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "validate": "yarn lint && yarn test"
   },
   "resolutions": {
     "@babel/code-frame": "^7.16.0",
