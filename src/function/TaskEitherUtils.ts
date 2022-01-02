@@ -2,6 +2,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import { unknownToError } from './unknownToError';
 import { pipe } from 'fp-ts/function';
+import { match } from 'ts-pattern';
 
 export const tryCatch = <T>(fn: () => Promise<T>): TE.TaskEither<Error, T> =>
 	TE.tryCatch(fn, unknownToError);
@@ -24,9 +25,19 @@ export function multiTypeSequence<A, B>(
 	a: TaskEither<A>,
 	b: TaskEither<B>
 ): TaskEither<[A, B]>;
-export function multiTypeSequence<A, B>(
+export function multiTypeSequence<A, B, C>(
 	a: TaskEither<A>,
-	b?: TaskEither<B>
+	b: TaskEither<B>,
+	c: TaskEither<C>
+): TaskEither<[A, B, C]>;
+export function multiTypeSequence<A, B, C, D, E, F, G>(
+	a: TaskEither<A>,
+	b?: TaskEither<B>,
+	c?: TaskEither<C>,
+	d?: TaskEither<D>,
+	e?: TaskEither<E>,
+	f?: TaskEither<F>,
+	g?: TaskEither<G>
 ): TaskEither<unknown> {
 	switch (arguments.length) {
 		case 1:
@@ -37,6 +48,14 @@ export function multiTypeSequence<A, B>(
 				TE.bindTo('a'),
 				TE.bind('b', () => b!),
 				TE.map(({ a, b }) => [a, b])
+			);
+		case 3:
+			return pipe(
+				a,
+				TE.bindTo('a'),
+				TE.bind('b', () => b!),
+				TE.bind('c', () => c!),
+				TE.map(({ a, b, c }) => [a, b, c])
 			);
 		default:
 			throw new Error(

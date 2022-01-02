@@ -10,8 +10,17 @@ describe('TaskEitherUtils', () => {
 		});
 
 		it('two arguments', async () => {
-			const result = await multiTypeSequence(TE.of('A'), TE.of('B'))();
-			expect(result).toEqualRight(['A', 'B']);
+			const result = await multiTypeSequence(TE.of('A'), TE.of(2))();
+			expect(result).toEqualRight(['A', 2]);
+		});
+
+		it('three arguments', async () => {
+			const result = await multiTypeSequence(
+				TE.of('A'),
+				TE.of(2),
+				TE.of('C')
+			)();
+			expect(result).toEqualRight(['A', 2, 'C']);
 		});
 	});
 });
