@@ -12,33 +12,23 @@ import {
 	Portfolio,
 	PortfolioModel
 } from '../../../src/mongo/models/PortfolioModel';
+import {
+	createFullTestServer,
+	FullTestServer,
+	stopFullTestServer
+} from '../../testutils/fullTestServer';
 
 // TODO simplify re-use of test setup/cleanup logic
 
 describe('portfolios', () => {
-	let mongoTestServer: MongoTestServer;
-	let expressServer: ExpressServer;
+	let fullTestServer: FullTestServer;
 	let user1InitPortfolios: Portfolio[];
 	beforeAll(async () => {
-		await pipe(
-			createMongoTestServer(),
-			TEU.throwIfLeft,
-			T.map((_) => {
-				mongoTestServer = _;
-			})
-		)();
-
-		expressServer = await pipe(startExpressServer(), TEU.throwIfLeft)();
+		await createFullTestServer();
 	});
 
 	afterAll(async () => {
-		await stopMongoTestServer(mongoTestServer)();
-		await new Promise((resolve, reject) => {
-			expressServer.server.close((err?: Error) => {
-				console.error('Express closed', err);
-				err === undefined ? resolve('') : reject(err);
-			});
-		});
+		await stopFullTestServer(fullTestServer);
 	});
 
 	beforeEach(async () => {
