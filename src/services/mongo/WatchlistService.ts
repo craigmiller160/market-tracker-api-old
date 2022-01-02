@@ -12,7 +12,7 @@ const getCurrentUserId = () => 1;
 
 export const findWatchlistsForUser = (): TEU.TaskEither<Watchlist[]> => {
 	const userId = getCurrentUserId();
-	return TEU.tryCatch(WatchlistModel.find({ userId }).exec);
+	return TEU.tryCatch(() => WatchlistModel.find({ userId }).exec());
 };
 
 const replaceWatchlistsForUser = (
@@ -20,7 +20,7 @@ const replaceWatchlistsForUser = (
 	watchlistModels: WatchlistModelInstanceType[]
 ): TEU.TaskEither<Watchlist[]> =>
 	pipe(
-		TEU.tryCatch(WatchlistModel.deleteOne({ userId }).exec),
+		TEU.tryCatch(() => WatchlistModel.deleteMany({ userId }).exec()),
 		TE.chain(() =>
 			TEU.tryCatch(() => WatchlistModel.insertMany(watchlistModels))
 		)
