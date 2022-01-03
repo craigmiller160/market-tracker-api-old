@@ -11,5 +11,5 @@ export const setupRequestLogging = (app: Express) => {
 		logger.debug(
 			`${req.method} ${req.path}${fullQueryString} - ${res.statusCode}`
 		);
-	});
+	})
 };
