@@ -18,7 +18,7 @@ const createErrorResponse = (
 	status: number
 ): ErrorResponse => {
 	const queryString = qs.stringify(req.query);
-	const fullQueryString = queryString.length > 0 ? `?${queryString}` : ''
+	const fullQueryString = queryString.length > 0 ? `?${queryString}` : '';
 
 	const timestamp = format(new Date(), 'yyyy-MM-dd HH:mm:ss.SSS');
 
