@@ -12,7 +12,7 @@ import { createRoutes } from './routes';
 import { setupErrorHandler } from './errorHandler';
 import https from 'https';
 import { httpsOptions } from './tls';
-import {setupRequestLogging} from './requestLogging';
+import { setupRequestLogging } from './requestLogging';
 
 const app = express();
 app.use(bodyParer.json());
