@@ -14,11 +14,16 @@ const createErrorResponse = (
 	err: Error,
 	req: Request,
 	status: number
-): ErrorResponse => ({
-	status,
-	message: err.message,
-	request: `${req.method} ${req.path}?${qs.stringify(req.query)}`
-});
+): ErrorResponse => {
+	const queryString = qs.stringify(req.query);
+	const fullQueryString = queryString.length > 0 ? `?${queryString}` : '';
+
+	return {
+		status,
+		message: err.message,
+		request: `${req.method} ${req.path}${fullQueryString}`
+	};
+};
 
 export const setupErrorHandler = (app: Express) =>
 	app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
