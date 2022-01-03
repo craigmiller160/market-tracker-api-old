@@ -16,21 +16,17 @@ export const findPortfoliosForUser = (): TEU.TaskEither<Portfolio[]> => {
 	return TEU.tryCatch(() => PortfolioModel.find({ userId }).exec());
 };
 
-const replacePortfoliosForUser = (
+const replacePortfoliosForUser = async (
 	userId: number,
 	portfolioModels: PortfolioModelInstanceType[]
-): TEU.TaskEither<Portfolio[]> =>
-	pipe(
-		TEU.multiTypeSequence(
-			TEU.tryCatch(() => PortfolioModel.deleteMany({ userId }).exec()),
-			TEU.tryCatch(async () => PortfolioModel.insertMany(portfolioModels))
-		),
-		TE.map(([, _]) => _)
-	);
+): Promise<void> => {
+	await PortfolioModel.deleteMany({ userId }).exec();
+	await PortfolioModel.insertMany(portfolioModels);
+};
 
 export const savePortfoliosForUser = (
 	portfolios: Portfolio[]
-): TEU.TaskEither<void> => {
+): TEU.TaskEither<unknown> => {
 	const userId = getCurrentUserId();
 
 	const portfolioModels = pipe(
@@ -43,15 +39,23 @@ export const savePortfoliosForUser = (
 		)
 	);
 
-	return pipe(
-		TEU.tryCatch(() => PortfolioModel.startSession()),
+	const sessionTE = TEU.tryCatch(() => PortfolioModel.startSession());
+
+	const postTxnTE = pipe(
+		sessionTE,
 		TE.chainFirst((session) =>
 			TEU.tryCatch(() =>
-				session.withTransaction(
+				session.withTransaction(() =>
 					replacePortfoliosForUser(userId, portfolioModels)
 				)
 			)
-		),
+		)
+	);
+
+	pipe(
+		sessionTE,
 		TE.chain((session) => TEU.tryCatch(() => session.endSession()))
 	);
+
+	return postTxnTE;
 };

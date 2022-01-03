@@ -16,21 +16,17 @@ export const findWatchlistsForUser = (): TEU.TaskEither<Watchlist[]> => {
 	return TEU.tryCatch(() => WatchlistModel.find({ userId }).exec());
 };
 
-const replaceWatchlistsForUser = (
+const replaceWatchlistsForUser = async (
 	userId: number,
 	watchlistModels: WatchlistModelInstanceType[]
-): TEU.TaskEither<Watchlist[]> =>
-	pipe(
-		TEU.multiTypeSequence(
-			TEU.tryCatch(() => WatchlistModel.deleteMany({ userId }).exec()),
-			TEU.tryCatch(() => WatchlistModel.insertMany(watchlistModels))
-		),
-		TE.map(([, _]) => _)
-	);
+): Promise<void> => {
+	await WatchlistModel.deleteMany({ userId }).exec();
+	await WatchlistModel.insertMany(watchlistModels);
+};
 
 export const saveWatchlistsForUser = (
 	watchlists: Watchlist[]
-): TEU.TaskEither<void> => {
+): TEU.TaskEither<unknown> => {
 	const userId = getCurrentUserId();
 
 	const watchlistModels = pipe(
@@ -43,15 +39,23 @@ export const saveWatchlistsForUser = (
 		)
 	);
 
-	return pipe(
-		TEU.tryCatch(() => WatchlistModel.startSession()),
+	const sessionTE = TEU.tryCatch(() => WatchlistModel.startSession());
+
+	const postTxnTE = pipe(
+		sessionTE,
 		TE.chainFirst((session) =>
 			TEU.tryCatch(() =>
-				session.withTransaction(
+				session.withTransaction(() =>
 					replaceWatchlistsForUser(userId, watchlistModels)
 				)
 			)
-		),
+		)
+	);
+
+	pipe(
+		sessionTE,
 		TE.chain((session) => TEU.tryCatch(() => session.endSession()))
 	);
+
+	return postTxnTE;
 };
