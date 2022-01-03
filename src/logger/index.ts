@@ -8,7 +8,7 @@ const myFormat = format.printf(
 		`[${timestamp}] [${level}] - ${stack ?? message}`
 );
 
-const logger = createLogger({
+export const logger = createLogger({
 	level: 'debug',
 	format: format.combine(
 		format((info) => {
