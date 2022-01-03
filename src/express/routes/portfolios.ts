@@ -9,13 +9,12 @@ import {
 } from '../../services/mongo/PortfolioService';
 
 export const getPortfolios: RouteCreator = (app) =>
-	app.get('/portfolios', (req, res) => {
-		throw new Error('Dying');
+	app.get('/portfolios', (req, res) =>
 		pipe(
 			findPortfoliosForUser(),
 			TE.map((_) => res.json(_))
-		)();
-	});
+		)()
+	);
 
 export const savePortfolios: RouteCreator = (app) =>
 	app.post(
