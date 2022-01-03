@@ -16,10 +16,13 @@ export const findPortfoliosForUser = (): TEU.TaskEither<Portfolio[]> => {
 	return TEU.tryCatch(() => PortfolioModel.find({ userId }).exec());
 };
 
-const replacePortfoliosForUser = async (userId: number, portfolioModels: PortfolioModelInstanceType[]): Promise<void> => {
+const replacePortfoliosForUser = async (
+	userId: number,
+	portfolioModels: PortfolioModelInstanceType[]
+): Promise<void> => {
 	await PortfolioModel.deleteMany({ userId }).exec();
 	await PortfolioModel.insertMany(portfolioModels);
-}
+};
 
 export const savePortfoliosForUser = (
 	portfolios: Portfolio[]
@@ -42,8 +45,8 @@ export const savePortfoliosForUser = (
 		sessionTE,
 		TE.chainFirst((session) =>
 			TEU.tryCatch(() =>
-				session.withTransaction(
-					() => replacePortfoliosForUser(userId, portfolioModels)
+				session.withTransaction(() =>
+					replacePortfoliosForUser(userId, portfolioModels)
 				)
 			)
 		)
