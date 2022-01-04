@@ -5,11 +5,15 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
 old_tracked=$(git status --porcelain | grep -E '^(A|M).*$' | sed -E 's/(A|M) *//g')
 
 yarn lint
 
-new_untracked=$(git status --porcelain | grep " M" | sed 's/ M //g')
+new_untracked=$(git status --porcelain | grep -E '^\SM.*$' | sed 's/\SM //g')
 
 for newFile in $new_untracked; do
   match=false
