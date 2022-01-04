@@ -15,8 +15,8 @@ pipe(
 		process.exit(1);
 		return _;
 	})
-)();
+)()
 
-const foo = () => 'abc';
-
-foo();
+// const foo = () => 'abc';
+//
+// foo();
