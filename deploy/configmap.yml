@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: market-tracker-api-config
+data:
+  MONGO_USER: mongo_root
+  MONGO_HOST: mongodb-service
+  MONGO_AUTH_DB: admin
+  MONGO_PORT: "27107"
+  NODE_ENV: production
+  MONGO_DB: market_tracker_prod
+  EXPRESS_PORT: 8080
