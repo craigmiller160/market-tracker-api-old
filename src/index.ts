@@ -15,4 +15,4 @@ pipe(
 		process.exit(1);
 		return _;
 	})
-)();
+)()
