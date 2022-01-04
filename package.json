@@ -5,6 +5,9 @@
   "publishConfig": {
     "registry": "https://craigmiller160.ddns.net:30003/repository/npm-private/"
   },
+  "files": [
+    "build"
+  ],
   "scripts": {
     "start": "env-cmd ts-node src",
     "build": "yarn lint && yarn test && yarn forceBuild",
