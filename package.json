@@ -9,7 +9,7 @@
     "start": "env-cmd ts-node src",
     "build": "yarn lint && yarn test && yarn forceBuild",
     "lint": "craig-lint",
-    "test": "craig-test",
+    "test": "craig-test --runInBand",
     "forceBuild": "tsc",
     "prepare": "husky install",
     "validate": "yarn lint && yarn test"
