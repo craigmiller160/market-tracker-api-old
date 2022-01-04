@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: market-tracker-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: market-tracker-api
+  template:
+    metadata:
+      labels:
+        app: market-tracker-api
+    spec:
+      containers:
+        - name: market-tracker-api
+          image: craigmiller160.ddns.net:30004/market-tracker-api:${KUBE_IMG_VERSION}
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: market-tracker-api-config
+          env:
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-root-password
+                  key: MONGO_ROOT_PASSWORD
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 300
