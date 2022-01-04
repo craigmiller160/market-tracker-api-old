@@ -16,3 +16,7 @@ pipe(
 		return _;
 	})
 )()
+
+// const foo = () => 'abc';
+//
+// foo();
