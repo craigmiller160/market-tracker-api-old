@@ -7,5 +7,7 @@ module.exports = merge(jestConfig, jestTsConfig, {
     testEnvironment: 'node',
     setupFilesAfterEnv: [
         path.join(process.cwd(), 'test', 'setup.ts')
-    ]
+    ],
+    globalSetup: path.join(process.cwd(), 'test', 'globalSetup.ts'),
+    globalTeardown: path.join(process.cwd(), 'test', 'globalTeardown.ts')
 });

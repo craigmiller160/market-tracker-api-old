@@ -4,22 +4,10 @@ import {
 	PortfolioModel,
 	portfolioToModel
 } from '../../../src/mongo/models/PortfolioModel';
-import {
-	createFullTestServer,
-	FullTestServer,
-	stopFullTestServer
-} from '../../testutils/fullTestServer';
+import { fullTestServer } from '../../globalSetup';
 
 describe('portfolios', () => {
-	let fullTestServer: FullTestServer;
 	let user1InitPortfolios: Portfolio[];
-	beforeAll(async () => {
-		fullTestServer = await createFullTestServer();
-	});
-
-	afterAll(async () => {
-		await stopFullTestServer(fullTestServer);
-	});
 
 	beforeEach(async () => {
 		user1InitPortfolios = [
