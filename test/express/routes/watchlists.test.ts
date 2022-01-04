@@ -4,10 +4,22 @@ import {
 	watchlistToModel
 } from '../../../src/mongo/models/WatchlistModel';
 import request from 'supertest';
-import { fullTestServer } from '../../globalSetup';
+import {
+	createFullTestServer,
+	FullTestServer,
+	stopFullTestServer
+} from '../../testutils/fullTestServer';
 
 describe('watchlists route', () => {
 	let user1InitWatchlists: Watchlist[];
+	let fullTestServer: FullTestServer;
+	beforeAll(async () => {
+		fullTestServer = await createFullTestServer();
+	});
+
+	afterAll(async () => {
+		await stopFullTestServer(fullTestServer);
+	});
 
 	beforeEach(async () => {
 		user1InitWatchlists = [
