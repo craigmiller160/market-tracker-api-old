@@ -10,7 +10,7 @@
     "build": "yarn lint && yarn test && yarn forceBuild",
     "start:prod": "node src",
     "lint": "craig-lint",
-    "test": "craig-test",
+    "test": "craig-test --runInBand",
     "forceBuild": "tsc",
     "prepare": "husky install",
     "validate": "yarn lint && yarn test"
