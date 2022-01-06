@@ -84,8 +84,8 @@ export const getConnectionString = (): EU.Either<string> => {
 		E.fromOption(
 			() =>
 				new Error(
-					`Missing environment variables for Mongo connection: ${nullableEnvToMongoEnv(
-						nullableEnvArray
+					`Missing environment variables for Mongo connection: ${JSON.stringify(
+						nullableEnvToMongoEnv(nullableEnvArray)
 					)}`
 				)
 		)
