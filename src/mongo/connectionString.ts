@@ -4,6 +4,7 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { match } from 'ts-pattern';
 import { logDebug } from '../logger';
+import * as A from 'fp-ts/Array';
 
 interface MongoEnv {
 	readonly hostname: string;
@@ -41,29 +42,52 @@ const envToMongoEnv = ([
 	db
 });
 
-const getMongoPasswordEnv = (): O.Option<string> =>
+const nullableEnvToMongoEnv = ([
+	hostname,
+	port,
+	user,
+	password,
+	adminDb,
+	db
+]: ReadonlyArray<string | undefined>): Partial<MongoEnv> => ({
+	hostname,
+	port,
+	user,
+	password,
+	adminDb,
+	db
+});
+
+const getMongoPasswordEnv = (): string | undefined =>
 	pipe(
 		O.fromNullable(process.env.MONGO_PASSWORD),
-		O.getOrElse(() => process.env.MONGO_ROOT_PASSWORD),
-		O.fromNullable
+		O.getOrElse(() => process.env.MONGO_ROOT_PASSWORD)
 	);
 
 export const getConnectionString = (): EU.Either<string> => {
+	const nullableEnvArray: Array<string | undefined> = [
+		process.env.MONGO_HOSTNAME,
+		process.env.MONGO_PORT,
+		process.env.MONGO_USER,
+		getMongoPasswordEnv(),
+		process.env.MONGO_AUTH_DB,
+		process.env.MONGO_DB
+	];
+
 	return pipe(
-		O.sequenceArray([
-			O.fromNullable(process.env.MONGO_HOSTNAME),
-			O.fromNullable(process.env.MONGO_PORT),
-			O.fromNullable(process.env.MONGO_USER),
-			getMongoPasswordEnv(),
-			O.fromNullable(process.env.MONGO_AUTH_DB),
-			O.fromNullable(process.env.MONGO_DB)
-		]),
+		nullableEnvArray,
+		A.map(O.fromNullable),
+		O.sequenceArray,
 		O.map(envToMongoEnv),
 		O.map(createConnectionString),
 		O.map(logConnectionStringInDev),
 		E.fromOption(
 			() =>
-				new Error('Missing environment variables for Mongo connection')
+				new Error(
+					`Missing environment variables for Mongo connection: ${nullableEnvToMongoEnv(
+						nullableEnvArray
+					)}`
+				)
 		)
 	);
 };
