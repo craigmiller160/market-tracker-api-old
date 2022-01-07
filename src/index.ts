@@ -12,7 +12,8 @@ pipe(
 	TE.chain(startExpressServer),
 	TE.mapLeft((_) => {
 		logError('Error starting application', _)();
-		process.exit(1);
+		// TODO restore this
+		// process.exit(1);
 		return _;
 	})
 )();
