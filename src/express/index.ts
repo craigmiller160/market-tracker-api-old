@@ -4,7 +4,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as TEU from '../function/TaskEitherUtils';
 
 import bodyParer from 'body-parser';
-import { logError, logInfo } from '../logger';
+import { logError, logger, logInfo } from '../logger';
 import { pipe } from 'fp-ts/function';
 import express, { Express } from 'express';
 import { Server } from 'http';
@@ -13,8 +13,11 @@ import { setupErrorHandler } from './errorHandler';
 import https from 'https';
 import { httpsOptions } from './tls';
 import { setupRequestLogging } from './requestLogging';
+import nocache from 'nocache';
 
 const app = express();
+app.use(nocache());
+app.disable('x-powered-by');
 app.use(bodyParer.json());
 setupRequestLogging(app);
 createRoutes(app);
@@ -66,6 +69,8 @@ export const startExpressServer = (): TEU.TaskEither<ExpressServer> => {
 		O.chain(safeParseInt),
 		O.getOrElse(() => 8080)
 	);
+
+	logger.debug('Starting server');
 
 	return pipe(
 		expressListen(port),
