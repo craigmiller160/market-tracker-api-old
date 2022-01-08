@@ -8,6 +8,7 @@ import passport from 'passport';
 import { logger } from '../logger';
 
 // TODO do I need tests for this?
+// TODO customize unauthorized error
 
 export const createPassportValidation = (tokenKey: TokenKey) => {
     logger.debug('Creating passport JWT validation strategy');

@@ -10,7 +10,7 @@ import {
 import passport from 'passport';
 
 export const getPortfolios: RouteCreator = (app) =>
-	app.get('/portfolios', passport.authenticate('jwt'), (req, res) =>
+	app.get('/portfolios', passport.authenticate('jwt', { session: false }), (req, res) =>
 		pipe(
 			findPortfoliosForUser(),
 			TE.map((_) => res.json(_))
