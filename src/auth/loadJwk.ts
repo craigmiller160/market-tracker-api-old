@@ -7,6 +7,7 @@ import * as EU from '../function/EitherUtils';
 import { pipe } from 'fp-ts/function';
 import jwkToPem, { JWK } from 'jwk-to-pem';
 import { TokenKey } from './TokenKey';
+import { logDebug, logInfo } from '../logger';
 
 const JWK_URI = '/jwk';
 
@@ -43,6 +44,8 @@ export const loadJwk = (): TE.TaskEither<Error, TokenKey> =>
 	pipe(
 		getAuthServerHost(),
 		TE.fromEither,
+		TE.chainFirst(() => TE.fromIO(logDebug('Loading JWK'))),
 		TE.chain(getJwkSetFromAuthServer),
-		TE.chain(convertJwkToPem)
+		TE.chain(convertJwkToPem),
+		TE.chainFirst(() => TE.fromIO(logInfo('JWK loaded')))
 	);
