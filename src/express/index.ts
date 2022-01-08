@@ -15,14 +15,6 @@ import { httpsOptions } from './tls';
 import { setupRequestLogging } from './requestLogging';
 import nocache from 'nocache';
 
-const app = express();
-app.use(nocache());
-app.disable('x-powered-by');
-app.use(bodyParer.json());
-setupRequestLogging(app);
-createRoutes(app);
-setupErrorHandler(app);
-
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
 		E.tryCatch(
@@ -35,7 +27,7 @@ const safeParseInt = (text: string): O.Option<number> =>
 		O.fromEither
 	);
 
-const expressListen = (port: number): TEU.TaskEither<Server> =>
+const expressListen = (app: Express, port: number): TEU.TaskEither<Server> =>
 	TEU.tryCatch(
 		() =>
 			new Promise((resolve, reject) => {
@@ -63,6 +55,17 @@ export interface ExpressServer {
 	readonly app: Express;
 }
 
+const createExpressApp = (): Express => {
+	const app = express();
+	app.use(nocache());
+	app.disable('x-powered-by');
+	app.use(bodyParer.json());
+	setupRequestLogging(app);
+	createRoutes(app);
+	setupErrorHandler(app);
+	return app;
+};
+
 export const startExpressServer = (): TEU.TaskEither<ExpressServer> => {
 	const port = pipe(
 		O.fromNullable(process.env.EXPRESS_PORT),
@@ -72,8 +75,10 @@ export const startExpressServer = (): TEU.TaskEither<ExpressServer> => {
 
 	logger.debug('Starting server');
 
+	const app = createExpressApp();
+
 	return pipe(
-		expressListen(port),
+		expressListen(app, port),
 		TE.map((_) => ({
 			server: _,
 			app
