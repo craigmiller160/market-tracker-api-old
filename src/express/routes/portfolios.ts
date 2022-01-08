@@ -7,9 +7,10 @@ import {
 	findPortfoliosForUser,
 	savePortfoliosForUser
 } from '../../services/mongo/PortfolioService';
+import passport from 'passport';
 
 export const getPortfolios: RouteCreator = (app) =>
-	app.get('/portfolios', (req, res) =>
+	app.get('/portfolios', passport.authenticate('jwt'), (req, res) =>
 		pipe(
 			findPortfoliosForUser(),
 			TE.map((_) => res.json(_))
