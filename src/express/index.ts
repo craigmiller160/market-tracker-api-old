@@ -15,6 +15,7 @@ import { httpsOptions } from './tls';
 import { setupRequestLogging } from './requestLogging';
 import nocache from 'nocache';
 import { TokenKey } from '../auth/TokenKey';
+import passport from 'passport';
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
@@ -61,6 +62,7 @@ const createExpressApp = (): Express => {
 	app.use(nocache());
 	app.disable('x-powered-by');
 	app.use(bodyParer.json());
+	app.use(passport.initialize());
 	setupRequestLogging(app);
 	createRoutes(app);
 	setupErrorHandler(app);
