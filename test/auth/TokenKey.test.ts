@@ -35,7 +35,7 @@ describe('TokenKey', () => {
 	});
 
 	afterEach(() => {
-		process.env.AUTH_SERVER_HOST = undefined;
+		delete process.env.AUTH_SERVER_HOST;
 	});
 
 	it('loads the TokenKey', async () => {
