@@ -6,11 +6,12 @@ import * as TEU from '../function/TaskEitherUtils';
 import * as EU from '../function/EitherUtils';
 import { pipe } from 'fp-ts/function';
 import jwkToPem, { JWK } from 'jwk-to-pem';
+import { TokenKey } from './TokenKey';
 
 const JWK_URI = '/jwk';
 
 export interface JwkSet {
-	keys: JWK[];
+	readonly keys: JWK[];
 }
 
 const getAuthServerHost = (): E.Either<Error, string> =>
@@ -27,17 +28,21 @@ const getJwkSetFromAuthServer = (
 		TE.map((_) => _.data)
 	);
 
-const convertJwkToPem = (jwkSet: JwkSet): TE.TaskEither<Error, string> =>
+const convertJwkToPem = (jwkSet: JwkSet): TE.TaskEither<Error, TokenKey> =>
 	pipe(
 		EU.tryCatch(() => jwkToPem(jwkSet.keys[0])),
+		E.map(
+			(_): TokenKey => ({
+				key: _
+			})
+		),
 		TE.fromEither
 	);
 
-export const loadJwk = () => {
+export const loadJwk = (): TE.TaskEither<Error, TokenKey> =>
 	pipe(
 		getAuthServerHost(),
 		TE.fromEither,
 		TE.chain(getJwkSetFromAuthServer),
 		TE.chain(convertJwkToPem)
 	);
-};
