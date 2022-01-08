@@ -8,10 +8,9 @@ const mockRestClient = new MockAdapter(restClient);
 
 jest.mock('jwk-to-pem', () => {
 	const { JWK } = jest.requireActual('jwk-to-pem');
-	return {
-		default: jest.fn(),
-		JWK
-	};
+	const mainFn: any = jest.fn();
+	mainFn.JWK = JWK;
+	return mainFn;
 });
 
 const jwkSet: JwkSet = {
