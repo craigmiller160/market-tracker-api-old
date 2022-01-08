@@ -18,7 +18,9 @@ export interface JwkSet {
 const getAuthServerHost = (): E.Either<Error, string> =>
 	pipe(
 		O.fromNullable(process.env.AUTH_SERVER_HOST),
-		E.fromOption(() => new Error('Auth Server Host is not available'))
+		E.fromOption(
+			() => new Error('Auth Server Host variable is not available')
+		)
 	);
 
 const getJwkSetFromAuthServer = (

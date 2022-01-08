@@ -47,4 +47,16 @@ describe('loadJwk', () => {
 			key: 'Success'
 		});
 	});
+
+	it('AUTH_SERVER_HOST variable is not available', async () => {
+		delete process.env.AUTH_SERVER_HOST;
+
+		const result = await loadJwk()();
+		expect(result).toEqualLeft(
+			new Error('Auth Server Host variable is not available')
+		);
+
+		expect(mockRestClient).not.toHaveBeenCalled();
+		expect(jwkToPemMock).not.toHaveBeenCalled();
+	});
 });
