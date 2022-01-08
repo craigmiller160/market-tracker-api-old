@@ -6,7 +6,7 @@ export interface InsecurePaths {
 	readonly paths: string[];
 }
 
-const DEFAULT_INSECURE_PATHS = ['/login', '/logout'];
+export const DEFAULT_INSECURE_PATHS = ['/login', '/logout'];
 
 const getInsecurePathsEnv = (): string[] =>
 	pipe(
