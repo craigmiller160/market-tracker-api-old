@@ -11,7 +11,7 @@ import { logger } from '../logger';
 // TODO customize unauthorized error
 
 export const createPassportValidation = (tokenKey: TokenKey) => {
-    logger.debug('Creating passport JWT validation strategy');
+	logger.debug('Creating passport JWT validation strategy');
 	const options: StrategyOptions = {
 		secretOrKey: tokenKey.key,
 		// TODO need to add cookie support as well
