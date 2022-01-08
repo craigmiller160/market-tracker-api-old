@@ -8,6 +8,7 @@ const mockRestClient = new MockAdapter(restClient);
 
 jest.mock('jwk-to-pem', () => {
 	const { JWK } = jest.requireActual('jwk-to-pem');
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const mainFn: any = jest.fn();
 	mainFn.JWK = JWK;
 	return mainFn;
