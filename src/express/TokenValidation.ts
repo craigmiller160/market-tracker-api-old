@@ -20,6 +20,8 @@ export interface AuthenticatedUser {
 	readonly roles: string[];
 }
 
+export const secure = () => passport.authenticate('jwt', { session: false });
+
 export const createPassportValidation = (tokenKey: TokenKey) => {
 	logger.debug('Creating passport JWT validation strategy');
 	const options: StrategyOptions = {
