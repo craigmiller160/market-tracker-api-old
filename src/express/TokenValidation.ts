@@ -10,6 +10,16 @@ import { logger } from '../logger';
 // TODO do I need tests for this?
 // TODO customize unauthorized error
 
+export interface AuthenticatedUser {
+	readonly sub: string;
+	readonly clientName: string;
+	readonly firstName: string;
+	readonly lastName: string;
+	readonly userId: number;
+	readonly userEmail: string;
+	readonly roles: string[];
+}
+
 export const createPassportValidation = (tokenKey: TokenKey) => {
 	logger.debug('Creating passport JWT validation strategy');
 	const options: StrategyOptions = {
@@ -20,7 +30,7 @@ export const createPassportValidation = (tokenKey: TokenKey) => {
 
 	passport.use(
 		new JwtStrategy(options, (payload, done) => {
-			done(null, 'Success');
+			done(null, payload);
 		})
 	);
 };
