@@ -12,7 +12,7 @@ const connectToMongoose = (
 	TEU.tryCatch(() => mongoose.connect(connectionString));
 
 // TODO delete this whole thing
-const connectWithMongoClient = (
+const connectWithMongoClient = ( // eslint-disable-line
 	connectionString: string // eslint-disable-line
 ): TE.TaskEither<Error, unknown> => {
 	const tempString = 'mongodb://mongodb-service:27017';
@@ -34,7 +34,7 @@ export const connectToMongo = (): TEU.TaskEither<Mongoose> =>
 	pipe(
 		getConnectionString(),
 		TE.fromEither,
-		TE.chainFirst(connectWithMongoClient),
+		// TE.chainFirst(connectWithMongoClient),
 		TE.chain(connectToMongoose),
 		TE.chainFirst(() => TE.fromIO(logInfo('Connected to MongoDB')))
 	);
