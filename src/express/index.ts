@@ -16,6 +16,7 @@ import { setupRequestLogging } from './requestLogging';
 import nocache from 'nocache';
 import { TokenKey } from '../auth/TokenKey';
 import passport from 'passport';
+import { createPassportValidation } from './TokenValidation';
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
@@ -80,6 +81,7 @@ export const startExpressServer = (
 
 	logger.debug('Starting server');
 
+	createPassportValidation(tokenKey);
 	const app = createExpressApp();
 
 	return pipe(
