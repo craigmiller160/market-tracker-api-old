@@ -2,7 +2,7 @@ import { restClient } from '../../src/services/RestClient';
 import MockAdapter from 'axios-mock-adapter';
 import '@relmify/jest-fp-ts';
 import jwkToPem from 'jwk-to-pem';
-import { JwkSet, loadJwk } from '../../src/auth/loadJwk';
+import { JwkSet, loadTokenKey } from '../../src/auth/TokenKey';
 
 const mockRestClient = new MockAdapter(restClient);
 
@@ -27,7 +27,7 @@ const jwkSet: JwkSet = {
 
 const jwkToPemMock = jwkToPem as jest.Mock;
 
-describe('loadJwk', () => {
+describe('TokenKey', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		mockRestClient.reset();
@@ -38,11 +38,11 @@ describe('loadJwk', () => {
 		process.env.AUTH_SERVER_HOST = undefined;
 	});
 
-	it('loads the JWK as a PEM', async () => {
+	it('loads the TokenKey', async () => {
 		mockRestClient.onGet('https://authServerHost/jwk').reply(200, jwkSet);
 		jwkToPemMock.mockImplementation(() => 'Success');
 
-		const result = await loadJwk()();
+		const result = await loadTokenKey()();
 		expect(result).toEqualRight({
 			key: 'Success'
 		});
@@ -51,7 +51,7 @@ describe('loadJwk', () => {
 	it('AUTH_SERVER_HOST variable is not available', async () => {
 		delete process.env.AUTH_SERVER_HOST;
 
-		const result = await loadJwk()();
+		const result = await loadTokenKey()();
 		expect(result).toEqualLeft(
 			new Error('Auth Server Host variable is not available')
 		);
