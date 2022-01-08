@@ -58,7 +58,7 @@ export interface ExpressServer {
 	readonly app: Express;
 }
 
-const createExpressApp = (): Express => {
+const createExpressApp = (tokenKey: TokenKey): Express => {
 	const app = express();
 	app.use(nocache());
 	app.disable('x-powered-by');
@@ -66,6 +66,7 @@ const createExpressApp = (): Express => {
 	app.use(passport.initialize());
 	setupRequestLogging(app);
 	createRoutes(app);
+	createPassportValidation(tokenKey);
 	setupErrorHandler(app);
 	return app;
 };
@@ -81,8 +82,7 @@ export const startExpressServer = (
 
 	logger.debug('Starting server');
 
-	createPassportValidation(tokenKey);
-	const app = createExpressApp();
+	const app = createExpressApp(tokenKey);
 
 	return pipe(
 		expressListen(app, port),
