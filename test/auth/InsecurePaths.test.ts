@@ -1,4 +1,7 @@
-import '@relmify/jest-fp-ts';
+import {
+	DEFAULT_INSECURE_PATHS,
+	getInsecurePaths
+} from '../../src/auth/InsecurePaths';
 
 describe('InsecurePaths', () => {
 	beforeEach(() => {
@@ -10,10 +13,17 @@ describe('InsecurePaths', () => {
 	});
 
 	it('getInsecurePaths with only defaults', () => {
-		throw new Error();
+		const result = getInsecurePaths();
+		expect(result).toEqual({
+			paths: DEFAULT_INSECURE_PATHS
+		});
 	});
 
 	it('getInsecurePaths with env paths', () => {
-		throw new Error();
+		process.env.INSECURE_PATHS = '/abc, /def';
+		const result = getInsecurePaths();
+		expect(result).toEqual({
+			paths: [...DEFAULT_INSECURE_PATHS, '/abc', '/def']
+		});
 	});
 });
