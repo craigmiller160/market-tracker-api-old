@@ -4,7 +4,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as TEU from '../function/TaskEitherUtils';
 
 import bodyParer from 'body-parser';
-import { logError, logInfo } from '../logger';
+import { logError, logger, logInfo } from '../logger';
 import { pipe } from 'fp-ts/function';
 import express, { Express } from 'express';
 import { Server } from 'http';
@@ -66,6 +66,8 @@ export const startExpressServer = (): TEU.TaskEither<ExpressServer> => {
 		O.chain(safeParseInt),
 		O.getOrElse(() => 8080)
 	);
+
+	logger.debug('Starting server');
 
 	return pipe(
 		expressListen(port),
