@@ -2,6 +2,8 @@ import * as O from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 
+// TODO if this is not really needed, remove it and the env variable
+
 export interface InsecurePaths {
 	readonly paths: string[];
 }
