@@ -15,7 +15,7 @@ const connectToMongoose = (
 const connectWithMongoClient = (
 	connectionString: string // eslint-disable-line
 ): TE.TaskEither<Error, unknown> => {
-	const tempString = 'mongodb://mongo-service:30002';
+	const tempString = 'mongodb://mongodb-service:30002';
 	logger.debug(`Trying to connect with MongoClient: ${tempString}`);
 	return pipe(
 		TEU.tryCatch(() => MongoClient.connect(tempString)),
