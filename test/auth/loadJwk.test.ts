@@ -56,7 +56,6 @@ describe('loadJwk', () => {
 			new Error('Auth Server Host variable is not available')
 		);
 
-		expect(mockRestClient).not.toHaveBeenCalled();
 		expect(jwkToPemMock).not.toHaveBeenCalled();
 	});
 });
