@@ -13,8 +13,11 @@ import { setupErrorHandler } from './errorHandler';
 import https from 'https';
 import { httpsOptions } from './tls';
 import { setupRequestLogging } from './requestLogging';
+import nocache from 'nocache';
 
 const app = express();
+app.use(nocache());
+app.disable('x-powered-by');
 app.use(bodyParer.json());
 setupRequestLogging(app);
 createRoutes(app);

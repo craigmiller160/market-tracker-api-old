@@ -3341,6 +3341,11 @@ new-find-package-json@^1.1.0:
     debug "^4.3.2"
     tslib "^2.3.0"
 
+nocache@^3.0.1:
+  version "3.0.1"
+  resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/nocache/-/nocache-3.0.1.tgz#54d8b53a7e0a0aa1a288cfceab8a3cefbcde67d4"
+  integrity sha512-Gh39xwJwBKy0OvFmWfBs/vDO4Nl7JhnJtkqNP76OUinQz7BiMoszHYrIDHHAaqVl/QKVxCEy4ZxC/XZninu7nQ==
+
 node-int64@^0.4.0:
   version "0.4.0"
   resolved "https://craigmiller160.ddns.net:30003/repository/npm-group/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
