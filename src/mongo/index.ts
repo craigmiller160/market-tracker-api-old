@@ -15,10 +15,10 @@ const connectToMongoose = (
 const connectWithMongoClient = ( // eslint-disable-line
 	connectionString: string // eslint-disable-line
 ): TE.TaskEither<Error, unknown> => {
-	const tempString = 'mongodb://mongodb-service:27017';
-	logger.debug(`Trying to connect with MongoClient: ${tempString}`);
+	// const tempString = 'mongodb://mongodb-service:27017';
+	logger.debug(`Trying to connect with MongoClient: ${connectionString}`);
 	return pipe(
-		TEU.tryCatch(() => MongoClient.connect(tempString)),
+		TEU.tryCatch(() => MongoClient.connect(connectionString)),
 		TE.map(() => {
 			logger.debug('Successfully connected with MongoClient');
 		}),
@@ -34,7 +34,7 @@ export const connectToMongo = (): TEU.TaskEither<Mongoose> =>
 	pipe(
 		getConnectionString(),
 		TE.fromEither,
-		// TE.chainFirst(connectWithMongoClient),
+		TE.chainFirst(connectWithMongoClient),
 		TE.chain(connectToMongoose),
 		TE.chainFirst(() => TE.fromIO(logInfo('Connected to MongoDB')))
 	);
