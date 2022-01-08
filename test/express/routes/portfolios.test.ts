@@ -11,8 +11,8 @@ import {
 } from '../../testutils/fullTestServer';
 
 describe('portfolios', () => {
-	let fullTestServer: FullTestServer;
 	let user1InitPortfolios: Portfolio[];
+	let fullTestServer: FullTestServer;
 	beforeAll(async () => {
 		fullTestServer = await createFullTestServer();
 	});

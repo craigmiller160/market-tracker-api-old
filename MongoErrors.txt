@@ -1,0 +1,46 @@
+THIS ERROR IS FROM SIMPLE CONNECT STRING
+
+[2022-01-08 13:54:52.133] [DEBUG] - Trying to connect with MongoClient: mongodb://mongodb-service:27017
+[2022-01-08 13:55:22.140] [ERROR] - Failed to connect with MongoClient
+[2022-01-08 13:55:22.141] [ERROR] - MongoServerSelectionError: connection <monitor> to 10.152.183.8:27017 closed
+    at Timeout._onTimeout (/usr/src/app/node_modules/mongodb/lib/sdam/topology.js:330:38)
+    at listOnTimeout (node:internal/timers:557:17)
+    at processTimers (node:internal/timers:500:7)
+[2022-01-08 13:55:22.141] [ERROR] - Error starting application
+[2022-01-08 13:55:22.141] [ERROR] - MongoServerSelectionError: connection <monitor> to 10.152.183.8:27017 closed
+    at Timeout._onTimeout (/usr/src/app/node_modules/mongodb/lib/sdam/topology.js:330:38)
+    at listOnTimeout (node:internal/timers:557:17)
+    at processTimers (node:internal/timers:500:7)
+
+
+
+SWITCHED BACK TO MONGOOSE WITH FULL CONNECTION STRING
+
+[2022-01-08 13:58:34.393] [DEBUG] - Mongo Connection String: mongodb://mongo_root:Ose7ZFnSjIiteCbWNUAt@mongodb-service:27107/market_tracker_prod?authSource=admin&tls=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true
+[2022-01-08 13:59:04.426] [ERROR] - Error starting application
+[2022-01-08 13:59:04.426] [ERROR] - MongooseServerSelectionError: Server selection timed out after 30000 ms
+    at NativeConnection.Connection.openUri (/usr/src/app/node_modules/mongoose/lib/connection.js:797:32)
+    at /usr/src/app/node_modules/mongoose/lib/index.js:341:10
+    at /usr/src/app/node_modules/mongoose/lib/helpers/promiseOrCallback.js:32:5
+    at new Promise (<anonymous>)
+    at promiseOrCallback (/usr/src/app/node_modules/mongoose/lib/helpers/promiseOrCallback.js:31:10)
+    at Mongoose._promiseOrCallback (/usr/src/app/node_modules/mongoose/lib/index.js:1167:10)
+    at Mongoose.connect (/usr/src/app/node_modules/mongoose/lib/index.js:340:20)
+    at /usr/src/app/build/mongo/index.js:33:87
+    at /usr/src/app/node_modules/fp-ts/lib/TaskEither.js:199:12
+    at /usr/src/app/node_modules/fp-ts/lib/Task.js:143:41
+
+MONGO CLIENT BUT WITH FULL CONNECTION STRING
+
+[2022-01-08 14:04:06.132] [DEBUG] - Mongo Connection String: mongodb://mongo_root:Ose7ZFnSjIiteCbWNUAt@mongodb-service:27107/market_tracker_prod?authSource=admin&tls=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true
+[2022-01-08 14:04:06.132] [DEBUG] - Trying to connect with MongoClient: mongodb://mongo_root:Ose7ZFnSjIiteCbWNUAt@mongodb-service:27107/market_tracker_prod?authSource=admin&tls=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true
+[2022-01-08 14:04:36.166] [ERROR] - Failed to connect with MongoClient
+[2022-01-08 14:04:36.166] [ERROR] - MongoServerSelectionError: Server selection timed out after 30000 ms
+    at Timeout._onTimeout (/usr/src/app/node_modules/mongodb/lib/sdam/topology.js:330:38)
+    at listOnTimeout (node:internal/timers:557:17)
+    at processTimers (node:internal/timers:500:7)
+[2022-01-08 14:04:36.166] [ERROR] - Error starting application
+[2022-01-08 14:04:36.167] [ERROR] - MongoServerSelectionError: Server selection timed out after 30000 ms
+    at Timeout._onTimeout (/usr/src/app/node_modules/mongodb/lib/sdam/topology.js:330:38)
+    at listOnTimeout (node:internal/timers:557:17)
+    at processTimers (node:internal/timers:500:7)
