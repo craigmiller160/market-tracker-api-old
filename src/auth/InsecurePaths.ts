@@ -16,6 +16,7 @@ const getInsecurePathsEnv = (): string[] =>
 		A.map((_) => _.trim())
 	);
 
-export const getInsecurePaths = () => {
-	getInsecurePathsEnv();
-};
+export const getInsecurePaths = (): string[] => [
+	...DEFAULT_INSECURE_PATHS,
+	...getInsecurePathsEnv()
+];
