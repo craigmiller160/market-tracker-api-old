@@ -14,6 +14,7 @@ import https from 'https';
 import { httpsOptions } from './tls';
 import { setupRequestLogging } from './requestLogging';
 import nocache from 'nocache';
+import { TokenKey } from '../auth/TokenKey';
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
@@ -66,7 +67,9 @@ const createExpressApp = (): Express => {
 	return app;
 };
 
-export const startExpressServer = (): TEU.TaskEither<ExpressServer> => {
+export const startExpressServer = (
+	tokenKey: TokenKey
+): TEU.TaskEither<ExpressServer> => {
 	const port = pipe(
 		O.fromNullable(process.env.EXPRESS_PORT),
 		O.chain(safeParseInt),

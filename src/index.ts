@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import { startExpressServer } from './express';
 import { logError, logInfo } from './logger';
-import { loadTokenKey } from './auth/loadTokenKey';
+import { loadTokenKey } from './auth/TokenKey';
 
 logInfo('Starting application')();
 
