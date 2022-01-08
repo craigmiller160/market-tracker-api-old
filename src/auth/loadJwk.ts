@@ -1,4 +1,3 @@
-import axios from 'axios';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import * as TE from 'fp-ts/TaskEither';
@@ -8,6 +7,7 @@ import { pipe } from 'fp-ts/function';
 import jwkToPem, { JWK } from 'jwk-to-pem';
 import { TokenKey } from './TokenKey';
 import { logDebug, logInfo } from '../logger';
+import { restClient } from '../services/RestClient';
 
 const JWK_URI = '/jwk';
 
@@ -25,7 +25,9 @@ const getJwkSetFromAuthServer = (
 	authServerHost: string
 ): TE.TaskEither<Error, JwkSet> =>
 	pipe(
-		TEU.tryCatch(() => axios.get<JwkSet>(`${authServerHost}${JWK_URI}`)),
+		TEU.tryCatch(() =>
+			restClient.get<JwkSet>(`${authServerHost}${JWK_URI}`)
+		),
 		TE.map((_) => _.data)
 	);
 
