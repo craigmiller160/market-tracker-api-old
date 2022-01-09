@@ -13,12 +13,12 @@ interface ErrorResponse {
 	readonly request: string;
 }
 
-const TOKEN_ERROR_REGEX = /^TokenError.*$/;
+const NO_AUTH_TOKEN_REGEX = /^.*No auth token.*$/;
 
 const isUnauthorizedError: P.Predicate<Error> = pipe(
 	(_: Error) => _.name === 'JsonWebTokenError',
 	P.or((_) => _.name === 'TokenExpiredError'),
-	P.or((_) => TOKEN_ERROR_REGEX.test(_.message))
+	P.or((_) => NO_AUTH_TOKEN_REGEX.test(_.message))
 );
 
 // TODO need tests for this
