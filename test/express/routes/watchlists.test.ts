@@ -5,6 +5,7 @@ import {
 } from '../../../src/mongo/models/WatchlistModel';
 import request from 'supertest';
 import {
+	createAccessToken,
 	createFullTestServer,
 	FullTestServer,
 	stopFullTestServer
@@ -57,8 +58,10 @@ describe('watchlists route', () => {
 
 	describe('getWatchlists', () => {
 		it('successful auth', async () => {
+			const token = createAccessToken(fullTestServer.keyPair.privateKey);
 			const res = await request(fullTestServer.expressServer.server)
 				.get('/watchlists')
+				.set('Authorization', `Bearer ${token}`)
 				.timeout(2000)
 				.expect(200);
 			expect(res.body).toEqual([
@@ -68,7 +71,10 @@ describe('watchlists route', () => {
 		});
 
 		it('failed auth', async () => {
-			throw new Error();
+			await request(fullTestServer.expressServer.server)
+				.get('/watchlists')
+				.timeout(2000)
+				.expect(401);
 		});
 	});
 
@@ -83,9 +89,11 @@ describe('watchlists route', () => {
 		];
 
 		it('successful auth', async () => {
+			const token = createAccessToken(fullTestServer.keyPair.privateKey);
 			const res = await request(fullTestServer.expressServer.server)
 				.post('/watchlists')
 				.timeout(2000)
+				.set('Authorization', `Bearer ${token}`)
 				.set('Content-Type', 'application/json')
 				.send(newWatchlists)
 				.expect(200);
