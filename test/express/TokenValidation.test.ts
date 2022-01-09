@@ -43,7 +43,24 @@ describe('TokenValidation', () => {
 	});
 
 	it('access token is expired', async () => {
-		throw new Error();
+		const token: string = jwt.sign(
+			accessToken,
+			fullTestServer.keyPair.privateKey,
+			{
+				algorithm: 'ES256',
+				expiresIn: '-10m'
+			}
+		);
+		const res = await request(fullTestServer.expressServer.server)
+			.get('/portfolios')
+			.set('Authorization', `Bearer ${token}`)
+			.expect(401);
+		expect(res.body).toEqual(
+			expect.objectContaining({
+				status: 401,
+				message: 'Unauthorized'
+			})
+		);
 	});
 
 	it('access token has invalid signature', async () => {
