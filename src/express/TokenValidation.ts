@@ -13,7 +13,6 @@ import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 
 // TODO do I need tests for this?
-// TODO customize unauthorized error
 
 export interface AccessToken {
 	readonly sub: string;
@@ -43,23 +42,17 @@ export const secure =
 		passport.authenticate(
 			'jwt',
 			{ session: false },
-			(error: Error | null, user: AccessToken | boolean, tokenError: Error | undefined) => {
-				console.log('Error', error);
-				console.log('User', user);
-				console.log('Info', JSON.stringify(tokenError));
-				console.log('Info2', tokenError instanceof Error);
-
+			(error: Error | null, user: AccessToken | boolean, tokenError: Error | undefined) =>
 				pipe(
 					O.fromNullable(error),
 					O.getOrElse(() => tokenError),
 					O.fromNullable,
-					O.map((realError) =>
-						errorHandler(realError, req, res, next)
+					O.fold(
+						() => fn(req, res, next),
+						(realError) => errorHandler(realError, req, res, next)
 					)
-				);
-			}
+				)
 		)(req, res, next);
-		fn(req, res, next);
 	};
 
 export const createPassportValidation = (tokenKey: TokenKey) => {
