@@ -28,7 +28,10 @@ describe('TokenValidation', () => {
 	});
 
 	it('has valid access token', async () => {
-		const token: string = jwt.sign(accessToken, fullTestServer.keyPair.getPrivate('hex'));
+		const token: string = jwt.sign(accessToken, fullTestServer.keyPair.getPrivate('hex'), {
+			algorithm: 'ES256'
+		});
+		console.log(token);
 		const res = await request(fullTestServer.expressServer.server)
 			.get('/portfolios')
 			.set('Authorization', `Bearer ${token}`)
