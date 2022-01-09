@@ -29,6 +29,22 @@ enum Method {
 	DELETE = 'DELETE'
 }
 
+type Route = (req: Request, res: Response, next: NextFunction) => void
+
+export const secureRoute = (fn: Route) => (req: Request, res: Response, next: NextFunction) => {
+	passport.authenticate(
+		'jwt',
+		{ session: false },
+		(err: Error | undefined, user: AccessToken | boolean, info) => {
+			console.log('Error', err);
+			console.log('User', user);
+			console.log('Info', info);
+			return user;
+		}
+	)(req, res, next);
+	fn(req, res, next);
+}
+
 // TODO method should be constant or enum
 const secureRouteCreator =
 	(app: Express) =>
