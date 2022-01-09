@@ -84,6 +84,14 @@ describe('TokenValidation', () => {
 	});
 
 	it('has no access token', async () => {
-		throw new Error();
+		const res = await request(fullTestServer.expressServer.server)
+			.get('/portfolios')
+			.expect(401);
+		expect(res.body).toEqual(
+			expect.objectContaining({
+				status: 401,
+				message: 'Unauthorized'
+			})
+		);
 	});
 });
