@@ -40,10 +40,11 @@ export const secure =
 		passport.authenticate(
 			'jwt',
 			{ session: false },
-			(err: Error | undefined, user: AccessToken | boolean, info) => {
-				console.log('Error', err);
+			(error: Error | undefined, user: AccessToken | boolean, tokenError: Error | undefined) => {
+				console.log('Error', error);
 				console.log('User', user);
-				console.log('Info', JSON.stringify(info));
+				console.log('Info', JSON.stringify(tokenError));
+				console.log('Info2', tokenError instanceof Error);
 				return user;
 			}
 		)(req, res, next);
