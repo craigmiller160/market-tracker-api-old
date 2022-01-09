@@ -22,29 +22,35 @@ export interface AccessToken {
 }
 
 type Route = (req: Request, res: Response, next: NextFunction) => void;
+
+const secureCallback =
+	(req: Request, res: Response, next: NextFunction, fn: Route) =>
+	(
+		error: Error | null,
+		user: AccessToken | boolean,
+		tokenError: Error | undefined
+	) => {
+		pipe(
+			O.fromNullable(error),
+			O.getOrElse(() => tokenError),
+			O.fromNullable,
+			O.fold(
+				() => {
+					req.user = user as AccessToken;
+					fn(req, res, next);
+				},
+				(realError) => errorHandler(realError, req, res, next)
+			)
+		);
+	};
+
 export const secure =
 	(fn: Route): Route =>
 	(req, res, next) => {
 		passport.authenticate(
 			'jwt',
 			{ session: false },
-			(
-				error: Error | null,
-				user: AccessToken | boolean,
-				tokenError: Error | undefined
-			) =>
-				pipe(
-					O.fromNullable(error),
-					O.getOrElse(() => tokenError),
-					O.fromNullable,
-					O.fold(
-						() => {
-							req.user = user as AccessToken;
-							fn(req, res, next);
-						},
-						(realError) => errorHandler(realError, req, res, next)
-					)
-				)
+			secureCallback(req, res, next, fn)
 		)(req, res, next);
 	};
 
