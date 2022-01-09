@@ -23,6 +23,7 @@ describe('TokenValidation', () => {
 		const token = createAccessToken(fullTestServer.keyPair.privateKey);
 		const res = await request(fullTestServer.expressServer.server)
 			.get('/portfolios')
+			.timeout(2000)
 			.set('Authorization', `Bearer ${token}`)
 			.expect(200);
 		expect(res.body).toEqual([]);
@@ -34,6 +35,7 @@ describe('TokenValidation', () => {
 		});
 		const res = await request(fullTestServer.expressServer.server)
 			.get('/portfolios')
+			.timeout(2000)
 			.set('Authorization', `Bearer ${token}`)
 			.expect(401);
 		expect(res.body).toEqual(
@@ -49,6 +51,7 @@ describe('TokenValidation', () => {
 		const token = createAccessToken(newKeyPair.privateKey);
 		const res = await request(fullTestServer.expressServer.server)
 			.get('/portfolios')
+			.timeout(2000)
 			.set('Authorization', `Bearer ${token}`)
 			.expect(401);
 		expect(res.body).toEqual(
@@ -62,6 +65,7 @@ describe('TokenValidation', () => {
 	it('has no access token', async () => {
 		const res = await request(fullTestServer.expressServer.server)
 			.get('/portfolios')
+			.timeout(2000)
 			.expect(401);
 		expect(res.body).toEqual(
 			expect.objectContaining({

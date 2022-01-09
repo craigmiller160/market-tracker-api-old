@@ -5,6 +5,7 @@ import {
 	portfolioToModel
 } from '../../../src/mongo/models/PortfolioModel';
 import {
+	createAccessToken,
 	createFullTestServer,
 	FullTestServer,
 	stopFullTestServer
@@ -57,8 +58,10 @@ describe('portfolios', () => {
 
 	describe('getPortfolios', () => {
 		it('successful auth', async () => {
+			const token = createAccessToken(fullTestServer.keyPair.privateKey);
 			const res = await request(fullTestServer.expressServer.server)
 				.get('/portfolios')
+				.set('Authorization', `Bearer ${token}`)
 				.timeout(2000)
 				.expect(200);
 			expect(res.body).toEqual([
@@ -72,20 +75,23 @@ describe('portfolios', () => {
 		});
 	});
 
-	describe('savePortfolios', async () => {
+	describe('savePortfolios', () => {
+		const newPortfolios: Portfolio[] = [
+			{
+				userId: 10,
+				portfolioName: 'Ten',
+				stocks: ['atv'],
+				cryptos: []
+			}
+		];
+
 		it('successful auth', async () => {
-			const newPortfolios: Portfolio[] = [
-				{
-					userId: 10,
-					portfolioName: 'Ten',
-					stocks: ['atv'],
-					cryptos: []
-				}
-			];
+			const token = createAccessToken(fullTestServer.keyPair.privateKey);
 			const res = await request(fullTestServer.expressServer.server)
 				.post('/portfolios')
 				.timeout(2000)
 				.set('Content-Type', 'application/json')
+				.set('Authorization', `Bearer ${token}`)
 				.send(newPortfolios)
 				.expect(200);
 			expect(res.body).toEqual([
