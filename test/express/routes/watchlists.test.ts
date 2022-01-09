@@ -73,16 +73,16 @@ describe('watchlists route', () => {
 	});
 
 	describe('saveWatchlists', () => {
-		it('successful auth', async () => {
-			const newWatchlists: Watchlist[] = [
-				{
-					userId: 10,
-					watchlistName: 'Ten',
-					stocks: ['atv'],
-					cryptos: []
-				}
-			];
+		const newWatchlists: Watchlist[] = [
+			{
+				userId: 10,
+				watchlistName: 'Ten',
+				stocks: ['atv'],
+				cryptos: []
+			}
+		];
 
+		it('successful auth', async () => {
 			const res = await request(fullTestServer.expressServer.server)
 				.post('/watchlists')
 				.timeout(2000)
@@ -98,7 +98,12 @@ describe('watchlists route', () => {
 		});
 
 		it('failed auth', async () => {
-			throw new Error();
+			await request(fullTestServer.expressServer.server)
+				.post('/watchlists')
+				.timeout(2000)
+				.set('Content-Type', 'application/json')
+				.send(newWatchlists)
+				.expect(401);
 		});
 	});
 });

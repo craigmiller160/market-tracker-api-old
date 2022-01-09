@@ -13,21 +13,24 @@ interface ErrorResponse {
 	readonly request: string;
 }
 
-const isUnauthorizedError: P.Predicate<string> = pipe(
-	(name: string) => name === 'JsonWebTokenError',
-	P.or((name) => name === 'TokenExpiredError')
+const TOKEN_ERROR_REGEX = /^TokenError.*$/;
+
+const isUnauthorizedError: P.Predicate<Error> = pipe(
+	(_: Error) => _.name === 'JsonWebTokenError',
+	P.or((_) => _.name === 'TokenExpiredError'),
+	P.or((_) => TOKEN_ERROR_REGEX.test(_.message))
 );
 
 // TODO need tests for this
 const getErrorStatus = (err: Error): number =>
 	match(err)
-		.with({ name: when(isUnauthorizedError) }, () => 401)
+		.with(when(isUnauthorizedError), () => 401)
 		.otherwise(() => 500);
 
 // TODO need tests for this too
 const getErrorMessage = (err: Error): string =>
 	match(err)
-		.with({ name: when(isUnauthorizedError) }, () => 'Unauthorized')
+		.with(when(isUnauthorizedError), () => 'Unauthorized')
 		.otherwise((_) => _.message);
 
 const createErrorResponse = (
