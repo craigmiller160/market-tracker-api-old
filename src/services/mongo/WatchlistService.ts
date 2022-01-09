@@ -9,12 +9,10 @@ import {
 } from '../../mongo/models/WatchlistModel';
 import { pipe } from 'fp-ts/function';
 
-const getCurrentUserId = () => 1;
-
-export const findWatchlistsForUser = (): TEU.TaskEither<Watchlist[]> => {
-	const userId = getCurrentUserId();
-	return TEU.tryCatch(() => WatchlistModel.find({ userId }).exec());
-};
+export const findWatchlistsForUser = (
+	userId: number
+): TEU.TaskEither<Watchlist[]> =>
+	TEU.tryCatch(() => WatchlistModel.find({ userId }).exec());
 
 const replaceWatchlistsForUser = async (
 	userId: number,
@@ -25,10 +23,9 @@ const replaceWatchlistsForUser = async (
 };
 
 export const saveWatchlistsForUser = (
+	userId: number,
 	watchlists: Watchlist[]
 ): TEU.TaskEither<unknown> => {
-	const userId = getCurrentUserId();
-
 	const watchlistModels = pipe(
 		watchlists,
 		A.map((_) =>
