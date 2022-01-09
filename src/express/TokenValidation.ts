@@ -29,20 +29,26 @@ enum Method {
 	DELETE = 'DELETE'
 }
 
-type Route = (req: Request, res: Response, next: NextFunction) => void
-export const secure = (fn: Route): Route => (req, res, next) => {
-	passport.authenticate(
-		'jwt',
-		{ session: false },
-		(err: Error | undefined, user: AccessToken | boolean, info) => {
-			console.log('Error', err);
-			console.log('User', user);
-			console.log('Info', info);
-			return user;
-		}
-	)(req, res, next);
-	fn(req, res, next);
-}
+// TODO delete these
+// Info {"name":"JsonWebTokenError","message":"jwt malformed"}
+// Info {"name":"TokenExpiredError","message":"jwt expired","expiredAt":"2022-01-09T00:32:31.000Z"}
+
+type Route = (req: Request, res: Response, next: NextFunction) => void;
+export const secure =
+	(fn: Route): Route =>
+	(req, res, next) => {
+		passport.authenticate(
+			'jwt',
+			{ session: false },
+			(err: Error | undefined, user: AccessToken | boolean, info) => {
+				console.log('Error', err);
+				console.log('User', user);
+				console.log('Info', JSON.stringify(info));
+				return user;
+			}
+		)(req, res, next);
+		fn(req, res, next);
+	};
 
 export const createPassportValidation = (tokenKey: TokenKey) => {
 	logger.debug('Creating passport JWT validation strategy');

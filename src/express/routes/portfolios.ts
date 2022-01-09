@@ -10,12 +10,15 @@ import {
 import { secure } from '../TokenValidation';
 
 export const getPortfolios: RouteCreator = (app) =>
-	app.get('/portfolios', secure((req, res) =>
-		pipe(
-			findPortfoliosForUser(),
-			TE.map((_) => res.json(_))
-		)()
-	));
+	app.get(
+		'/portfolios',
+		secure((req, res) =>
+			pipe(
+				findPortfoliosForUser(),
+				TE.map((_) => res.json(_))
+			)()
+		)
+	);
 
 export const savePortfolios: RouteCreator = (app) =>
 	app.post(
