@@ -32,8 +32,8 @@ enum Method {
 // TODO method should be constant or enum
 const secureRouteCreator =
 	(app: Express) =>
-	(method: Method) =>
 	(
+		method: Method,
 		route: string,
 		fn: (req: Request, res: Response, next: NextFunction) => void
 	): void => {
