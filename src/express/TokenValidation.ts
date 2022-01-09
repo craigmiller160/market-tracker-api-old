@@ -30,8 +30,7 @@ enum Method {
 }
 
 type Route = (req: Request, res: Response, next: NextFunction) => void
-
-export const secure = (fn: Route) => (req: Request, res: Response, next: NextFunction) => {
+export const secure = (fn: Route): Route => (req, res, next) => {
 	passport.authenticate(
 		'jwt',
 		{ session: false },
