@@ -1,6 +1,19 @@
-export {};
+import {
+	createFullTestServer,
+	FullTestServer,
+	stopFullTestServer
+} from '../testutils/fullTestServer';
 
 describe('TokenValidation', () => {
+	let fullTestServer: FullTestServer;
+	beforeAll(async () => {
+		fullTestServer = await createFullTestServer();
+	});
+
+	afterAll(async () => {
+		await stopFullTestServer(fullTestServer);
+	});
+
 	it('has valid access token', async () => {
 		throw new Error();
 	});
