@@ -2,7 +2,7 @@ import { RouteCreator } from './RouteCreator';
 import * as TE from 'fp-ts/TaskEither';
 import { Portfolio } from '../../mongo/models/PortfolioModel';
 import { pipe } from 'fp-ts/function';
-import { Express, NextFunction, Request, Response } from 'express';
+import { Request } from 'express';
 import {
 	findPortfoliosForUser,
 	savePortfoliosForUser
@@ -12,13 +12,12 @@ import { secure } from '../TokenValidation';
 export const getPortfolios: RouteCreator = (app) =>
 	app.get(
 		'/portfolios',
-		secure((req, res) => {
-			console.log('Code still executing'); // TODO delete this
+		secure((req, res) =>
 			pipe(
 				findPortfoliosForUser(),
 				TE.map((_) => res.json(_))
 			)()
-		})
+		)
 	);
 
 export const savePortfolios: RouteCreator = (app) =>

@@ -13,11 +13,10 @@ interface ErrorResponse {
 	readonly request: string;
 }
 
-const isUnauthorizedError: P.Predicate<string> =
-	pipe(
-		(name: string) => name === 'JsonWebTokenError',
-		P.or((name) => name === 'TokenExpiredError')
-	)
+const isUnauthorizedError: P.Predicate<string> = pipe(
+	(name: string) => name === 'JsonWebTokenError',
+	P.or((name) => name === 'TokenExpiredError')
+);
 
 // TODO need tests for this
 const getErrorStatus = (err: Error): number =>
@@ -25,6 +24,7 @@ const getErrorStatus = (err: Error): number =>
 		.with({ name: when(isUnauthorizedError) }, () => 401)
 		.otherwise(() => 500);
 
+// TODO need tests for this too
 const getErrorMessage = (err: Error): string =>
 	match(err)
 		.with({ name: when(isUnauthorizedError) }, () => 'Unauthorized')
@@ -48,7 +48,12 @@ const createErrorResponse = (
 	};
 };
 
-export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction): void => {
+export const errorHandler = (
+	err: Error,
+	req: Request,
+	res: Response,
+	next: NextFunction
+): void => {
 	logger.error('Error while processing request');
 	logger.error(err);
 
@@ -57,7 +62,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
 	res.status(status);
 	res.json(errorResponse);
 	next();
-}
+};
 
 export const setupErrorHandler = (app: Express) =>
 	app.use((err: Error, req: Request, res: Response, next: NextFunction) =>
