@@ -14,14 +14,9 @@ import https from 'https';
 import { httpsOptions } from './tls';
 import { setupRequestLogging } from './requestLogging';
 import nocache from 'nocache';
-
-const app = express();
-app.use(nocache());
-app.disable('x-powered-by');
-app.use(bodyParer.json());
-setupRequestLogging(app);
-createRoutes(app);
-setupErrorHandler(app);
+import { TokenKey } from '../auth/TokenKey';
+import passport from 'passport';
+import { createPassportValidation } from './TokenValidation';
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
@@ -35,7 +30,7 @@ const safeParseInt = (text: string): O.Option<number> =>
 		O.fromEither
 	);
 
-const expressListen = (port: number): TEU.TaskEither<Server> =>
+const expressListen = (app: Express, port: number): TEU.TaskEither<Server> =>
 	TEU.tryCatch(
 		() =>
 			new Promise((resolve, reject) => {
@@ -63,7 +58,22 @@ export interface ExpressServer {
 	readonly app: Express;
 }
 
-export const startExpressServer = (): TEU.TaskEither<ExpressServer> => {
+const createExpressApp = (tokenKey: TokenKey): Express => {
+	const app = express();
+	app.use(nocache());
+	app.disable('x-powered-by');
+	app.use(bodyParer.json());
+	app.use(passport.initialize());
+	setupRequestLogging(app);
+	createRoutes(app);
+	createPassportValidation(tokenKey);
+	setupErrorHandler(app);
+	return app;
+};
+
+export const startExpressServer = (
+	tokenKey: TokenKey
+): TEU.TaskEither<ExpressServer> => {
 	const port = pipe(
 		O.fromNullable(process.env.EXPRESS_PORT),
 		O.chain(safeParseInt),
@@ -72,8 +82,10 @@ export const startExpressServer = (): TEU.TaskEither<ExpressServer> => {
 
 	logger.debug('Starting server');
 
+	const app = createExpressApp(tokenKey);
+
 	return pipe(
-		expressListen(port),
+		expressListen(app, port),
 		TE.map((_) => ({
 			server: _,
 			app

@@ -2,6 +2,9 @@ import { Express, NextFunction, Request, Response } from 'express';
 import { logger } from '../logger';
 import qs from 'qs';
 import { format } from 'date-fns';
+import { match, when } from 'ts-pattern';
+import * as P from 'fp-ts/Predicate';
+import { pipe } from 'fp-ts/function';
 
 interface ErrorResponse {
 	readonly timestamp: string;
@@ -10,7 +13,23 @@ interface ErrorResponse {
 	readonly request: string;
 }
 
-const getErrorStatus = (): number => 500;
+const NO_AUTH_TOKEN_REGEX = /^.*No auth token.*$/;
+const UNAUTHORIZED_ERROR_NAMES = ['JsonWebTokenError', 'TokenExpiredError'];
+
+const isUnauthorizedError: P.Predicate<Error> = pipe(
+	(_: Error) => UNAUTHORIZED_ERROR_NAMES.includes(_.name),
+	P.or((_) => NO_AUTH_TOKEN_REGEX.test(_.message))
+);
+
+const getErrorStatus = (err: Error): number =>
+	match(err)
+		.with(when(isUnauthorizedError), () => 401)
+		.otherwise(() => 500);
+
+const getErrorMessage = (err: Error): string =>
+	match(err)
+		.with(when(isUnauthorizedError), () => 'Unauthorized')
+		.otherwise((_) => _.message);
 
 const createErrorResponse = (
 	err: Error,
@@ -25,19 +44,28 @@ const createErrorResponse = (
 	return {
 		timestamp,
 		status,
-		message: err.message,
+		message: getErrorMessage(err),
 		request: `${req.method} ${req.path}${fullQueryString}`
 	};
 };
 
-export const setupErrorHandler = (app: Express) =>
-	app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-		logger.error('Error while processing request');
-		logger.error(err);
+export const errorHandler = (
+	err: Error,
+	req: Request,
+	res: Response,
+	next: NextFunction
+): void => {
+	logger.error('Error while processing request');
+	logger.error(err);
 
-		const status = getErrorStatus();
-		const errorResponse = createErrorResponse(err, req, status);
-		res.status(status);
-		res.json(errorResponse);
-		next();
-	});
+	const status = getErrorStatus(err);
+	const errorResponse = createErrorResponse(err, req, status);
+	res.status(status);
+	res.json(errorResponse);
+	next();
+};
+
+export const setupErrorHandler = (app: Express) =>
+	app.use((err: Error, req: Request, res: Response, next: NextFunction) =>
+		errorHandler(err, req, res, next)
+	);

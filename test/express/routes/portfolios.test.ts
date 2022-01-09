@@ -5,6 +5,7 @@ import {
 	portfolioToModel
 } from '../../../src/mongo/models/PortfolioModel';
 import {
+	createAccessToken,
 	createFullTestServer,
 	FullTestServer,
 	stopFullTestServer
@@ -55,18 +56,29 @@ describe('portfolios', () => {
 		await PortfolioModel.deleteMany().exec();
 	});
 
-	it('getPortfolios', async () => {
-		const res = await request(fullTestServer.expressServer.server)
-			.get('/portfolios')
-			.timeout(2000)
-			.expect(200);
-		expect(res.body).toEqual([
-			expect.objectContaining(user1InitPortfolios[0]),
-			expect.objectContaining(user1InitPortfolios[1])
-		]);
+	describe('getPortfolios', () => {
+		it('successful auth', async () => {
+			const token = createAccessToken(fullTestServer.keyPair.privateKey);
+			const res = await request(fullTestServer.expressServer.server)
+				.get('/portfolios')
+				.set('Authorization', `Bearer ${token}`)
+				.timeout(2000)
+				.expect(200);
+			expect(res.body).toEqual([
+				expect.objectContaining(user1InitPortfolios[0]),
+				expect.objectContaining(user1InitPortfolios[1])
+			]);
+		});
+
+		it('failed auth', async () => {
+			await request(fullTestServer.expressServer.server)
+				.get('/portfolios')
+				.timeout(2000)
+				.expect(401);
+		});
 	});
 
-	it('savePortfolios', async () => {
+	describe('savePortfolios', () => {
 		const newPortfolios: Portfolio[] = [
 			{
 				userId: 10,
@@ -75,17 +87,39 @@ describe('portfolios', () => {
 				cryptos: []
 			}
 		];
-		const res = await request(fullTestServer.expressServer.server)
-			.post('/portfolios')
-			.timeout(2000)
-			.set('Content-Type', 'application/json')
-			.send(newPortfolios)
-			.expect(200);
-		expect(res.body).toEqual([
-			expect.objectContaining({
-				...newPortfolios[0],
-				userId: 1
-			})
-		]);
+
+		it('successful auth', async () => {
+			const token = createAccessToken(fullTestServer.keyPair.privateKey);
+			const res = await request(fullTestServer.expressServer.server)
+				.post('/portfolios')
+				.timeout(2000)
+				.set('Content-Type', 'application/json')
+				.set('Authorization', `Bearer ${token}`)
+				.send(newPortfolios)
+				.expect(200);
+			expect(res.body).toEqual([
+				expect.objectContaining({
+					...newPortfolios[0],
+					userId: 1
+				})
+			]);
+			const results = await PortfolioModel.find({ userId: 1 }).exec();
+			expect(results).toHaveLength(1);
+			expect(results[0]).toEqual(
+				expect.objectContaining({
+					...newPortfolios[0],
+					userId: 1
+				})
+			);
+		});
+
+		it('failed auth', async () => {
+			await request(fullTestServer.expressServer.server)
+				.post('/portfolios')
+				.timeout(2000)
+				.set('Content-Type', 'application/json')
+				.send(newPortfolios)
+				.expect(401);
+		});
 	});
 });
