@@ -11,8 +11,6 @@ import { errorHandler } from './errorHandler';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 
-// TODO do I need tests for this?
-
 export interface AccessToken {
 	readonly sub: string;
 	readonly clientName: string;
@@ -22,10 +20,6 @@ export interface AccessToken {
 	readonly userEmail: string;
 	readonly roles: string[];
 }
-
-// TODO delete these
-// Info {"name":"JsonWebTokenError","message":"jwt malformed"}
-// Info {"name":"TokenExpiredError","message":"jwt expired","expiredAt":"2022-01-09T00:32:31.000Z"}
 
 type Route = (req: Request, res: Response, next: NextFunction) => void;
 export const secure =

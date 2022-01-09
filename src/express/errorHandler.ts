@@ -14,20 +14,18 @@ interface ErrorResponse {
 }
 
 const NO_AUTH_TOKEN_REGEX = /^.*No auth token.*$/;
+const UNAUTHORIZED_ERROR_NAMES = ['JsonWebTokenError', 'TokenExpiredError'];
 
 const isUnauthorizedError: P.Predicate<Error> = pipe(
-	(_: Error) => _.name === 'JsonWebTokenError',
-	P.or((_) => _.name === 'TokenExpiredError'),
+	(_: Error) => UNAUTHORIZED_ERROR_NAMES.includes(_.name),
 	P.or((_) => NO_AUTH_TOKEN_REGEX.test(_.message))
 );
 
-// TODO need tests for this
 const getErrorStatus = (err: Error): number =>
 	match(err)
 		.with(when(isUnauthorizedError), () => 401)
 		.otherwise(() => 500);
 
-// TODO need tests for this too
 const getErrorMessage = (err: Error): string =>
 	match(err)
 		.with(when(isUnauthorizedError), () => 'Unauthorized')
