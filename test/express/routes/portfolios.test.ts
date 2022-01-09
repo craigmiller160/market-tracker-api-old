@@ -71,7 +71,10 @@ describe('portfolios', () => {
 		});
 
 		it('failed auth', async () => {
-			throw new Error();
+			await request(fullTestServer.expressServer.server)
+				.get('/portfolios')
+				.timeout(2000)
+				.expect(401);
 		});
 	});
 
@@ -111,7 +114,12 @@ describe('portfolios', () => {
 		});
 
 		it('failed auth', async () => {
-			throw new Error();
+			await request(fullTestServer.expressServer.server)
+				.post('/portfolios')
+				.timeout(2000)
+				.set('Content-Type', 'application/json')
+				.send(newPortfolios)
+				.expect(401);
 		});
 	});
 });
