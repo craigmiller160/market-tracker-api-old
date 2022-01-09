@@ -39,7 +39,8 @@ describe('TokenValidation', () => {
 	});
 
 	it('has no access token', async () => {
-		jwt.sign()
+		const token: string = jwt.sign(accessToken, fullTestServer.keyPair.getPrivate('hex'));
+		console.log(token);
 		throw new Error();
 	});
 });
