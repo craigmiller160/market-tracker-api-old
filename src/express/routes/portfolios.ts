@@ -2,7 +2,7 @@ import { RouteCreator } from './RouteCreator';
 import * as TE from 'fp-ts/TaskEither';
 import { Portfolio } from '../../mongo/models/PortfolioModel';
 import { pipe } from 'fp-ts/function';
-import { Request } from 'express';
+import { Express, NextFunction, Request, Response } from 'express';
 import {
 	findPortfoliosForUser,
 	savePortfoliosForUser

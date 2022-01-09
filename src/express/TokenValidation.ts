@@ -6,7 +6,8 @@ import {
 import { TokenKey } from '../auth/TokenKey';
 import passport from 'passport';
 import { logger } from '../logger';
-import { NextFunction, Request, Response } from 'express';
+import { Express, NextFunction, Request, Response } from 'express';
+import { match } from 'ts-pattern';
 
 // TODO do I need tests for this?
 // TODO customize unauthorized error
@@ -20,6 +21,43 @@ export interface AccessToken {
 	readonly userEmail: string;
 	readonly roles: string[];
 }
+
+enum Method {
+	GET = 'GET',
+	POST = 'POST',
+	PUT = 'PUT',
+	DELETE = 'DELETE'
+}
+
+// TODO method should be constant or enum
+const secureRouteCreator =
+	(app: Express) =>
+	(method: Method) =>
+	(
+		route: string,
+		fn: (req: Request, res: Response, next: NextFunction) => void
+	): void => {
+		const request = match(method)
+			.with(Method.GET, () => app.get)
+			.with(Method.POST, () => app.post)
+			.with(Method.PUT, () => app.put)
+			.with(Method.DELETE, () => app.delete)
+			.run();
+
+		request(route, (req, res, next) => {
+			passport.authenticate(
+				'jwt',
+				{ session: false },
+				(err: Error | undefined, user: AccessToken | boolean, info) => {
+					console.log('Error', err);
+					console.log('User', user);
+					console.log('Info', info);
+					return user;
+				}
+			)(req, res, next);
+			fn(req, res, next);
+		});
+	};
 
 export const secure = (req: Request, res: Response, next: NextFunction) => {
 	passport.authenticate(
