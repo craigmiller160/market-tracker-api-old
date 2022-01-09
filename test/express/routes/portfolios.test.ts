@@ -100,6 +100,14 @@ describe('portfolios', () => {
 					userId: 1
 				})
 			]);
+			const results = await PortfolioModel.find({ userId: 1 }).exec();
+			expect(results).toHaveLength(1);
+			expect(results[0]).toEqual(
+				expect.objectContaining({
+					...newPortfolios[0],
+					userId: 1
+				})
+			);
 		});
 
 		it('failed auth', async () => {
