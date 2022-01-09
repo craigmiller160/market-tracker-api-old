@@ -31,7 +31,7 @@ enum Method {
 
 type Route = (req: Request, res: Response, next: NextFunction) => void
 
-export const secureRoute = (fn: Route) => (req: Request, res: Response, next: NextFunction) => {
+export const secure = (fn: Route) => (req: Request, res: Response, next: NextFunction) => {
 	passport.authenticate(
 		'jwt',
 		{ session: false },
@@ -44,49 +44,6 @@ export const secureRoute = (fn: Route) => (req: Request, res: Response, next: Ne
 	)(req, res, next);
 	fn(req, res, next);
 }
-
-// TODO method should be constant or enum
-const secureRouteCreator =
-	(app: Express) =>
-	(
-		method: Method,
-		route: string,
-		fn: (req: Request, res: Response, next: NextFunction) => void
-	): void => {
-		const request = match(method)
-			.with(Method.GET, () => app.get)
-			.with(Method.POST, () => app.post)
-			.with(Method.PUT, () => app.put)
-			.with(Method.DELETE, () => app.delete)
-			.run();
-
-		request(route, (req, res, next) => {
-			passport.authenticate(
-				'jwt',
-				{ session: false },
-				(err: Error | undefined, user: AccessToken | boolean, info) => {
-					console.log('Error', err);
-					console.log('User', user);
-					console.log('Info', info);
-					return user;
-				}
-			)(req, res, next);
-			fn(req, res, next);
-		});
-	};
-
-export const secure = (req: Request, res: Response, next: NextFunction) => {
-	passport.authenticate(
-		'jwt',
-		{ session: false },
-		(err: Error | undefined, user: AccessToken | boolean, info) => {
-			console.log('Error', err);
-			console.log('User', user);
-			console.log('Info', info);
-			return user;
-		}
-	)(req, res, next);
-};
 
 export const createPassportValidation = (tokenKey: TokenKey) => {
 	logger.debug('Creating passport JWT validation strategy');

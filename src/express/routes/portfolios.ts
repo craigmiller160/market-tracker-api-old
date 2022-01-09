@@ -7,10 +7,10 @@ import {
 	findPortfoliosForUser,
 	savePortfoliosForUser
 } from '../../services/mongo/PortfolioService';
-import { secureRoute } from '../TokenValidation';
+import { secure } from '../TokenValidation';
 
 export const getPortfolios: RouteCreator = (app) =>
-	app.get('/portfolios', secureRoute((req, res) =>
+	app.get('/portfolios', secure((req, res) =>
 		pipe(
 			findPortfoliosForUser(),
 			TE.map((_) => res.json(_))
