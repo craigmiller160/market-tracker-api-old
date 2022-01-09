@@ -38,7 +38,10 @@ export const secure =
 					O.getOrElse(() => tokenError),
 					O.fromNullable,
 					O.fold(
-						() => fn(req, res, next),
+						() => {
+							req.user = user as AccessToken;
+							fn(req, res, next);
+						},
 						(realError) => errorHandler(realError, req, res, next)
 					)
 				)

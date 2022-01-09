@@ -7,27 +7,29 @@ import {
 	findPortfoliosForUser,
 	savePortfoliosForUser
 } from '../../services/mongo/PortfolioService';
-import { secure } from '../TokenValidation';
+import { AccessToken, secure } from '../TokenValidation';
 
 export const getPortfolios: RouteCreator = (app) =>
 	app.get(
 		'/portfolios',
-		secure((req, res) =>
+		secure((req, res) => {
+			const token = req.user as AccessToken;
 			pipe(
-				findPortfoliosForUser(),
+				findPortfoliosForUser(token.userId),
 				TE.map((_) => res.json(_))
-			)()
-		)
+			)();
+		})
 	);
 
 export const savePortfolios: RouteCreator = (app) =>
 	app.post(
 		'/portfolios',
-		secure((req: Request<unknown, unknown, Portfolio[]>, res) =>
+		secure((req: Request<unknown, unknown, Portfolio[]>, res) => {
+			const token = req.user as AccessToken;
 			pipe(
-				savePortfoliosForUser(req.body),
-				TE.chain(findPortfoliosForUser),
+				savePortfoliosForUser(token.userId, req.body),
+				TE.chain(() => findPortfoliosForUser(token.userId)),
 				TE.map((_) => res.json(_))
-			)()
-		)
+			)();
+		})
 	);

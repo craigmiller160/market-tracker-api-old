@@ -7,27 +7,29 @@ import {
 import * as TE from 'fp-ts/TaskEither';
 import { Request } from 'express';
 import { Watchlist } from '../../mongo/models/WatchlistModel';
-import { secure } from '../TokenValidation';
+import { AccessToken, secure } from '../TokenValidation';
 
 export const getWatchlists: RouteCreator = (app) =>
 	app.get(
 		'/watchlists',
-		secure((req, res) =>
+		secure((req, res) => {
+			const token = req.user as AccessToken;
 			pipe(
-				findWatchlistsForUser(),
+				findWatchlistsForUser(token.userId),
 				TE.map((_) => res.json(_))
-			)()
-		)
+			)();
+		})
 	);
 
 export const saveWatchlists: RouteCreator = (app) =>
 	app.post(
 		'/watchlists',
-		secure((req: Request<unknown, unknown, Watchlist[]>, res) =>
+		secure((req: Request<unknown, unknown, Watchlist[]>, res) => {
+			const token = req.user as AccessToken;
 			pipe(
-				saveWatchlistsForUser(req.body),
-				TE.chain(findWatchlistsForUser),
+				saveWatchlistsForUser(token.userId, req.body),
+				TE.chain(() => findWatchlistsForUser(token.userId)),
 				TE.map((_) => res.json(_))
-			)()
-		)
+			)();
+		})
 	);
