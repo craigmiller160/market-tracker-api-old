@@ -1,5 +1,4 @@
 import { ExpressServer, startExpressServer } from '../../src/express';
-import { ec } from 'elliptic';
 import {
 	createMongoTestServer,
 	MongoTestServer,
