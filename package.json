@@ -43,6 +43,7 @@
     "elliptic": "^6.5.4",
     "env-cmd": "^10.1.0",
     "husky": "^7.0.4",
+    "jsonwebtoken": "^8.5.1",
     "mongodb-memory-server": "^8.1.0",
     "supertest": "^6.1.6",
     "ts-node": "^10.4.0",

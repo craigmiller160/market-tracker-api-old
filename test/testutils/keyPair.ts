@@ -6,3 +6,6 @@ const ecInstance = new ec('secp256k1');
 
 export const createKeyPair = (): E.Either<Error, ec.KeyPair> =>
 	EU.tryCatch(() => ecInstance.genKeyPair());
+
+export const getPublic = (keyPair: ec.KeyPair): string =>
+	keyPair.getPublic().encode('hex', false);

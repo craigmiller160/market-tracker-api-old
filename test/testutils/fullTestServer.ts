@@ -9,7 +9,7 @@ import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import * as TEU from '../../src/function/TaskEitherUtils';
 import { stopExpressServer } from './expressServer';
-import { createKeyPair } from './keyPair';
+import { createKeyPair, getPublic } from './keyPair';
 import { TokenKey } from '../../src/auth/TokenKey';
 
 export interface FullTestServer {
@@ -22,7 +22,7 @@ const createExpressServerWithKey = (
 	keyPair: ec.KeyPair
 ): TE.TaskEither<Error, ExpressServer> => {
 	const tokenKey: TokenKey = {
-		key: keyPair.getPublic().encode('hex', false)
+		key: getPublic(keyPair)
 	};
 	return startExpressServer(tokenKey);
 };

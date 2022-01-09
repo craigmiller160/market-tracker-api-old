@@ -3,6 +3,18 @@ import {
 	FullTestServer,
 	stopFullTestServer
 } from '../testutils/fullTestServer';
+import jwt from 'jsonwebtoken';
+import { AccessToken } from '../../src/express/TokenValidation';
+
+const accessToken: AccessToken = {
+	userId: 1,
+	userEmail: 'bob@gmail.com',
+	firstName: 'Bob',
+	lastName: 'Saget',
+	roles: [],
+	sub: 'bob@gmail.com',
+	clientName: 'the-app'
+};
 
 describe('TokenValidation', () => {
 	let fullTestServer: FullTestServer;
@@ -27,6 +39,7 @@ describe('TokenValidation', () => {
 	});
 
 	it('has no access token', async () => {
+		jwt.sign()
 		throw new Error();
 	});
 });
