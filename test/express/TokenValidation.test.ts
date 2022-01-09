@@ -6,6 +6,9 @@ import {
 import jwt from 'jsonwebtoken';
 import { AccessToken } from '../../src/express/TokenValidation';
 import request from 'supertest';
+import { createKeyPair } from '../testutils/keyPair';
+import { pipe } from 'fp-ts/function';
+import * as EU from '../../src/function/EitherUtils';
 
 const accessToken: AccessToken = {
 	userId: 1,
@@ -64,7 +67,20 @@ describe('TokenValidation', () => {
 	});
 
 	it('access token has invalid signature', async () => {
-		throw new Error();
+		const newKeyPair = pipe(createKeyPair(), EU.throwIfLeft);
+		const token: string = jwt.sign(accessToken, newKeyPair.privateKey, {
+			algorithm: 'ES256'
+		});
+		const res = await request(fullTestServer.expressServer.server)
+			.get('/portfolios')
+			.set('Authorization', `Bearer ${token}`)
+			.expect(401);
+		expect(res.body).toEqual(
+			expect.objectContaining({
+				status: 401,
+				message: 'Unauthorized'
+			})
+		);
 	});
 
 	it('has no access token', async () => {
