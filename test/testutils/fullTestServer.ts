@@ -9,20 +9,20 @@ import { pipe } from 'fp-ts/function';
 import * as TE from 'fp-ts/TaskEither';
 import * as TEU from '../../src/function/TaskEitherUtils';
 import { stopExpressServer } from './expressServer';
-import { createKeyPair } from './keyPair';
+import { createKeyPair, TokenKeyPair } from './keyPair';
 import { TokenKey } from '../../src/auth/TokenKey';
 
 export interface FullTestServer {
-	readonly keyPair: ec.KeyPair;
+	readonly keyPair: TokenKeyPair;
 	readonly expressServer: ExpressServer;
 	readonly mongoServer: MongoTestServer;
 }
 
 const createExpressServerWithKey = (
-	keyPair: ec.KeyPair
+	publicKey: string
 ): TE.TaskEither<Error, ExpressServer> => {
 	const tokenKey: TokenKey = {
-		key: keyPair.getPublic('hex')
+		key: publicKey
 	};
 	return startExpressServer(tokenKey);
 };
@@ -34,7 +34,7 @@ export const createFullTestServer = (): Promise<FullTestServer> =>
 		TE.bindTo('keyPair'),
 		TE.bind('mongoServer', createMongoTestServer),
 		TE.bind('expressServer', ({ keyPair }) =>
-			createExpressServerWithKey(keyPair)
+			createExpressServerWithKey(keyPair.publicKey)
 		),
 		TEU.throwIfLeft
 	)();
