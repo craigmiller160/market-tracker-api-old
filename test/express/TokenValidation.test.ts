@@ -5,6 +5,7 @@ import {
 } from '../testutils/fullTestServer';
 import jwt from 'jsonwebtoken';
 import { AccessToken } from '../../src/express/TokenValidation';
+import request from 'supertest';
 
 const accessToken: AccessToken = {
 	userId: 1,
@@ -27,7 +28,12 @@ describe('TokenValidation', () => {
 	});
 
 	it('has valid access token', async () => {
-		throw new Error();
+		const token: string = jwt.sign(accessToken, fullTestServer.keyPair.getPrivate('hex'));
+		const res = await request(fullTestServer.expressServer.server)
+			.get('/portfolios')
+			.set('Authorization', `Bearer ${token}`)
+			.expect(200);
+		expect(res.body).toEqual([]);
 	});
 
 	it('access token is expired', async () => {
@@ -39,8 +45,6 @@ describe('TokenValidation', () => {
 	});
 
 	it('has no access token', async () => {
-		const token: string = jwt.sign(accessToken, fullTestServer.keyPair.getPrivate('hex'));
-		console.log(token);
 		throw new Error();
 	});
 });
