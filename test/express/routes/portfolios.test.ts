@@ -55,37 +55,49 @@ describe('portfolios', () => {
 		await PortfolioModel.deleteMany().exec();
 	});
 
-	it('getPortfolios', async () => {
-		const res = await request(fullTestServer.expressServer.server)
-			.get('/portfolios')
-			.timeout(2000)
-			.expect(200);
-		expect(res.body).toEqual([
-			expect.objectContaining(user1InitPortfolios[0]),
-			expect.objectContaining(user1InitPortfolios[1])
-		]);
+	describe('getPortfolios', () => {
+		it('successful auth', async () => {
+			const res = await request(fullTestServer.expressServer.server)
+				.get('/portfolios')
+				.timeout(2000)
+				.expect(200);
+			expect(res.body).toEqual([
+				expect.objectContaining(user1InitPortfolios[0]),
+				expect.objectContaining(user1InitPortfolios[1])
+			]);
+		});
+
+		it('failed auth', async () => {
+			throw new Error();
+		});
 	});
 
-	it('savePortfolios', async () => {
-		const newPortfolios: Portfolio[] = [
-			{
-				userId: 10,
-				portfolioName: 'Ten',
-				stocks: ['atv'],
-				cryptos: []
-			}
-		];
-		const res = await request(fullTestServer.expressServer.server)
-			.post('/portfolios')
-			.timeout(2000)
-			.set('Content-Type', 'application/json')
-			.send(newPortfolios)
-			.expect(200);
-		expect(res.body).toEqual([
-			expect.objectContaining({
-				...newPortfolios[0],
-				userId: 1
-			})
-		]);
+	describe('savePortfolios', async () => {
+		it('successful auth', async () => {
+			const newPortfolios: Portfolio[] = [
+				{
+					userId: 10,
+					portfolioName: 'Ten',
+					stocks: ['atv'],
+					cryptos: []
+				}
+			];
+			const res = await request(fullTestServer.expressServer.server)
+				.post('/portfolios')
+				.timeout(2000)
+				.set('Content-Type', 'application/json')
+				.send(newPortfolios)
+				.expect(200);
+			expect(res.body).toEqual([
+				expect.objectContaining({
+					...newPortfolios[0],
+					userId: 1
+				})
+			]);
+		});
+
+		it('failed auth', async () => {
+			throw new Error();
+		});
 	});
 });

@@ -55,38 +55,50 @@ describe('watchlists route', () => {
 		await WatchlistModel.deleteMany().exec();
 	});
 
-	it('getWatchlists', async () => {
-		const res = await request(fullTestServer.expressServer.server)
-			.get('/watchlists')
-			.timeout(2000)
-			.expect(200);
-		expect(res.body).toEqual([
-			expect.objectContaining(user1InitWatchlists[0]),
-			expect.objectContaining(user1InitWatchlists[1])
-		]);
+	describe('getWatchlists', () => {
+		it('successful auth', async () => {
+			const res = await request(fullTestServer.expressServer.server)
+				.get('/watchlists')
+				.timeout(2000)
+				.expect(200);
+			expect(res.body).toEqual([
+				expect.objectContaining(user1InitWatchlists[0]),
+				expect.objectContaining(user1InitWatchlists[1])
+			]);
+		});
+
+		it('failed auth', async () => {
+			throw new Error();
+		});
 	});
 
-	it('saveWatchlists', async () => {
-		const newWatchlists: Watchlist[] = [
-			{
-				userId: 10,
-				watchlistName: 'Ten',
-				stocks: ['atv'],
-				cryptos: []
-			}
-		];
+	describe('saveWatchlists', () => {
+		it('successful auth', async () => {
+			const newWatchlists: Watchlist[] = [
+				{
+					userId: 10,
+					watchlistName: 'Ten',
+					stocks: ['atv'],
+					cryptos: []
+				}
+			];
 
-		const res = await request(fullTestServer.expressServer.server)
-			.post('/watchlists')
-			.timeout(2000)
-			.set('Content-Type', 'application/json')
-			.send(newWatchlists)
-			.expect(200);
-		expect(res.body).toEqual([
-			expect.objectContaining({
-				...newWatchlists[0],
-				userId: 1
-			})
-		]);
+			const res = await request(fullTestServer.expressServer.server)
+				.post('/watchlists')
+				.timeout(2000)
+				.set('Content-Type', 'application/json')
+				.send(newWatchlists)
+				.expect(200);
+			expect(res.body).toEqual([
+				expect.objectContaining({
+					...newWatchlists[0],
+					userId: 1
+				})
+			]);
+		});
+
+		it('failed auth', async () => {
+			throw new Error();
+		});
 	});
 });
