@@ -23,10 +23,11 @@ export const getPortfolios: RouteCreator = (app) =>
 export const savePortfolios: RouteCreator = (app) =>
 	app.post(
 		'/portfolios',
-		(req: Request<unknown, unknown, Portfolio[]>, res) =>
+		secure((req: Request<unknown, unknown, Portfolio[]>, res) =>
 			pipe(
 				savePortfoliosForUser(req.body),
 				TE.chain(findPortfoliosForUser),
 				TE.map((_) => res.json(_))
 			)()
+		)
 	);
