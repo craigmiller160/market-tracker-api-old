@@ -160,12 +160,10 @@ describe('portfolios', () => {
 
 			const resultsWithoutIds = formatPortfolios(results);
 
-			expect(resultsWithoutIds[0]).toEqual(
-				expect.objectContaining({
-					...newPortfolios[0],
-					userId: 1
-				})
-			);
+			expect(resultsWithoutIds[0]).toEqual({
+				...newPortfolios[0],
+				userId: 1
+			});
 		});
 
 		it('failed auth', async () => {

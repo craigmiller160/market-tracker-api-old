@@ -151,6 +151,18 @@ describe('watchlists route', () => {
 					userId: 1
 				})
 			]);
+
+			const results = await WatchlistModel.find({ userId: 1 })
+				.lean()
+				.exec();
+			expect(results).toHaveLength(1);
+
+			const resultsWithoutIds = formatWatchlists(results);
+
+			expect(resultsWithoutIds[0]).toEqual({
+				...newWatchlists[0],
+				userId: 1
+			});
 		});
 
 		it('failed auth', async () => {

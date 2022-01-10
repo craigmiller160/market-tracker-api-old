@@ -1,9 +1,11 @@
-type WithMongooseId<T extends Record<string, unknown>> = T & {
+/* eslint-disable @typescript-eslint/ban-types */
+
+type WithMongooseId<T extends {}> = T & {
 	__v?: number;
 	_id?: string;
 };
 
-export const removeId = <T extends Record<string, unknown>>(
+export const removeId = <T extends {}>(
 	withMongooseId: WithMongooseId<T>
 ): T => {
 	const newObj = { ...withMongooseId };
