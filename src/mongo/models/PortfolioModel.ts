@@ -1,10 +1,16 @@
 import { model, Schema } from 'mongoose';
+import Number = module
+
+export interface PortfolioItem {
+	symbol: string;
+	shares: number;
+}
 
 export interface Portfolio {
 	userId: number;
 	portfolioName: string;
-	stocks: string[];
-	cryptos: string[];
+	stocks: PortfolioItem[];
+	cryptos: PortfolioItem[];
 }
 
 const portfolioSchema = new Schema<Portfolio>({
@@ -16,8 +22,14 @@ const portfolioSchema = new Schema<Portfolio>({
 		type: String,
 		required: true
 	},
-	stocks: [String],
-	cryptos: [String]
+	stocks: [{
+		symbol: String,
+		shares: Number
+	}],
+	cryptos: [{
+		symbol: String,
+		shares: Number
+	}]
 });
 
 export const PortfolioModel = model<Portfolio>('portfolio', portfolioSchema);
