@@ -27,14 +27,36 @@ describe('watchlists route', () => {
 			{
 				userId: 1,
 				watchlistName: 'One',
-				stocks: ['ABC', 'DEF'],
-				cryptos: ['GHI']
+				stocks: [
+					{
+						symbol: 'ABC'
+					},
+					{
+						symbol: 'DEF'
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'GHI'
+					}
+				]
 			},
 			{
 				userId: 1,
 				watchlistName: 'Two',
-				stocks: ['QRS', 'TUV'],
-				cryptos: ['WXYZ']
+				stocks: [
+					{
+						symbol: 'QRS'
+					},
+					{
+						symbol: 'TUV'
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'WXYZ'
+					}
+				]
 			}
 		];
 		const user1Watchlists = user1InitWatchlists.map(watchlistToModel);
@@ -44,8 +66,19 @@ describe('watchlists route', () => {
 			{
 				userId: 2,
 				watchlistName: 'Three',
-				stocks: ['ABC2', 'DEF2'],
-				cryptos: ['GHI2']
+				stocks: [
+					{
+						symbol: 'ABC2'
+					},
+					{
+						symbol: 'DEF2'
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'GHI2'
+					}
+				]
 			}
 		];
 		const user2Models = user2Watchlists.map(watchlistToModel);
@@ -83,7 +116,11 @@ describe('watchlists route', () => {
 			{
 				userId: 10,
 				watchlistName: 'Ten',
-				stocks: ['atv'],
+				stocks: [
+					{
+						symbol: 'atv'
+					}
+				],
 				cryptos: []
 			}
 		];
