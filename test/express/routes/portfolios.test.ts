@@ -27,14 +27,34 @@ describe('portfolios', () => {
 			{
 				userId: 1,
 				portfolioName: 'One',
-				stocks: ['ABC', 'DEF'],
-				cryptos: ['GHI']
+				stocks: [
+					{
+						symbol: 'ABC',
+						shares: 1
+					},
+					{ symbol: 'DEF', shares: 2 }
+				],
+				cryptos: [{ symbol: 'GHI', shares: 3 }]
 			},
 			{
 				userId: 1,
 				portfolioName: 'Two',
-				stocks: ['QRS', 'TUV'],
-				cryptos: ['WXYZ']
+				stocks: [
+					{
+						symbol: 'QRS',
+						shares: 1
+					},
+					{
+						symbol: 'QRS',
+						shares: 2
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'QRS',
+						shares: 3
+					}
+				]
 			}
 		];
 		const user1Models = user1InitPortfolios.map(portfolioToModel);
