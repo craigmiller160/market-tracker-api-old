@@ -10,6 +10,17 @@ import {
 	FullTestServer,
 	stopFullTestServer
 } from '../../testutils/fullTestServer';
+import { removeId } from '../../testutils/functions';
+
+const formatWatchlists = (watchlists: Watchlist[]): Watchlist[] =>
+	watchlists.map((watchlist) => {
+		const newWatchlist = removeId(watchlist);
+		return {
+			...newWatchlist,
+			stocks: newWatchlist.stocks.map(removeId),
+			cryptos: newWatchlist.cryptos.map(removeId)
+		};
+	});
 
 describe('watchlists route', () => {
 	let user1InitWatchlists: Watchlist[];
@@ -97,7 +108,7 @@ describe('watchlists route', () => {
 				.set('Authorization', `Bearer ${token}`)
 				.timeout(2000)
 				.expect(200);
-			expect(res.body).toEqual([
+			expect(formatWatchlists(res.body)).toEqual([
 				expect.objectContaining(user1InitWatchlists[0]),
 				expect.objectContaining(user1InitWatchlists[1])
 			]);
@@ -134,7 +145,7 @@ describe('watchlists route', () => {
 				.set('Content-Type', 'application/json')
 				.send(newWatchlists)
 				.expect(200);
-			expect(res.body).toEqual([
+			expect(formatWatchlists(res.body)).toEqual([
 				expect.objectContaining({
 					...newWatchlists[0],
 					userId: 1

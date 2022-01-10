@@ -1,7 +1,6 @@
 import request from 'supertest';
 import {
 	Portfolio,
-	PortfolioItem,
 	PortfolioModel,
 	portfolioToModel
 } from '../../../src/mongo/models/PortfolioModel';
@@ -11,44 +10,17 @@ import {
 	FullTestServer,
 	stopFullTestServer
 } from '../../testutils/fullTestServer';
-import * as A from 'fp-ts/Array';
+import { removeId } from '../../testutils/functions';
 
-type PortfolioItemWithId = PortfolioItem & {
-	_id?: string;
-};
-
-type PortfolioWithId = Portfolio & {
-	__v?: number;
-	_id?: string;
-	stocks: PortfolioItemWithId[];
-	cryptos: PortfolioItemWithId[];
-};
-
-type RemoveIdsFromItems = (items: PortfolioItemWithId[]) => PortfolioItem[];
-const removeIdsFromItems: RemoveIdsFromItems = A.map(
-	(item: PortfolioItemWithId) => {
-		const newItem = { ...item };
-		delete newItem._id;
-		return newItem;
-	}
-);
-
-type RemoveIdsFromOutput = (output: PortfolioWithId[]) => Portfolio[];
-const removeIdsFromOutput: RemoveIdsFromOutput = A.map(
-	(portfolio: PortfolioWithId): Portfolio => {
-		const newPortfolio = { ...portfolio };
-		delete newPortfolio.__v;
-		delete newPortfolio._id;
-
-		const stocks = removeIdsFromItems(newPortfolio.stocks);
-		const cryptos = removeIdsFromItems(newPortfolio.cryptos);
+const formatPortfolios = (portfolios: Portfolio[]): Portfolio[] =>
+	portfolios.map((portfolio) => {
+		const newPortfolio = removeId(portfolio);
 		return {
 			...newPortfolio,
-			stocks,
-			cryptos
+			stocks: newPortfolio.stocks.map(removeId),
+			cryptos: newPortfolio.cryptos.map(removeId)
 		};
-	}
-);
+	});
 
 describe('portfolios', () => {
 	let user1InitPortfolios: Portfolio[];
@@ -137,7 +109,10 @@ describe('portfolios', () => {
 				.set('Authorization', `Bearer ${token}`)
 				.timeout(2000)
 				.expect(200);
-			expect(removeIdsFromOutput(res.body)).toEqual(user1InitPortfolios);
+
+			expect(formatPortfolios(res.body as Portfolio[])).toEqual(
+				user1InitPortfolios
+			);
 		});
 
 		it('failed auth', async () => {
@@ -172,7 +147,7 @@ describe('portfolios', () => {
 				.set('Authorization', `Bearer ${token}`)
 				.send(newPortfolios)
 				.expect(200);
-			expect(removeIdsFromOutput(res.body)).toEqual([
+			expect(formatPortfolios(res.body)).toEqual([
 				{
 					...newPortfolios[0],
 					userId: 1
@@ -183,7 +158,7 @@ describe('portfolios', () => {
 				.exec();
 			expect(results).toHaveLength(1);
 
-			const resultsWithoutIds = removeIdsFromOutput(results);
+			const resultsWithoutIds = formatPortfolios(results);
 
 			expect(resultsWithoutIds[0]).toEqual(
 				expect.objectContaining({
