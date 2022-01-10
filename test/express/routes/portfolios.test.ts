@@ -169,15 +169,16 @@ describe('portfolios', () => {
 				.set('Authorization', `Bearer ${token}`)
 				.send(newPortfolios)
 				.expect(200);
-			expect(res.body).toEqual([
-				expect.objectContaining({
+			expect(removeIdsFromOutput(res.body)).toEqual([
+				{
 					...newPortfolios[0],
 					userId: 1
-				})
+				}
 			]);
 			const results = await PortfolioModel.find({ userId: 1 }).exec();
 			expect(results).toHaveLength(1);
-			expect(results[0]).toEqual(
+			const resultsWithoutIds = removeIdsFromOutput(results);
+			expect(resultsWithoutIds[0]).toEqual(
 				expect.objectContaining({
 					...newPortfolios[0],
 					userId: 1
