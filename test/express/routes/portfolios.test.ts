@@ -64,8 +64,22 @@ describe('portfolios', () => {
 			{
 				userId: 2,
 				portfolioName: 'Three',
-				stocks: ['ABC2', 'DEF2'],
-				cryptos: ['GHI2']
+				stocks: [
+					{
+						symbol: 'ABC2',
+						shares: 1
+					},
+					{
+						symbol: 'DEF2',
+						shares: 2
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'GHI2',
+						shares: 3
+					}
+				]
 			}
 		];
 		const user2Models = user2Portfolios.map(portfolioToModel);
@@ -103,7 +117,12 @@ describe('portfolios', () => {
 			{
 				userId: 10,
 				portfolioName: 'Ten',
-				stocks: ['atv'],
+				stocks: [
+					{
+						symbol: 'atv',
+						shares: 1
+					}
+				],
 				cryptos: []
 			}
 		];
