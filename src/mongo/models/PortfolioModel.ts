@@ -1,5 +1,4 @@
-import { model, Schema } from 'mongoose';
-import Number = module
+import { model, Schema } from 'mongoose';;
 
 export interface PortfolioItem {
 	symbol: string;
@@ -22,14 +21,18 @@ const portfolioSchema = new Schema<Portfolio>({
 		type: String,
 		required: true
 	},
-	stocks: [{
-		symbol: String,
-		shares: Number
-	}],
-	cryptos: [{
-		symbol: String,
-		shares: Number
-	}]
+	stocks: [
+		{
+			symbol: String,
+			shares: Number
+		}
+	],
+	cryptos: [
+		{
+			symbol: String,
+			shares: Number
+		}
+	]
 });
 
 export const PortfolioModel = model<Portfolio>('portfolio', portfolioSchema);
