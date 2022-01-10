@@ -177,8 +177,7 @@ describe('portfolios', () => {
 			]);
 			const results = await PortfolioModel.find({ userId: 1 }).exec();
 			expect(results).toHaveLength(1);
-			const resultsWithoutIds = removeIdsFromOutput(results);
-			expect(resultsWithoutIds[0]).toEqual(
+			expect(results[0]).toEqual(
 				expect.objectContaining({
 					...newPortfolios[0],
 					userId: 1
