@@ -3,7 +3,9 @@ type WithMongooseId<T extends Record<string, unknown>> = T & {
 	_id?: string;
 };
 
-export const removeId = <T>(withMongooseId: WithMongooseId<T>): T => {
+export const removeId = <T extends Record<string, unknown>>(
+	withMongooseId: WithMongooseId<T>
+): T => {
 	const newObj = { ...withMongooseId };
 	delete newObj.__v;
 	delete newObj._id;
