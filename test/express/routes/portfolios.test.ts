@@ -1,6 +1,7 @@
 import request from 'supertest';
 import {
 	Portfolio,
+	PortfolioItem,
 	PortfolioModel,
 	portfolioToModel
 } from '../../../src/mongo/models/PortfolioModel';
@@ -10,6 +11,41 @@ import {
 	FullTestServer,
 	stopFullTestServer
 } from '../../testutils/fullTestServer';
+import * as A from 'fp-ts/Array';
+
+type PortfolioItemWithId = PortfolioItem & {
+	_id?: string;
+};
+
+type PortfolioWithId = Portfolio & {
+	__v?: number;
+	_id?: string;
+	stocks: PortfolioItemWithId[];
+	cryptos: PortfolioItemWithId[];
+};
+
+type RemoveIdsFromItems = (items: PortfolioItemWithId[]) => PortfolioItem[];
+const removeIdsFromItems: RemoveIdsFromItems = A.map(
+	(item: PortfolioItemWithId) => {
+		delete item._id;
+		return item;
+	}
+);
+
+type RemoveIdsFromOutput = (output: PortfolioWithId[]) => Portfolio[];
+const removeIdsFromOutput: RemoveIdsFromOutput = A.map(
+	(portfolio: PortfolioWithId): Portfolio => {
+		delete portfolio.__v;
+		delete portfolio._id;
+		const stocks = removeIdsFromItems(portfolio.stocks);
+		const cryptos = removeIdsFromItems(portfolio.cryptos);
+		return {
+			...portfolio,
+			stocks,
+			cryptos
+		};
+	}
+);
 
 describe('portfolios', () => {
 	let user1InitPortfolios: Portfolio[];
@@ -98,10 +134,7 @@ describe('portfolios', () => {
 				.set('Authorization', `Bearer ${token}`)
 				.timeout(2000)
 				.expect(200);
-			expect(res.body).toEqual([
-				expect.objectContaining(user1InitPortfolios[0]),
-				expect.objectContaining(user1InitPortfolios[1])
-			]);
+			expect(removeIdsFromOutput(res.body)).toEqual(user1InitPortfolios);
 		});
 
 		it('failed auth', async () => {
