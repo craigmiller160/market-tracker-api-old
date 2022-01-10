@@ -1,10 +1,14 @@
 import { model, Schema } from 'mongoose';
 
+export interface WatchlistItem {
+	symbol: string;
+}
+
 export interface Watchlist {
 	userId: number;
 	watchlistName: string;
-	stocks: string[];
-	cryptos: string[];
+	stocks: WatchlistItem[];
+	cryptos: WatchlistItem[];
 }
 
 const watchlistSchema = new Schema<Watchlist>({
@@ -16,8 +20,16 @@ const watchlistSchema = new Schema<Watchlist>({
 		type: String,
 		required: true
 	},
-	stocks: [String],
-	cryptos: [String]
+	stocks: [
+		{
+			symbol: String
+		}
+	],
+	cryptos: [
+		{
+			symbol: String
+		}
+	]
 });
 
 export const WatchlistModel = model<Watchlist>('watchlist', watchlistSchema);

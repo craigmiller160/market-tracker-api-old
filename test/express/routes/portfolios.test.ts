@@ -10,6 +10,17 @@ import {
 	FullTestServer,
 	stopFullTestServer
 } from '../../testutils/fullTestServer';
+import { removeId } from '../../testutils/functions';
+
+const formatPortfolios = (portfolios: Portfolio[]): Portfolio[] =>
+	portfolios.map((portfolio) => {
+		const newPortfolio = removeId(portfolio);
+		return {
+			...newPortfolio,
+			stocks: newPortfolio.stocks.map(removeId),
+			cryptos: newPortfolio.cryptos.map(removeId)
+		};
+	});
 
 describe('portfolios', () => {
 	let user1InitPortfolios: Portfolio[];
@@ -27,14 +38,34 @@ describe('portfolios', () => {
 			{
 				userId: 1,
 				portfolioName: 'One',
-				stocks: ['ABC', 'DEF'],
-				cryptos: ['GHI']
+				stocks: [
+					{
+						symbol: 'ABC',
+						shares: 1
+					},
+					{ symbol: 'DEF', shares: 2 }
+				],
+				cryptos: [{ symbol: 'GHI', shares: 3 }]
 			},
 			{
 				userId: 1,
 				portfolioName: 'Two',
-				stocks: ['QRS', 'TUV'],
-				cryptos: ['WXYZ']
+				stocks: [
+					{
+						symbol: 'QRS',
+						shares: 1
+					},
+					{
+						symbol: 'QRS',
+						shares: 2
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'QRS',
+						shares: 3
+					}
+				]
 			}
 		];
 		const user1Models = user1InitPortfolios.map(portfolioToModel);
@@ -44,8 +75,22 @@ describe('portfolios', () => {
 			{
 				userId: 2,
 				portfolioName: 'Three',
-				stocks: ['ABC2', 'DEF2'],
-				cryptos: ['GHI2']
+				stocks: [
+					{
+						symbol: 'ABC2',
+						shares: 1
+					},
+					{
+						symbol: 'DEF2',
+						shares: 2
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'GHI2',
+						shares: 3
+					}
+				]
 			}
 		];
 		const user2Models = user2Portfolios.map(portfolioToModel);
@@ -64,10 +109,10 @@ describe('portfolios', () => {
 				.set('Authorization', `Bearer ${token}`)
 				.timeout(2000)
 				.expect(200);
-			expect(res.body).toEqual([
-				expect.objectContaining(user1InitPortfolios[0]),
-				expect.objectContaining(user1InitPortfolios[1])
-			]);
+
+			expect(formatPortfolios(res.body as Portfolio[])).toEqual(
+				user1InitPortfolios
+			);
 		});
 
 		it('failed auth', async () => {
@@ -83,7 +128,12 @@ describe('portfolios', () => {
 			{
 				userId: 10,
 				portfolioName: 'Ten',
-				stocks: ['atv'],
+				stocks: [
+					{
+						symbol: 'atv',
+						shares: 1
+					}
+				],
 				cryptos: []
 			}
 		];
@@ -97,20 +147,23 @@ describe('portfolios', () => {
 				.set('Authorization', `Bearer ${token}`)
 				.send(newPortfolios)
 				.expect(200);
-			expect(res.body).toEqual([
-				expect.objectContaining({
+			expect(formatPortfolios(res.body)).toEqual([
+				{
 					...newPortfolios[0],
 					userId: 1
-				})
+				}
 			]);
-			const results = await PortfolioModel.find({ userId: 1 }).exec();
+			const results = await PortfolioModel.find({ userId: 1 })
+				.lean()
+				.exec();
 			expect(results).toHaveLength(1);
-			expect(results[0]).toEqual(
-				expect.objectContaining({
-					...newPortfolios[0],
-					userId: 1
-				})
-			);
+
+			const resultsWithoutIds = formatPortfolios(results);
+
+			expect(resultsWithoutIds[0]).toEqual({
+				...newPortfolios[0],
+				userId: 1
+			});
 		});
 
 		it('failed auth', async () => {

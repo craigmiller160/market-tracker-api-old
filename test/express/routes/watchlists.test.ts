@@ -10,6 +10,17 @@ import {
 	FullTestServer,
 	stopFullTestServer
 } from '../../testutils/fullTestServer';
+import { removeId } from '../../testutils/functions';
+
+const formatWatchlists = (watchlists: Watchlist[]): Watchlist[] =>
+	watchlists.map((watchlist) => {
+		const newWatchlist = removeId(watchlist);
+		return {
+			...newWatchlist,
+			stocks: newWatchlist.stocks.map(removeId),
+			cryptos: newWatchlist.cryptos.map(removeId)
+		};
+	});
 
 describe('watchlists route', () => {
 	let user1InitWatchlists: Watchlist[];
@@ -27,14 +38,36 @@ describe('watchlists route', () => {
 			{
 				userId: 1,
 				watchlistName: 'One',
-				stocks: ['ABC', 'DEF'],
-				cryptos: ['GHI']
+				stocks: [
+					{
+						symbol: 'ABC'
+					},
+					{
+						symbol: 'DEF'
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'GHI'
+					}
+				]
 			},
 			{
 				userId: 1,
 				watchlistName: 'Two',
-				stocks: ['QRS', 'TUV'],
-				cryptos: ['WXYZ']
+				stocks: [
+					{
+						symbol: 'QRS'
+					},
+					{
+						symbol: 'TUV'
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'WXYZ'
+					}
+				]
 			}
 		];
 		const user1Watchlists = user1InitWatchlists.map(watchlistToModel);
@@ -44,8 +77,19 @@ describe('watchlists route', () => {
 			{
 				userId: 2,
 				watchlistName: 'Three',
-				stocks: ['ABC2', 'DEF2'],
-				cryptos: ['GHI2']
+				stocks: [
+					{
+						symbol: 'ABC2'
+					},
+					{
+						symbol: 'DEF2'
+					}
+				],
+				cryptos: [
+					{
+						symbol: 'GHI2'
+					}
+				]
 			}
 		];
 		const user2Models = user2Watchlists.map(watchlistToModel);
@@ -64,7 +108,7 @@ describe('watchlists route', () => {
 				.set('Authorization', `Bearer ${token}`)
 				.timeout(2000)
 				.expect(200);
-			expect(res.body).toEqual([
+			expect(formatWatchlists(res.body)).toEqual([
 				expect.objectContaining(user1InitWatchlists[0]),
 				expect.objectContaining(user1InitWatchlists[1])
 			]);
@@ -83,7 +127,11 @@ describe('watchlists route', () => {
 			{
 				userId: 10,
 				watchlistName: 'Ten',
-				stocks: ['atv'],
+				stocks: [
+					{
+						symbol: 'atv'
+					}
+				],
 				cryptos: []
 			}
 		];
@@ -97,12 +145,24 @@ describe('watchlists route', () => {
 				.set('Content-Type', 'application/json')
 				.send(newWatchlists)
 				.expect(200);
-			expect(res.body).toEqual([
+			expect(formatWatchlists(res.body)).toEqual([
 				expect.objectContaining({
 					...newWatchlists[0],
 					userId: 1
 				})
 			]);
+
+			const results = await WatchlistModel.find({ userId: 1 })
+				.lean()
+				.exec();
+			expect(results).toHaveLength(1);
+
+			const resultsWithoutIds = formatWatchlists(results);
+
+			expect(resultsWithoutIds[0]).toEqual({
+				...newWatchlists[0],
+				userId: 1
+			});
 		});
 
 		it('failed auth', async () => {
