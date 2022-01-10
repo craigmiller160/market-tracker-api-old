@@ -27,20 +27,23 @@ type PortfolioWithId = Portfolio & {
 type RemoveIdsFromItems = (items: PortfolioItemWithId[]) => PortfolioItem[];
 const removeIdsFromItems: RemoveIdsFromItems = A.map(
 	(item: PortfolioItemWithId) => {
-		delete item._id;
-		return item;
+		const newItem = { ...item };
+		delete newItem._id;
+		return newItem;
 	}
 );
 
 type RemoveIdsFromOutput = (output: PortfolioWithId[]) => Portfolio[];
 const removeIdsFromOutput: RemoveIdsFromOutput = A.map(
 	(portfolio: PortfolioWithId): Portfolio => {
-		delete portfolio.__v;
-		delete portfolio._id;
-		const stocks = removeIdsFromItems(portfolio.stocks);
-		const cryptos = removeIdsFromItems(portfolio.cryptos);
+		const newPortfolio = { ...portfolio };
+		delete newPortfolio.__v;
+		delete newPortfolio._id;
+
+		const stocks = removeIdsFromItems(newPortfolio.stocks);
+		const cryptos = removeIdsFromItems(newPortfolio.cryptos);
 		return {
-			...portfolio,
+			...newPortfolio,
 			stocks,
 			cryptos
 		};
@@ -175,9 +178,14 @@ describe('portfolios', () => {
 					userId: 1
 				}
 			]);
-			const results = await PortfolioModel.find({ userId: 1 }).exec();
+			const results = await PortfolioModel.find({ userId: 1 })
+				.lean()
+				.exec();
 			expect(results).toHaveLength(1);
-			expect(results[0]).toEqual(
+
+			const resultsWithoutIds = removeIdsFromOutput(results);
+
+			expect(resultsWithoutIds[0]).toEqual(
 				expect.objectContaining({
 					...newPortfolios[0],
 					userId: 1
