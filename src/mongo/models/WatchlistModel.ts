@@ -20,12 +20,16 @@ const watchlistSchema = new Schema<Watchlist>({
 		type: String,
 		required: true
 	},
-	stocks: [{
-		symbol: String
-	}],
-	cryptos: [{
-		symbol: String
-	}]
+	stocks: [
+		{
+			symbol: String
+		}
+	],
+	cryptos: [
+		{
+			symbol: String
+		}
+	]
 });
 
 export const WatchlistModel = model<Watchlist>('watchlist', watchlistSchema);
