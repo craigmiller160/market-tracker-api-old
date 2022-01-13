@@ -61,7 +61,12 @@ export interface ExpressServer {
 
 const createExpressApp = (tokenKey: TokenKey): Express => {
 	const app = express();
-	app.use(session());
+	app.use(
+		session({
+			// TODO improve this
+			secret: 'secret'
+		})
+	);
 	app.use(nocache());
 	app.disable('x-powered-by');
 	app.use(bodyParer.json());
