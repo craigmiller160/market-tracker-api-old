@@ -20,7 +20,13 @@ const storeAuthCodeLoginSessionValues = (
 	// TODO set expiration
 };
 
-const buildAuthCodeLoginUrl = (origin: string, state: number): string => {};
+const buildAuthCodeLoginUrl = (origin: string, state: number): string => {
+	const loginPath = encodeURIComponent(''); // TODO get this from env
+	const clientKey = encodeURIComponent(''); // TODO get this from env
+	const redirectUri = encodeURIComponent(''); // TODO get this from env
+	const encodedState = encodeURIComponent(state);
+
+};
 
 export const prepareAuthCodeLogin = (req: Request): E.Either<Error, string> => {
 	const state = randomInt(1_000_000_000);
