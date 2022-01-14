@@ -15,7 +15,7 @@ const clearEnv = () => {
 
 const setEnv = () => {
 	process.env.CLIENT_KEY = 'clientKey';
-	process.env.AUTH_CODE_REDIRECT_URI = 'authCodeRedirectUri';
+	process.env.AUTH_CODE_REDIRECT_URI = '/authCodeRedirectUri';
 	process.env.AUTH_LOGIN_BASE_URI = '/authLoginBaseUri';
 };
 
@@ -65,7 +65,7 @@ describe('user details route', () => {
 
 		it('successfully gets the url', async () => {
 			const urlRegex =
-				/^origin\/authLoginBaseUri\/ui\/login\?response_type=code&client_id=clientKey&redirect_uri=authCodeRedirectUri&state=.+$/;
+				/^origin\/authLoginBaseUri\/ui\/login\?response_type=code&client_id=clientKey&redirect_uri=origin%2FauthCodeRedirectUri&state=.+$/;
 			const res = await request(fullTestServer.expressServer.server)
 				.post('/oauth/authcode/login')
 				.set('Origin', 'origin')
@@ -87,7 +87,7 @@ describe('user details route', () => {
 				timestamp: expect.any(String),
 				status: 500,
 				message:
-					'Missing environment variables for auth code login URL: ,authCodeRedirectUri,/authLoginBaseUri',
+					'Missing environment variables for auth code login URL: ,/authCodeRedirectUri,/authLoginBaseUri',
 				request: 'POST /oauth/authcode/login'
 			});
 		});
