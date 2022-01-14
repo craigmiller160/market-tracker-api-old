@@ -28,4 +28,8 @@ export const authenticateWithAuthCode = (
 	req: Request,
 	code: string,
 	state: number
-) => {};
+) => {
+    pipe(
+        validateState(req, state)
+    )
+};
