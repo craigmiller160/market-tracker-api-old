@@ -3,6 +3,7 @@ import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 import { randomInt } from 'crypto';
+import * as A from 'fp-ts/Array';
 
 const AUTH_CODE_LOGIN_PATH = '/ui/login';
 
@@ -23,6 +24,19 @@ const storeAuthCodeLoginSessionValues = (
 };
 
 const buildAuthCodeLoginUrl = (origin: string, state: number): string => {
+	const nullableEnvArray: Array<string | undefined> = [
+		process.env.CLIENT_KEY,
+		process.env.AUTH_CODE_REDIRECT_URI,
+		process.env.AUTH_LOGIN_BASE_URI
+	];
+
+	const result = pipe(
+		nullableEnvArray,
+		A.map(O.fromNullable),
+		O.sequenceArray,
+		O.map((envArray) => A.map((_) => encodeURIComponent(_)))
+	);
+
 	const loginBaseUri = encodeURIComponent(''); // TODO get this from env
 	const clientKey = encodeURIComponent(''); // TODO get this from env
 	const redirectUri = encodeURIComponent(''); // TODO get this from env
