@@ -6,6 +6,7 @@ import { pipe } from 'fp-ts/function';
 import { compareAsc } from 'date-fns';
 import * as IO from 'fp-ts/IO';
 import * as IOE from 'fp-ts/IOEither';
+import { restClient } from '../RestClient';
 
 // TODO need special exception type to return 401s
 
@@ -62,6 +63,15 @@ const removeAuthCodeSessionAttributes = (req: Request): IO.IO<void> => {
 	delete session.state;
 	delete session.origin;
 	return IO.of(null);
+};
+
+const authenticateCode = (origin: string, code: string) => {
+	const body = {
+		grant_type: 'authorization_code',
+		client_id: '', // TODO get client key
+		code,
+		redirect_uri: '' // TODO get redirect uri
+	};
 };
 
 export const authenticateWithAuthCode = (
