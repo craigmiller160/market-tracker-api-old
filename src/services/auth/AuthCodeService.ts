@@ -24,10 +24,17 @@ const storeAuthCodeLoginSessionValues = (
 };
 
 const createUrl = (envVariables: string[], origin: string, state: string): string => {
-	throw new Error();
+	const [
+		clientKey,
+		authCodeRedirectUri,
+		authLoginBaseUri
+	] = envVariables;
+	const baseUrl = `${origin}${authLoginBaseUri}${AUTH_CODE_LOGIN_PATH}`;
+	const queryString = `response_type=code&client_id=${clientKey}&redirect_uri=${authCodeRedirectUri}&state=${state}`;
+	return `${baseUrl}?${queryString}`
 };
 
-const buildAuthCodeLoginUrl = (origin: string, state: number): string => {
+const buildAuthCodeLoginUrl = (origin: string, state: number): E.Either<Error, string> => {
 	const encodedState = encodeURIComponent(state);
 	const nullableEnvArray: Array<string | undefined> = [
 		process.env.CLIENT_KEY,
@@ -35,13 +42,14 @@ const buildAuthCodeLoginUrl = (origin: string, state: number): string => {
 		process.env.AUTH_LOGIN_BASE_URI
 	];
 
-	const result = pipe(
+	return pipe(
 		nullableEnvArray,
 		A.map(O.fromNullable),
 		O.sequenceArray,
 		O.map((_) => _ as string[]),
 		O.map(A.map<string, string>(encodeURIComponent)),
-		O.map((_) => createUrl(_, origin, encodedState))
+		O.map((_) => createUrl(_, origin, encodedState)),
+		E.fromOption(() => new Error(`Missing environment variables for auth code login URL: ${nullableEnvArray}`))
 	);
 };
 
@@ -53,6 +61,6 @@ export const prepareAuthCodeLogin = (req: Request): E.Either<Error, string> => {
 			storeAuthCodeLoginSessionValues(req, state, origin);
 			return origin;
 		}),
-		E.map((origin) => buildAuthCodeLoginUrl(origin, state))
+		E.chain((origin) => buildAuthCodeLoginUrl(origin, state))
 	);
 };
