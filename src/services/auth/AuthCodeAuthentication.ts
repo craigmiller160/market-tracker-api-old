@@ -184,19 +184,26 @@ const getCodeAndState = (req: Request): E.Either<Error, [string, number]> => {
 		nullableQueryArray,
 		A.map(O.fromNullable),
 		O.sequenceArray,
-		E.fromOption(() => new Error(`Missing required query params for authentication: ${nullableQueryArray}`)),
+		E.fromOption(
+			() =>
+				new Error(
+					`Missing required query params for authentication: ${nullableQueryArray}`
+				)
+		),
 		E.bindTo('parts'),
-		E.bind('state', ({ parts: [, stateString]}) => EU.tryCatch(() => parseInt(stateString))),
+		E.bind('state', ({ parts: [, stateString] }) =>
+			EU.tryCatch(() => parseInt(stateString))
+		),
 		E.map(({ parts: [code], state }) => [code, state])
-	)
-}
+	);
+};
 
 export const authenticateWithAuthCode = (
 	req: Request
 ): TE.TaskEither<Error, AuthCodeSuccess> =>
 	pipe(
 		getCodeAndState(req),
-		E.chainFirst(([,state]) => validateState(req, state)),
+		E.chainFirst(([, state]) => validateState(req, state)),
 		E.chainFirst(() => validateStateExpiration(req)),
 		E.chainFirst(() => validateOrigin(req)),
 		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req))),

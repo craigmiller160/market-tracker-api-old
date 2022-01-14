@@ -59,4 +59,8 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 			)
 		)
 	);
+
+	app.get('/oauth/logout', () => {
+		throw new Error('Finish this');
+	});
 };
