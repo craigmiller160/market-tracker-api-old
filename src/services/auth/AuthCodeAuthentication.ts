@@ -165,7 +165,6 @@ export const authenticateWithAuthCode = (
 		TE.fromEither,
 		TE.chain((_) => authenticateCode(_, code))
 	);
-	// TODO authenticate with Auth Server
 	// TODO store refresh token in DB
 	// TODO set access token as cookie
 };
