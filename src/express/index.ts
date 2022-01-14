@@ -64,7 +64,9 @@ const createExpressApp = (tokenKey: TokenKey): Express => {
 	app.use(
 		session({
 			// TODO improve this
-			secret: 'secret'
+			secret: 'secret',
+			resave: false,
+			saveUninitialized: false
 		})
 	);
 	app.use(nocache());
