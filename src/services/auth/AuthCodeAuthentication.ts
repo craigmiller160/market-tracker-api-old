@@ -6,7 +6,11 @@ import { pipe } from 'fp-ts/function';
 import { compareAsc } from 'date-fns';
 import * as IO from 'fp-ts/IO';
 import * as IOE from 'fp-ts/IOEither';
+import * as TEU from '../../function/TaskEitherUtils';
+import * as TE from 'fp-ts/TaskEither';
 import { restClient } from '../RestClient';
+import { TokenResponse } from '../../types/TokenResponse';
+import { AxiosResponse } from 'axios';
 
 // TODO need special exception type to return 401s
 
@@ -65,13 +69,32 @@ const removeAuthCodeSessionAttributes = (req: Request): IO.IO<void> => {
 	return IO.of(null);
 };
 
-const authenticateCode = (origin: string, code: string) => {
+const authenticateCode = (
+	origin: string,
+	code: string
+): TE.TaskEither<Error, TokenResponse> => {
+	// TODO urlEncode all values
 	const body = {
 		grant_type: 'authorization_code',
 		client_id: '', // TODO get client key
 		code,
 		redirect_uri: '' // TODO get redirect uri
 	};
+
+	// TODO need basic auth for clientKey/clientSecret
+	const basicAuth = '';
+
+	return pipe(
+		TEU.tryCatch(() =>
+			restClient.post<TokenResponse>('', body, {
+				headers: {
+					'content-type': 'application/x-www-form-urlencoded',
+					authorization: `Basic ${basicAuth}`
+				}
+			})
+		),
+		TE.map((_) => _.data)
+	);
 };
 
 export const authenticateWithAuthCode = (
