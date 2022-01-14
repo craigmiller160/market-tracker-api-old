@@ -33,7 +33,9 @@ const createUrl = (
 ): string => {
 	const [clientKey, authCodeRedirectUri, authLoginBaseUri] = envVariables;
 	const baseUrl = `${origin}${authLoginBaseUri}${AUTH_CODE_LOGIN_PATH}`;
-	const queryString = `response_type=code&client_id=${clientKey}&redirect_uri=${authCodeRedirectUri}&state=${state}`;
+	const encodedClientKey = encodeURIComponent(clientKey);
+	const encodedRedirectUri = encodeURIComponent(authCodeRedirectUri);
+	const queryString = `response_type=code&client_id=${encodedClientKey}&redirect_uri=${encodedRedirectUri}&state=${state}`;
 	return `${baseUrl}?${queryString}`;
 };
 
@@ -53,7 +55,6 @@ const buildAuthCodeLoginUrl = (
 		A.map(O.fromNullable),
 		O.sequenceArray,
 		O.map((_) => _ as string[]),
-		O.map(A.map<string, string>(encodeURIComponent)),
 		O.map((_) => createUrl(_, origin, encodedState)),
 		E.fromOption(
 			() =>
