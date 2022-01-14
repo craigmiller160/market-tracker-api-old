@@ -15,7 +15,7 @@ import { encodeForUri } from '../../function/UriEncoding';
 import * as EU from '../../function/EitherUtils';
 import { AppRefreshToken } from '../../mongo/models/AppRefreshTokenModel';
 import { saveRefreshToken } from '../mongo/RefreshTokenService';
-import {createTokenCookie} from './Cookie';
+import { createTokenCookie } from './Cookie';
 
 // TODO need special exception type to return 401s
 
@@ -165,11 +165,17 @@ const handleRefreshToken = (
 	return saveRefreshToken(refreshToken);
 };
 
+const prepareRedirect = (): E.Either<Error, string> =>
+	pipe(
+		O.fromNullable(process.env.POST_AUTH_REDIRECT),
+		E.fromOption(() => new Error('No post-auth redirect available for auth code login'))
+	)
+
 export const authenticateWithAuthCode = (
 	req: Request,
 	code: string,
 	state: number
-) => {
+): TE.TaskEither<Error, AuthCodeSuccess> =>
 	pipe(
 		validateState(req, state),
 		E.chain(() => validateStateExpiration(req)),
@@ -178,7 +184,7 @@ export const authenticateWithAuthCode = (
 		TE.fromEither,
 		TE.chain((_) => authenticateCode(_, code)),
 		TE.chainFirst(handleRefreshToken),
-		TE.chain((_) => TE.fromEither(createTokenCookie(_.accessToken)))
+		TE.chain((_) => TE.fromEither(createTokenCookie(_.accessToken))),
+		TE.bindTo('cookie'),
+		TE.bind('postAuthRedirect', () => TE.fromEither(prepareRedirect))
 	);
-	// TODO set access token as cookie
-};
