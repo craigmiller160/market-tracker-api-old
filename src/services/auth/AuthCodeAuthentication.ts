@@ -168,8 +168,11 @@ const handleRefreshToken = (
 const prepareRedirect = (): E.Either<Error, string> =>
 	pipe(
 		O.fromNullable(process.env.POST_AUTH_REDIRECT),
-		E.fromOption(() => new Error('No post-auth redirect available for auth code login'))
-	)
+		E.fromOption(
+			() =>
+				new Error('No post-auth redirect available for auth code login')
+		)
+	);
 
 export const authenticateWithAuthCode = (
 	req: Request,
@@ -186,5 +189,5 @@ export const authenticateWithAuthCode = (
 		TE.chainFirst(handleRefreshToken),
 		TE.chain((_) => TE.fromEither(createTokenCookie(_.accessToken))),
 		TE.bindTo('cookie'),
-		TE.bind('postAuthRedirect', () => TE.fromEither(prepareRedirect))
+		TE.bind('postAuthRedirect', () => TE.fromEither(prepareRedirect()))
 	);
