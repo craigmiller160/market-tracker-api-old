@@ -10,6 +10,8 @@ import { encodeForUri } from '../../function/UriEncoding';
 import { getHeader, getMarketTrackerSession } from '../../function/HttpRequest';
 import { addMinutes } from 'date-fns';
 
+// TODO 401 exception
+
 export interface AuthCodeLoginResponse {
 	readonly url: string;
 }
@@ -35,7 +37,7 @@ const storeAuthCodeLoginSessionValues = (
 };
 
 const createUrl = (
-	envVariables: string[],
+	envVariables: readonly string[],
 	origin: string,
 	state: number
 ): E.Either<Error, string> => {
@@ -71,7 +73,6 @@ const buildAuthCodeLoginUrl = (
 		nullableEnvArray,
 		A.map(O.fromNullable),
 		O.sequenceArray,
-		O.map((_) => _ as string[]),
 		E.fromOption(
 			() =>
 				new Error(
