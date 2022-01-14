@@ -13,8 +13,8 @@ import { TokenResponse } from '../../types/TokenResponse';
 import * as A from 'fp-ts/Array';
 import { encodeForUri } from '../../function/UriEncoding';
 import * as EU from '../../function/EitherUtils';
-import {AppRefreshToken} from '../../mongo/models/AppRefreshTokenModel';
-import {saveRefreshToken} from '../mongo/RefreshTokenService';
+import { AppRefreshToken } from '../../mongo/models/AppRefreshTokenModel';
+import { saveRefreshToken } from '../mongo/RefreshTokenService';
 
 // TODO need special exception type to return 401s
 
@@ -154,13 +154,15 @@ const authenticateCode = (
 	);
 };
 
-const handleRefreshToken = (tokenResponse: TokenResponse): TE.TaskEither<Error, unknown> => {
+const handleRefreshToken = (
+	tokenResponse: TokenResponse
+): TE.TaskEither<Error, unknown> => {
 	const refreshToken: AppRefreshToken = {
 		tokenId: tokenResponse.tokenId,
 		refreshToken: tokenResponse.refreshToken
 	};
 	return saveRefreshToken(refreshToken);
-}
+};
 
 export const authenticateWithAuthCode = (
 	req: Request,
@@ -176,6 +178,5 @@ export const authenticateWithAuthCode = (
 		TE.chain((_) => authenticateCode(_, code)),
 		TE.chainFirst(handleRefreshToken)
 	);
-	// TODO store refresh token in DB
 	// TODO set access token as cookie
 };
