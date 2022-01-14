@@ -7,6 +7,18 @@ import {
 } from '../../testutils/fullTestServer';
 import request from 'supertest';
 
+const clearEnv = () => {
+	delete process.env.CLIENT_KEY;
+	delete process.env.AUTH_CODE_REDIRECT_URI;
+	delete process.env.AUTH_LOGIN_BASE_URI;
+};
+
+const setEnv = () => {
+	process.env.CLIENT_KEY = 'clientKey';
+	process.env.AUTH_CODE_REDIRECT_URI = 'authCodeRedirectUri';
+	process.env.AUTH_LOGIN_BASE_URI = '/authLoginBaseUri';
+};
+
 describe('user details route', () => {
 	let fullTestServer: FullTestServer;
 	beforeAll(async () => {
@@ -15,6 +27,14 @@ describe('user details route', () => {
 
 	afterAll(async () => {
 		await stopFullTestServer(fullTestServer);
+	});
+
+	beforeEach(() => {
+		clearEnv();
+	});
+
+	afterEach(() => {
+		clearEnv();
 	});
 
 	describe('get user details', () => {
@@ -39,8 +59,19 @@ describe('user details route', () => {
 	});
 
 	describe('get auth code login url', () => {
+		beforeEach(() => {
+			setEnv();
+		});
+
 		it('successfully gets the url', async () => {
-			throw new Error();
+			const res = await request(fullTestServer.expressServer.server)
+				.post('/oauth/authcode/login')
+				.set('Origin', 'origin')
+				.timeout(2000)
+				.expect(200);
+			expect(res.body).toEqual({
+				url: 'origin/authLoginBaseUri/ui/login?response_type=code&client_id=clientKey&redirect_uri=authCodeRedirectUri&state=283597917'
+			});
 		});
 
 		it('has an error while getting the url', async () => {
