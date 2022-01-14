@@ -23,7 +23,12 @@ const storeAuthCodeLoginSessionValues = (
 	// TODO set expiration
 };
 
+const createUrl = (envVariables: string[], origin: string, state: string): string => {
+	throw new Error();
+};
+
 const buildAuthCodeLoginUrl = (origin: string, state: number): string => {
+	const encodedState = encodeURIComponent(state);
 	const nullableEnvArray: Array<string | undefined> = [
 		process.env.CLIENT_KEY,
 		process.env.AUTH_CODE_REDIRECT_URI,
@@ -35,13 +40,9 @@ const buildAuthCodeLoginUrl = (origin: string, state: number): string => {
 		A.map(O.fromNullable),
 		O.sequenceArray,
 		O.map((_) => _ as string[]),
-		O.map(A.map<string, string>(encodeURIComponent))
+		O.map(A.map<string, string>(encodeURIComponent)),
+		O.map((_) => createUrl(_, origin, encodedState))
 	);
-
-	const loginBaseUri = encodeURIComponent(''); // TODO get this from env
-	const clientKey = encodeURIComponent(''); // TODO get this from env
-	const redirectUri = encodeURIComponent(''); // TODO get this from env
-	const encodedState = encodeURIComponent(state);
 };
 
 export const prepareAuthCodeLogin = (req: Request): E.Either<Error, string> => {
