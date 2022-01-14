@@ -6,6 +6,9 @@ import {
 	prepareAuthCodeLogin
 } from '../../services/auth/AuthCodeLogin';
 import * as E from 'fp-ts/Either';
+import * as TE from 'fp-ts/TaskEither';
+import * as T from 'fp-ts/Task';
+import { authenticateWithAuthCode } from '../../services/auth/AuthCodeAuthentication';
 
 export const createOAuthRoutes: RouteCreator = (app) => {
 	app.get(
@@ -34,6 +37,24 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 						url
 					};
 					res.json(response);
+				}
+			)
+		)
+	);
+
+	app.get('/oauth/authcode/code', (req, res, next) =>
+		pipe(
+			authenticateWithAuthCode(req),
+			TE.fold(
+				(ex) => {
+					next(ex);
+					return T.of('');
+				},
+				(authCodeSuccess) => {
+					res.setHeader('Set-Cookie', authCodeSuccess.cookie);
+					res.setHeader('Location', authCodeSuccess.postAuthRedirect);
+					res.status(302);
+					return T.of('');
 				}
 			)
 		)

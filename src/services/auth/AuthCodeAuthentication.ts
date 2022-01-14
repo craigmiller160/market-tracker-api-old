@@ -174,18 +174,34 @@ const prepareRedirect = (): E.Either<Error, string> =>
 		)
 	);
 
+const getCodeAndState = (req: Request): E.Either<Error, [string, number]> => {
+	const nullableQueryArray: Array<string | undefined> = [
+		req.query.code as string | undefined,
+		req.query.state as string | undefined
+	];
+
+	return pipe(
+		nullableQueryArray,
+		A.map(O.fromNullable),
+		O.sequenceArray,
+		E.fromOption(() => new Error(`Missing required query params for authentication: ${nullableQueryArray}`)),
+		E.bindTo('parts'),
+		E.bind('state', ({ parts: [, stateString]}) => EU.tryCatch(() => parseInt(stateString))),
+		E.map(({ parts: [code], state }) => [code, state])
+	)
+}
+
 export const authenticateWithAuthCode = (
-	req: Request,
-	code: string,
-	state: number
+	req: Request
 ): TE.TaskEither<Error, AuthCodeSuccess> =>
 	pipe(
-		validateState(req, state),
-		E.chain(() => validateStateExpiration(req)),
-		E.chain(() => validateOrigin(req)),
+		getCodeAndState(req),
+		E.chainFirst(([,state]) => validateState(req, state)),
+		E.chainFirst(() => validateStateExpiration(req)),
+		E.chainFirst(() => validateOrigin(req)),
 		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req))),
 		TE.fromEither,
-		TE.chain((_) => authenticateCode(_, code)),
+		TE.chain(([code]) => authenticateCode(_, code)),
 		TE.chainFirst(handleRefreshToken),
 		TE.chain((_) => TE.fromEither(createTokenCookie(_.accessToken))),
 		TE.bindTo('cookie'),
