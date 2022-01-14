@@ -7,7 +7,7 @@ import * as A from 'fp-ts/Array';
 import * as IO from 'fp-ts/IO';
 import * as IOE from 'fp-ts/IOEither';
 import { encodeForUri } from '../../function/UriEncoding';
-import { getHeader } from '../../function/HttpRequest';
+import {getHeader, getMarketTrackerSession} from '../../function/HttpRequest';
 import { addMinutes } from 'date-fns';
 
 const AUTH_CODE_LOGIN_PATH = '/ui/login';
@@ -23,9 +23,10 @@ const storeAuthCodeLoginSessionValues = (
 	state: number,
 	origin: string
 ): IO.IO<void> => {
-	req.session.state = state;
-	req.session.origin = origin;
-	req.session.stateExpiration = addMinutes(new Date(), 10);
+	const session = getMarketTrackerSession(req);
+	session.state = state;
+	session.origin = origin;
+	session.stateExpiration = addMinutes(new Date(), 10);
 	return IO.of(null);
 };
 
