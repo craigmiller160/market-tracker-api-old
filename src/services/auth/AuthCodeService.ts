@@ -68,8 +68,10 @@ export const prepareAuthCodeLogin = (req: Request): E.Either<Error, string> => {
 	const state = randomInt(1_000_000_000);
 	return pipe(
 		getOrigin(req),
-		E.chainFirst( (_) =>
-			IOE.fromIO<void,Error>(storeAuthCodeLoginSessionValues(req, state, _))()
+		E.chainFirst((_) =>
+			IOE.fromIO<void, Error>(
+				storeAuthCodeLoginSessionValues(req, state, _)
+			)()
 		),
 		E.chain((origin) => buildAuthCodeLoginUrl(origin, state))
 	);
