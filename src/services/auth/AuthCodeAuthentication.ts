@@ -4,6 +4,11 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 
+// TODO need test for successful login
+// TODO need test for login rejected
+// TODO need test for invalid state
+// TODO need test for expired state
+
 export interface AuthCodeSuccess {
 	readonly cookie: string;
 	readonly postAuthRedirect: string;
