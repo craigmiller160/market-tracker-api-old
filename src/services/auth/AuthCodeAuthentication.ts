@@ -46,6 +46,14 @@ const validateStateExpiration = (req: Request): E.Either<Error, Date> => {
 	);
 };
 
+const validateOrigin = (req: Request): E.Either<Error, string> => {
+	const { origin } = getMarketTrackerSession(req);
+	return pipe(
+		O.fromNullable(origin),
+		E.fromOption(() => new Error('Cannot find origin in session'))
+	);
+};
+
 export const authenticateWithAuthCode = (
 	req: Request,
 	code: string,
@@ -53,6 +61,7 @@ export const authenticateWithAuthCode = (
 ) => {
 	pipe(
 		validateState(req, state),
-		E.chain(() => validateStateExpiration(req))
+		E.chain(() => validateStateExpiration(req)),
+		E.chain(() => validateOrigin(req))
 	);
 };
