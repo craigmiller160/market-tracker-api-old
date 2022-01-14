@@ -17,4 +17,6 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 			});
 		})
 	);
+
+	app.post('/oauth/authcode/login', (req, res) => {});
 };

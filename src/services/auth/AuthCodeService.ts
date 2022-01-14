@@ -4,6 +4,8 @@ import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 import { randomInt } from 'crypto';
 import * as A from 'fp-ts/Array';
+import * as IO from 'fp-ts/IO';
+import * as IOE from 'fp-ts/IOEither';
 
 const AUTH_CODE_LOGIN_PATH = '/ui/login';
 
@@ -17,10 +19,11 @@ const storeAuthCodeLoginSessionValues = (
 	req: Request,
 	state: number,
 	origin: string
-): void => {
+): IO.IO<void> => {
 	req.session.state = state;
 	req.session.origin = origin;
 	// TODO set expiration
+	return IO.of(null);
 };
 
 const createUrl = (
@@ -65,10 +68,9 @@ export const prepareAuthCodeLogin = (req: Request): E.Either<Error, string> => {
 	const state = randomInt(1_000_000_000);
 	return pipe(
 		getOrigin(req),
-		E.map((origin) => {
-			storeAuthCodeLoginSessionValues(req, state, origin);
-			return origin;
-		}),
+		E.chainFirst(
+			IOE.fromIO(storeAuthCodeLoginSessionValues(req, state, origin))
+		),
 		E.chain((origin) => buildAuthCodeLoginUrl(origin, state))
 	);
 };
