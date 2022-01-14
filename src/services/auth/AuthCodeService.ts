@@ -8,6 +8,7 @@ import * as IO from 'fp-ts/IO';
 import * as IOE from 'fp-ts/IOEither';
 import { encodeForUri } from '../../function/UriEncoding';
 import { getHeader } from '../../function/HttpRequest';
+import { addMinutes } from 'date-fns';
 
 const AUTH_CODE_LOGIN_PATH = '/ui/login';
 
@@ -24,7 +25,7 @@ const storeAuthCodeLoginSessionValues = (
 ): IO.IO<void> => {
 	req.session.state = state;
 	req.session.origin = origin;
-	// TODO set expiration
+	req.session.stateExpiration = addMinutes(new Date(), 10);
 	return IO.of(null);
 };
 
