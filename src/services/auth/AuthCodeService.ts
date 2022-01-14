@@ -4,6 +4,8 @@ import * as O from 'fp-ts/Option';
 import { pipe } from 'fp-ts/function';
 import { randomInt } from 'crypto';
 
+const AUTH_CODE_LOGIN_PATH = '/ui/login';
+
 const getOrigin = (req: Request): E.Either<Error, string> =>
 	pipe(
 		O.fromNullable(req.header('Origin')),
@@ -21,11 +23,10 @@ const storeAuthCodeLoginSessionValues = (
 };
 
 const buildAuthCodeLoginUrl = (origin: string, state: number): string => {
-	const loginPath = encodeURIComponent(''); // TODO get this from env
+	const loginBaseUri = encodeURIComponent(''); // TODO get this from env
 	const clientKey = encodeURIComponent(''); // TODO get this from env
 	const redirectUri = encodeURIComponent(''); // TODO get this from env
 	const encodedState = encodeURIComponent(state);
-
 };
 
 export const prepareAuthCodeLogin = (req: Request): E.Either<Error, string> => {
