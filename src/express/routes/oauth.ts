@@ -25,13 +25,11 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 		})
 	);
 
-	app.post('/oauth/authcode/login', (req, res) =>
+	app.post('/oauth/authcode/login', (req, res, next) =>
 		pipe(
 			prepareAuthCodeLogin(req),
 			E.fold(
-				() => {
-					throw new Error('Figure this out');
-				},
+				(ex) => next(ex),
 				(url) => {
 					const response: AuthCodeLoginResponse = {
 						url
