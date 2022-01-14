@@ -3,6 +3,9 @@ import { getMarketTrackerSession } from '../../function/HttpRequest';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
+import { compareAsc } from 'date-fns';
+
+// TODO need special exception type to return 401s
 
 // TODO need test for successful login
 // TODO need test for login rejected
@@ -29,10 +32,27 @@ const validateState = (
 	);
 };
 
+const validateStateExpiration = (req: Request): E.Either<Error, Date> => {
+	const { stateExpiration } = getMarketTrackerSession(req);
+	return pipe(
+		O.fromNullable(stateExpiration),
+		E.fromOption(
+			() => new Error('Cannot find auth code state expiration in session')
+		),
+		E.filterOrElse(
+			(_) => compareAsc(new Date(), _) <= 0,
+			() => new Error('Auth code state has expired')
+		)
+	);
+};
+
 export const authenticateWithAuthCode = (
 	req: Request,
 	code: string,
 	state: number
 ) => {
-	pipe(validateState(req, state));
+	pipe(
+		validateState(req, state),
+		E.chain(() => validateStateExpiration(req))
+	);
 };
