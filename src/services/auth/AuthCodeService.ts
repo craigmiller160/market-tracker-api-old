@@ -6,13 +6,14 @@ import { randomInt } from 'crypto';
 import * as A from 'fp-ts/Array';
 import * as IO from 'fp-ts/IO';
 import * as IOE from 'fp-ts/IOEither';
-import {encodeForUri} from '../../function/UriEncoding';
+import { encodeForUri } from '../../function/UriEncoding';
+import {getHeader} from '../../function/HttpRequest';
 
 const AUTH_CODE_LOGIN_PATH = '/ui/login';
 
 const getOrigin = (req: Request): E.Either<Error, string> =>
 	pipe(
-		O.fromNullable(req.header('Origin')),
+		getHeader(req, 'Origin'),
 		E.fromOption(() => new Error('Missing origin header on request'))
 	);
 
@@ -31,7 +32,7 @@ const createUrl = (
 	envVariables: string[],
 	origin: string,
 	state: number
-): E.Either<Error,string> => {
+): E.Either<Error, string> => {
 	const [clientKey, authCodeRedirectUri, authLoginBaseUri] = envVariables;
 	const baseUrl = `${origin}${authLoginBaseUri}${AUTH_CODE_LOGIN_PATH}`;
 
@@ -41,9 +42,12 @@ const createUrl = (
 			encodeForUri(authCodeRedirectUri),
 			encodeForUri(state)
 		]),
-		E.map(([encodedClientKey, encodedRedirectUri, encodedState]) => `response_type=code&client_id=${encodedClientKey}&redirect_uri=${encodedRedirectUri}&state=${encodedState}`),
+		E.map(
+			([encodedClientKey, encodedRedirectUri, encodedState]) =>
+				`response_type=code&client_id=${encodedClientKey}&redirect_uri=${encodedRedirectUri}&state=${encodedState}`
+		),
 		E.map((queryString) => `${baseUrl}?${queryString}`)
-	)
+	);
 };
 
 const buildAuthCodeLoginUrl = (
