@@ -29,13 +29,14 @@ const storeAuthCodeLoginSessionValues = (
 const createUrl = (
 	envVariables: string[],
 	origin: string,
-	state: string
+	state: number
 ): string => {
 	const [clientKey, authCodeRedirectUri, authLoginBaseUri] = envVariables;
 	const baseUrl = `${origin}${authLoginBaseUri}${AUTH_CODE_LOGIN_PATH}`;
 	const encodedClientKey = encodeURIComponent(clientKey);
 	const encodedRedirectUri = encodeURIComponent(authCodeRedirectUri);
-	const queryString = `response_type=code&client_id=${encodedClientKey}&redirect_uri=${encodedRedirectUri}&state=${state}`;
+	const encodedState = encodeURIComponent(state);
+	const queryString = `response_type=code&client_id=${encodedClientKey}&redirect_uri=${encodedRedirectUri}&state=${encodedState}`;
 	return `${baseUrl}?${queryString}`;
 };
 
@@ -43,7 +44,6 @@ const buildAuthCodeLoginUrl = (
 	origin: string,
 	state: number
 ): E.Either<Error, string> => {
-	const encodedState = encodeURIComponent(state);
 	const nullableEnvArray: Array<string | undefined> = [
 		process.env.CLIENT_KEY,
 		process.env.AUTH_CODE_REDIRECT_URI,
@@ -55,7 +55,7 @@ const buildAuthCodeLoginUrl = (
 		A.map(O.fromNullable),
 		O.sequenceArray,
 		O.map((_) => _ as string[]),
-		O.map((_) => createUrl(_, origin, encodedState)),
+		O.map((_) => createUrl(_, origin, state)),
 		E.fromOption(
 			() =>
 				new Error(
