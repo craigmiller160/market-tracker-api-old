@@ -7,7 +7,7 @@ import * as A from 'fp-ts/Array';
 import * as IO from 'fp-ts/IO';
 import * as IOE from 'fp-ts/IOEither';
 import { encodeForUri } from '../../function/UriEncoding';
-import {getHeader, getMarketTrackerSession} from '../../function/HttpRequest';
+import { getHeader, getMarketTrackerSession } from '../../function/HttpRequest';
 import { addMinutes } from 'date-fns';
 
 const AUTH_CODE_LOGIN_PATH = '/ui/login';
