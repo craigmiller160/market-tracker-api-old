@@ -34,7 +34,10 @@ const buildAuthCodeLoginUrl = (origin: string, state: number): string => {
 		nullableEnvArray,
 		A.map(O.fromNullable),
 		O.sequenceArray,
-		O.map((envArray) => A.map((_) => encodeURIComponent(_)))
+		O.map((_) => _ as string[]),
+		O.map((envArray) =>
+			A.map<string, string>((_) => encodeURIComponent(_))(envArray)
+		)
 	);
 
 	const loginBaseUri = encodeURIComponent(''); // TODO get this from env
