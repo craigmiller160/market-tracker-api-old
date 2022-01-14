@@ -37,4 +37,14 @@ describe('user details route', () => {
 				.expect(401);
 		});
 	});
+
+	describe('get auth code login url', () => {
+		it('successfully gets the url', async () => {
+			throw new Error();
+		});
+
+		it('has an error while getting the url', async () => {
+			throw new Error();
+		});
+	});
 });
