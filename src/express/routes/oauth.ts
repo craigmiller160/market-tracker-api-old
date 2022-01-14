@@ -25,7 +25,7 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 		})
 	);
 
-	app.post('/oauth/authcode/login', (req, res) => {
+	app.post('/oauth/authcode/login', (req, res) =>
 		pipe(
 			prepareAuthCodeLogin(req),
 			E.fold(
@@ -39,6 +39,6 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 					res.json(response);
 				}
 			)
-		);
-	});
+		)
+	);
 };
