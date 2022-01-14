@@ -4,6 +4,8 @@ import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
 import { compareAsc } from 'date-fns';
+import * as IO from 'fp-ts/IO';
+import * as IOE from 'fp-ts/IOEither';
 
 // TODO need special exception type to return 401s
 
@@ -54,6 +56,14 @@ const validateOrigin = (req: Request): E.Either<Error, string> => {
 	);
 };
 
+const removeAuthCodeSessionAttributes = (req: Request): IO.IO<void> => {
+	const session = getMarketTrackerSession(req);
+	delete session.stateExpiration;
+	delete session.state;
+	delete session.origin;
+	return IO.of(null);
+}
+
 export const authenticateWithAuthCode = (
 	req: Request,
 	code: string,
@@ -62,6 +72,7 @@ export const authenticateWithAuthCode = (
 	pipe(
 		validateState(req, state),
 		E.chain(() => validateStateExpiration(req)),
-		E.chain(() => validateOrigin(req))
+		E.chain(() => validateOrigin(req)),
+		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req)))
 	);
 };
