@@ -6,6 +6,7 @@ import { randomInt } from 'crypto';
 import * as A from 'fp-ts/Array';
 import * as IO from 'fp-ts/IO';
 import * as IOE from 'fp-ts/IOEither';
+import {encodeForUri} from '../../function/UriEncoding';
 
 const AUTH_CODE_LOGIN_PATH = '/ui/login';
 
@@ -30,14 +31,19 @@ const createUrl = (
 	envVariables: string[],
 	origin: string,
 	state: number
-): string => {
+): E.Either<Error,string> => {
 	const [clientKey, authCodeRedirectUri, authLoginBaseUri] = envVariables;
 	const baseUrl = `${origin}${authLoginBaseUri}${AUTH_CODE_LOGIN_PATH}`;
-	const encodedClientKey = encodeURIComponent(clientKey);
-	const encodedRedirectUri = encodeURIComponent(authCodeRedirectUri);
-	const encodedState = encodeURIComponent(state);
-	const queryString = `response_type=code&client_id=${encodedClientKey}&redirect_uri=${encodedRedirectUri}&state=${encodedState}`;
-	return `${baseUrl}?${queryString}`;
+
+	return pipe(
+		E.sequenceArray([
+			encodeForUri(clientKey),
+			encodeForUri(authCodeRedirectUri),
+			encodeForUri(state)
+		]),
+		E.map(([encodedClientKey, encodedRedirectUri, encodedState]) => `response_type=code&client_id=${encodedClientKey}&redirect_uri=${encodedRedirectUri}&state=${encodedState}`),
+		E.map((queryString) => `${baseUrl}?${queryString}`)
+	)
 };
 
 const buildAuthCodeLoginUrl = (
@@ -55,13 +61,13 @@ const buildAuthCodeLoginUrl = (
 		A.map(O.fromNullable),
 		O.sequenceArray,
 		O.map((_) => _ as string[]),
-		O.map((_) => createUrl(_, origin, state)),
 		E.fromOption(
 			() =>
 				new Error(
 					`Missing environment variables for auth code login URL: ${nullableEnvArray}`
 				)
-		)
+		),
+		E.chain((_) => createUrl(_, origin, state))
 	);
 };
 
