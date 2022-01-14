@@ -64,13 +64,15 @@ describe('user details route', () => {
 		});
 
 		it('successfully gets the url', async () => {
+			const urlRegex =
+				/^origin\/authLoginBaseUri\/ui\/login\?response_type=code&client_id=clientKey&redirect_uri=authCodeRedirectUri&state=.+$/;
 			const res = await request(fullTestServer.expressServer.server)
 				.post('/oauth/authcode/login')
 				.set('Origin', 'origin')
 				.timeout(2000)
 				.expect(200);
 			expect(res.body).toEqual({
-				url: 'origin/authLoginBaseUri/ui/login?response_type=code&client_id=clientKey&redirect_uri=authCodeRedirectUri&state=283597917'
+				url: expect.stringMatching(urlRegex)
 			});
 		});
 
