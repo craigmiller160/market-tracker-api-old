@@ -37,11 +37,12 @@ const createUrl = (
 ): E.Either<Error, string> => {
 	const [clientKey, authCodeRedirectUri, authLoginBaseUri] = envVariables;
 	const baseUrl = `${origin}${authLoginBaseUri}${AUTH_CODE_LOGIN_PATH}`;
+	const fullRedirectUri = `${origin}${authCodeRedirectUri}`;
 
 	return pipe(
 		E.sequenceArray([
 			encodeForUri(clientKey),
-			encodeForUri(authCodeRedirectUri),
+			encodeForUri(fullRedirectUri),
 			encodeForUri(state)
 		]),
 		E.map(
