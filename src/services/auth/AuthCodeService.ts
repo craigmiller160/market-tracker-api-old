@@ -23,18 +23,21 @@ const storeAuthCodeLoginSessionValues = (
 	// TODO set expiration
 };
 
-const createUrl = (envVariables: string[], origin: string, state: string): string => {
-	const [
-		clientKey,
-		authCodeRedirectUri,
-		authLoginBaseUri
-	] = envVariables;
+const createUrl = (
+	envVariables: string[],
+	origin: string,
+	state: string
+): string => {
+	const [clientKey, authCodeRedirectUri, authLoginBaseUri] = envVariables;
 	const baseUrl = `${origin}${authLoginBaseUri}${AUTH_CODE_LOGIN_PATH}`;
 	const queryString = `response_type=code&client_id=${clientKey}&redirect_uri=${authCodeRedirectUri}&state=${state}`;
-	return `${baseUrl}?${queryString}`
+	return `${baseUrl}?${queryString}`;
 };
 
-const buildAuthCodeLoginUrl = (origin: string, state: number): E.Either<Error, string> => {
+const buildAuthCodeLoginUrl = (
+	origin: string,
+	state: number
+): E.Either<Error, string> => {
 	const encodedState = encodeURIComponent(state);
 	const nullableEnvArray: Array<string | undefined> = [
 		process.env.CLIENT_KEY,
@@ -49,7 +52,12 @@ const buildAuthCodeLoginUrl = (origin: string, state: number): E.Either<Error, s
 		O.map((_) => _ as string[]),
 		O.map(A.map<string, string>(encodeURIComponent)),
 		O.map((_) => createUrl(_, origin, encodedState)),
-		E.fromOption(() => new Error(`Missing environment variables for auth code login URL: ${nullableEnvArray}`))
+		E.fromOption(
+			() =>
+				new Error(
+					`Missing environment variables for auth code login URL: ${nullableEnvArray}`
+				)
+		)
 	);
 };
 

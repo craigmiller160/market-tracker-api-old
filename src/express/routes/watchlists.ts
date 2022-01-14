@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { Watchlist } from '../../mongo/models/WatchlistModel';
 import { AccessToken, secure } from '../TokenValidation';
 
-export const getWatchlists: RouteCreator = (app) =>
+export const createWatchlistRoutes: RouteCreator = (app) => {
 	app.get(
 		'/watchlists',
 		secure((req, res) => {
@@ -21,7 +21,6 @@ export const getWatchlists: RouteCreator = (app) =>
 		})
 	);
 
-export const saveWatchlists: RouteCreator = (app) =>
 	app.post(
 		'/watchlists',
 		secure((req: Request<unknown, unknown, Watchlist[]>, res) => {
@@ -33,3 +32,4 @@ export const saveWatchlists: RouteCreator = (app) =>
 			)();
 		})
 	);
+};

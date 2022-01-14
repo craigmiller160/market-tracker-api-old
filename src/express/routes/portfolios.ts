@@ -9,7 +9,7 @@ import {
 } from '../../services/mongo/PortfolioService';
 import { AccessToken, secure } from '../TokenValidation';
 
-export const getPortfolios: RouteCreator = (app) =>
+export const createPortfolioRoutes: RouteCreator = (app) => {
 	app.get(
 		'/portfolios',
 		secure((req, res) => {
@@ -21,7 +21,6 @@ export const getPortfolios: RouteCreator = (app) =>
 		})
 	);
 
-export const savePortfolios: RouteCreator = (app) =>
 	app.post(
 		'/portfolios',
 		secure((req: Request<unknown, unknown, Portfolio[]>, res) => {
@@ -33,3 +32,4 @@ export const savePortfolios: RouteCreator = (app) =>
 			)();
 		})
 	);
+};
