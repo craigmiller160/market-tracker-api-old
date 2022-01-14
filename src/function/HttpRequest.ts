@@ -4,9 +4,9 @@ import { pipe } from 'fp-ts/function';
 import * as EU from './EitherUtils';
 
 export interface MarketTrackerSession {
-	state: number;
-	origin: string;
-	stateExpiration: Date;
+	state?: number;
+	origin?: string;
+	stateExpiration?: Date;
 }
 
 export const getHeader = (req: Request, key: string): O.Option<string> =>
