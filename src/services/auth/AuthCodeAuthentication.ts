@@ -10,7 +10,6 @@ import * as TEU from '../../function/TaskEitherUtils';
 import * as TE from 'fp-ts/TaskEither';
 import { restClient } from '../RestClient';
 import { TokenResponse } from '../../types/TokenResponse';
-import { AxiosResponse } from 'axios';
 
 // TODO need special exception type to return 401s
 
@@ -106,7 +105,9 @@ export const authenticateWithAuthCode = (
 		validateState(req, state),
 		E.chain(() => validateStateExpiration(req)),
 		E.chain(() => validateOrigin(req)),
-		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req)))
+		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req))),
+		TE.fromEither,
+		TE.chain((_) => authenticateCode(_, code))
 	);
 	// TODO authenticate with Auth Server
 	// TODO store refresh token in DB
