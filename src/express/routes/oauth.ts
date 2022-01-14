@@ -1,7 +1,7 @@
 import { RouteCreator } from './RouteCreator';
 import { AccessToken, secure } from '../TokenValidation';
 import { pipe } from 'fp-ts/function';
-import { prepareAuthCodeLogin } from '../../services/auth/AuthCodeService';
+import { prepareAuthCodeLogin } from '../../services/auth/AuthCodeLogin';
 import * as E from 'fp-ts/Either';
 
 export interface AuthCodeLoginResponse {
