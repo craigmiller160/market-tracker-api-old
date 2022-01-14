@@ -10,6 +10,9 @@ import * as TEU from '../../function/TaskEitherUtils';
 import * as TE from 'fp-ts/TaskEither';
 import { restClient } from '../RestClient';
 import { TokenResponse } from '../../types/TokenResponse';
+import * as A from 'fp-ts/Array';
+import { encodeForUri } from '../../function/UriEncoding';
+import * as EU from '../../function/EitherUtils';
 
 // TODO need special exception type to return 401s
 
@@ -21,6 +24,13 @@ import { TokenResponse } from '../../types/TokenResponse';
 export interface AuthCodeSuccess {
 	readonly cookie: string;
 	readonly postAuthRedirect: string;
+}
+
+interface AuthenticateBody {
+	grant_type: string;
+	client_id: string;
+	code: string;
+	redirect_uri: string;
 }
 
 const validateState = (
@@ -68,29 +78,75 @@ const removeAuthCodeSessionAttributes = (req: Request): IO.IO<void> => {
 	return IO.of(null);
 };
 
+const createAuthenticateBody = (
+	origin: string,
+	code: string,
+	envVariables: string[]
+): E.Either<Error, AuthenticateBody> => {
+	const [clientKey, , authCodeRedirectUri] = envVariables;
+
+	return pipe(
+		E.sequenceArray([
+			encodeForUri(code),
+			encodeForUri(clientKey),
+			encodeForUri(authCodeRedirectUri)
+		]),
+		E.map(
+			([
+				encodedCode,
+				encodedClientKey,
+				encodedAuthCodeRedirectUri
+			]): AuthenticateBody => ({
+				grant_type: 'authorization_code',
+				client_id: encodedClientKey,
+				code: encodedCode,
+				redirect_uri: encodedAuthCodeRedirectUri
+			})
+		)
+	);
+};
+
 const authenticateCode = (
 	origin: string,
 	code: string
 ): TE.TaskEither<Error, TokenResponse> => {
-	// TODO urlEncode all values
-	const body = {
-		grant_type: 'authorization_code',
-		client_id: '', // TODO get client key
-		code,
-		redirect_uri: '' // TODO get redirect uri
-	};
-
-	// TODO need basic auth for clientKey/clientSecret
-	const basicAuth = '';
+	const nullableEnvArray: Array<string | undefined> = [
+		process.env.CLIENT_KEY,
+		process.env.CLIENT_SECRET,
+		process.env.AUTH_CODE_REDIRECT_URI
+	];
 
 	return pipe(
-		TEU.tryCatch(() =>
-			restClient.post<TokenResponse>('', body, {
-				headers: {
-					'content-type': 'application/x-www-form-urlencoded',
-					authorization: `Basic ${basicAuth}`
-				}
-			})
+		nullableEnvArray,
+		A.map(O.fromNullable),
+		O.sequenceArray,
+		O.map((_) => _ as string[]),
+		E.fromOption(
+			() =>
+				new Error(
+					`Missing environment variables to authenticate auth code: ${nullableEnvArray}`
+				)
+		),
+		E.bindTo('envVariables'),
+		E.bind('requestBody', ({ envVariables }) =>
+			createAuthenticateBody(origin, code, envVariables)
+		),
+		E.bind('basicAuth', ({ envVariables }) => {
+			const [clientKey, clientSecret] = envVariables;
+			return EU.tryCatch(() =>
+				Buffer.from(`${clientKey}:${clientSecret}`).toString('base64')
+			);
+		}),
+		TE.fromEither,
+		TE.chain(({ requestBody, basicAuth }) =>
+			TEU.tryCatch(() =>
+				restClient.post<TokenResponse>('', requestBody, {
+					headers: {
+						'content-type': 'application/x-www-form-urlencoded',
+						authorization: `Basic ${basicAuth}`
+					}
+				})
+			)
 		),
 		TE.map((_) => _.data)
 	);
