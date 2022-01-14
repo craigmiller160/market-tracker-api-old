@@ -15,6 +15,7 @@ import { encodeForUri } from '../../function/UriEncoding';
 import * as EU from '../../function/EitherUtils';
 import { AppRefreshToken } from '../../mongo/models/AppRefreshTokenModel';
 import { saveRefreshToken } from '../mongo/RefreshTokenService';
+import {createTokenCookie} from './Cookie';
 
 // TODO need special exception type to return 401s
 
@@ -176,7 +177,8 @@ export const authenticateWithAuthCode = (
 		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req))),
 		TE.fromEither,
 		TE.chain((_) => authenticateCode(_, code)),
-		TE.chainFirst(handleRefreshToken)
+		TE.chainFirst(handleRefreshToken),
+		TE.chain((_) => TE.fromEither(createTokenCookie(_.accessToken)))
 	);
 	// TODO set access token as cookie
 };
