@@ -10,6 +10,10 @@ import { encodeForUri } from '../../function/UriEncoding';
 import { getHeader, getMarketTrackerSession } from '../../function/HttpRequest';
 import { addMinutes } from 'date-fns';
 
+export interface AuthCodeLoginResponse {
+	readonly url: string;
+}
+
 const AUTH_CODE_LOGIN_PATH = '/ui/login';
 
 const getOrigin = (req: Request): E.Either<Error, string> =>

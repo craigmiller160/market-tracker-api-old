@@ -1,12 +1,11 @@
 import { RouteCreator } from './RouteCreator';
 import { AccessToken, secure } from '../TokenValidation';
 import { pipe } from 'fp-ts/function';
-import { prepareAuthCodeLogin } from '../../services/auth/AuthCodeLogin';
+import {
+	AuthCodeLoginResponse,
+	prepareAuthCodeLogin
+} from '../../services/auth/AuthCodeLogin';
 import * as E from 'fp-ts/Either';
-
-export interface AuthCodeLoginResponse {
-	readonly url: string;
-}
 
 export const createOAuthRoutes: RouteCreator = (app) => {
 	app.get(
