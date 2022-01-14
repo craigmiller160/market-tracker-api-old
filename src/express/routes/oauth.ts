@@ -1,5 +1,12 @@
 import { RouteCreator } from './RouteCreator';
 import { AccessToken, secure } from '../TokenValidation';
+import { pipe } from 'fp-ts/function';
+import { prepareAuthCodeLogin } from '../../services/auth/AuthCodeService';
+import * as E from 'fp-ts/Either';
+
+export interface AuthCodeLoginResponse {
+	readonly url: string;
+}
 
 export const createOAuthRoutes: RouteCreator = (app) => {
 	app.get(
@@ -18,5 +25,20 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 		})
 	);
 
-	app.post('/oauth/authcode/login', (req, res) => {});
+	app.post('/oauth/authcode/login', (req, res) => {
+		pipe(
+			prepareAuthCodeLogin(req),
+			E.fold(
+				() => {
+					throw new Error('Figure this out');
+				},
+				(url) => {
+					const response: AuthCodeLoginResponse = {
+						url
+					};
+					res.json(response);
+				}
+			)
+		);
+	});
 };
