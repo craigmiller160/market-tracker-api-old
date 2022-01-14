@@ -62,7 +62,7 @@ const removeAuthCodeSessionAttributes = (req: Request): IO.IO<void> => {
 	delete session.state;
 	delete session.origin;
 	return IO.of(null);
-}
+};
 
 export const authenticateWithAuthCode = (
 	req: Request,
@@ -75,4 +75,7 @@ export const authenticateWithAuthCode = (
 		E.chain(() => validateOrigin(req)),
 		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req)))
 	);
+	// TODO authenticate with Auth Server
+	// TODO store refresh token in DB
+	// TODO set access token as cookie
 };
