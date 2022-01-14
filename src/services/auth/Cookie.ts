@@ -1,4 +1,3 @@
-import { addDays, format } from 'date-fns';
 import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import * as O from 'fp-ts/Option';
@@ -26,4 +25,13 @@ const getCookieEnv = (): E.Either<Error, readonly string[]> => {
 	);
 };
 
-export const createTokenCookie = (accessToken: string) => {};
+export const createTokenCookie = (
+	accessToken: string
+): E.Either<Error, string> =>
+	pipe(
+		getCookieEnv(),
+		E.map(
+			([cookieName, cookieMaxAgeSecs, cookiePath]) =>
+				`${cookieName}=${accessToken}; Max-Age=${cookieMaxAgeSecs}; Secure; HttpOnly; SameSite=strict; Path=${cookiePath}`
+		)
+	);
