@@ -71,7 +71,7 @@
     "nocache": "^3.0.1",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
-    "qs": "^6.10.2",
+    "qs": "^6.10.3",
     "ts-pattern": "^3.3.4",
     "winston": "^3.3.3"
   }

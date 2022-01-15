@@ -19,6 +19,7 @@ import { compareAsc, parse } from '../../function/DateFns';
 import { STATE_EXP_FORMAT } from './constants';
 import { UnauthorizedError } from '../../error/UnauthorizedError';
 import { logError } from '../../logger';
+import qs from 'qs';
 
 export interface AuthCodeSuccess {
 	readonly cookie: string;
@@ -133,7 +134,7 @@ const sendTokenRequest = (
 		TEU.tryCatch(() =>
 			restClient.post<TokenResponse>(
 				`${authServerHost}${TOKEN_PATH}`,
-				requestBody,
+				qs.stringify(requestBody),
 				{
 					headers: {
 						'content-type': 'application/x-www-form-urlencoded',
