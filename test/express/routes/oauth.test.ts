@@ -52,7 +52,10 @@ const getSessionCookie = (res: request.Response): string => {
 
 const createValidateSessionData =
 	(fullTestServer: FullTestServer) =>
-	async (sessionCookie: string, expectedSession: MarketTrackerSession) => {
+	async (
+		sessionCookie: string,
+		expectedSession: MarketTrackerSession = {}
+	) => {
 		const sessionRes = await request(fullTestServer.expressServer.server)
 			.get('/session')
 			.set('Cookie', sessionCookie)
@@ -63,7 +66,7 @@ const createValidateSessionData =
 
 const createPrepareSession =
 	(fullTestServer: FullTestServer) =>
-	async (expectedSession: MarketTrackerSession): Promise<string> => {
+	async (expectedSession?: MarketTrackerSession): Promise<string> => {
 		const sessionPrepRes = await request(
 			fullTestServer.expressServer.server
 		)
@@ -82,7 +85,7 @@ describe('oauth routes', () => {
 		expectedSession: MarketTrackerSession
 	) => Promise<void>;
 	let prepareSession: (
-		expectedSession: MarketTrackerSession
+		expectedSession?: MarketTrackerSession
 	) => Promise<string>;
 	beforeAll(async () => {
 		fullTestServer = await createFullTestServer();
@@ -246,7 +249,30 @@ describe('oauth routes', () => {
 		});
 	});
 
-	it('logs out', async () => {
-		throw new Error();
+	describe('logout', () => {
+		beforeEach(() => {
+			setEnv();
+		});
+
+		it('logs out', async () => {
+			const sessionCookie = await prepareSession();
+			const res = await request(fullTestServer.expressServer.server)
+				.get('/oauth/logout')
+				.timeout(2000)
+				.set('Cookie', sessionCookie)
+				.expect(204);
+			expect(res.headers['set-cookie']).toHaveLength(1);
+			expect(res.headers['set-cookie'][0]).toEqual(
+				'my-cookie=; Max-Age=0'
+			);
+		});
+
+		it('missing environment variables for logout', async () => {
+			delete process.env.COOKIE_NAME;
+			await request(fullTestServer.expressServer.server)
+				.get('/oauth/logout')
+				.timeout(2000)
+				.expect(401);
+		});
 	});
 });

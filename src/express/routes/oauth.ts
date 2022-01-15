@@ -90,7 +90,8 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 				(ex) => next(ex),
 				(cookie) => {
 					res.setHeader('Set-Cookie', cookie);
-					res.status(200);
+					res.status(204);
+					res.end();
 				}
 			)
 		)
