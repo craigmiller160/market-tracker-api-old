@@ -114,7 +114,10 @@ describe('oauth routes', () => {
 		});
 
 		it('missing origin header', async () => {
-			throw new Error();
+			await request(fullTestServer.expressServer.server)
+				.post('/oauth/authcode/login')
+				.timeout(2000)
+				.expect(401);
 		});
 
 		it('missing environment variables for login', async () => {
