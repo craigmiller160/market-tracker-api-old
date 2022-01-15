@@ -85,14 +85,23 @@ describe('oauth routes', () => {
 			});
 
 			const cookieHeaders: string[] = res.headers['set-cookie'] ?? [];
-			const req = request(fullTestServer.expressServer.server).get(
-				'/session'
-			);
-			const reqWithCookies = cookieHeaders.reduce((newReq, cookie) => {
-				return newReq.set('Cookie', cookie);
-			}, req);
-			const res3 = await reqWithCookies.timeout(2000).expect(200);
-			console.log('Session', res3.body); // eslint-disable-line
+			const res3 = await request(fullTestServer.expressServer.server)
+				.get('/session')
+				.set('Cookie', cookieHeaders[0])
+				.timeout(2000)
+				.expect(200);
+			console.log(res3.body);
+
+
+
+			// const req = request(fullTestServer.expressServer.server).get(
+			// 	'/session'
+			// );
+			// const reqWithCookies = cookieHeaders.reduce((newReq, cookie) => {
+			// 	return newReq.set('Cookie', cookie);
+			// }, req);
+			// const res3 = await reqWithCookies.timeout(2000).expect(200);
+			// console.log('Session', res3.body); // eslint-disable-line
 
 			// TODO delete below here
 
