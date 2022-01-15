@@ -17,6 +17,9 @@ const clearEnv = () => {
 	delete process.env.CLIENT_SECRET;
 	delete process.env.AUTH_CODE_REDIRECT_URI;
 	delete process.env.AUTH_LOGIN_BASE_URI;
+	delete process.env.COOKIE_NAME;
+	delete process.env.COOKIE_MAX_AGE_SECS;
+	delete process.env.COOKIE_PATH;
 };
 
 const setEnv = () => {
@@ -24,6 +27,9 @@ const setEnv = () => {
 	process.env.CLIENT_SECRET = 'clientSecret';
 	process.env.AUTH_CODE_REDIRECT_URI = '/authCodeRedirectUri';
 	process.env.AUTH_LOGIN_BASE_URI = '/authLoginBaseUri';
+	process.env.COOKIE_NAME = 'my-cookie';
+	process.env.COOKIE_MAX_AGE_SECS = '8600';
+	process.env.COOKIE_PATH = '/the-path';
 };
 
 const mockApi = new MockAdapter(restClient);
@@ -107,7 +113,7 @@ describe('oauth routes', () => {
 			});
 		});
 
-		it('has an error while getting the url', async () => {
+		it('missing environment variables for login', async () => {
 			delete process.env.CLIENT_KEY;
 			const res = await request(fullTestServer.expressServer.server)
 				.post('/oauth/authcode/login')
@@ -121,6 +127,32 @@ describe('oauth routes', () => {
 					'Missing environment variables for auth code login URL: ,/authCodeRedirectUri,/authLoginBaseUri',
 				request: 'POST /oauth/authcode/login'
 			});
+		});
+	});
+
+	describe('authenticate the auth code', () => {
+		it('successfully authenticates the auth code', async () => {
+			throw new Error();
+		});
+
+		it('missing environment variables for authentication', async () => {
+			throw new Error();
+		});
+
+		it('missing environment variables for cookie creation', async () => {
+			throw new Error();
+		});
+
+		it('invalid state for authentication', async () => {
+			throw new Error();
+		});
+
+		it('expired state for authentication', async () => {
+			throw new Error();
+		});
+
+		it('authentication rejected by auth server', async () => {
+			throw new Error();
 		});
 	});
 });
