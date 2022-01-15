@@ -3,7 +3,6 @@ import { getMarketTrackerSession } from '../../function/HttpRequest';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
 import { pipe } from 'fp-ts/function';
-import { compareAsc } from 'date-fns';
 import * as IO from 'fp-ts/IO';
 import * as IOE from 'fp-ts/IOEither';
 import * as TEU from '../../function/TaskEitherUtils';
@@ -16,6 +15,8 @@ import * as EU from '../../function/EitherUtils';
 import { AppRefreshToken } from '../../mongo/models/AppRefreshTokenModel';
 import { saveRefreshToken } from '../mongo/RefreshTokenService';
 import { createTokenCookie } from './Cookie';
+import { compareAsc, parse } from '../../function/DateFns';
+import { STATE_EXP_FORMAT } from './constants';
 
 // TODO need special exception type to return 401s
 
@@ -56,7 +57,10 @@ const validateState = (
 	);
 };
 
-const validateStateExpiration = (req: Request): E.Either<Error, Date> => {
+const parseAndValidateNotExpired = (stateExpString: string): boolean =>
+	pipe(stateExpString, parse(STATE_EXP_FORMAT), compareAsc(new Date())) <= 0;
+
+const validateStateExpiration = (req: Request): E.Either<Error, string> => {
 	const { stateExpiration } = getMarketTrackerSession(req);
 	return pipe(
 		O.fromNullable(stateExpiration),
@@ -64,7 +68,7 @@ const validateStateExpiration = (req: Request): E.Either<Error, Date> => {
 			() => new Error('Cannot find auth code state expiration in session')
 		),
 		E.filterOrElse(
-			(_) => compareAsc(new Date(), _) <= 0,
+			parseAndValidateNotExpired,
 			() => new Error('Auth code state has expired')
 		)
 	);
