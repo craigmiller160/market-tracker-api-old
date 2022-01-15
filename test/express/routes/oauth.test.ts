@@ -17,6 +17,7 @@ import { TokenResponse } from '../../../src/types/TokenResponse';
 import { AuthenticateBody } from '../../../src/services/auth/AuthCodeAuthentication';
 import { AppRefreshTokenModel } from '../../../src/mongo/models/AppRefreshTokenModel';
 import qs from 'qs';
+import { AccessToken } from '../../../src/express/TokenValidation';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
@@ -137,9 +138,11 @@ describe('oauth routes', () => {
 				.timeout(2000)
 				.set('Authorization', `Bearer ${token}`)
 				.expect(200);
-			expect(res.body).toEqual({
-				...accessToken
-			});
+			const expectedBody: Partial<AccessToken> = {
+				...accessToken,
+				jti: undefined
+			};
+			expect(res.body).toEqual(expectedBody);
 		});
 
 		it('fails when not authenticated', async () => {
