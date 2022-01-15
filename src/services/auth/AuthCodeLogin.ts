@@ -33,6 +33,8 @@ const storeAuthCodeLoginSessionValues = (
 	session.state = state;
 	session.origin = origin;
 	session.stateExpiration = addMinutes(new Date(), 10);
+	// req.session.save(); // TODO add to MarketTrackerSession
+	console.log('Session', session, req.session);
 	return IO.of(null);
 };
 

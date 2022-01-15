@@ -46,6 +46,7 @@ const validateState = (
 	providedState: number
 ): E.Either<Error, number> => {
 	const { state } = getMarketTrackerSession(req);
+	console.log('ReceivedSession', req.session);
 	return pipe(
 		O.fromNullable(state),
 		E.fromOption(() => new Error('Cannot find auth code state in session')),

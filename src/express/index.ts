@@ -62,13 +62,14 @@ export interface ExpressServer {
 
 const createExpressApp = (tokenKey: TokenKey): Express => {
 	const app = express();
-	app.use(cookieParser());
+	// TODO uninstall cookie-parser... maybe
+	// app.use(cookieParser());
 	app.use(
 		session({
 			// TODO improve this
 			secret: 'secret',
-			resave: false,
-			saveUninitialized: false
+			resave: true,
+			saveUninitialized: true
 		})
 	);
 	app.use(nocache());
