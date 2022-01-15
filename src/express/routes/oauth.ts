@@ -43,7 +43,8 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 		)
 	);
 
-	app.get('/oauth/authcode/code', (req, res, next) =>
+	app.get('/oauth/authcode/code', (req, res, next) => {
+		console.log('InnerHeaders', req.headers)
 		pipe(
 			authenticateWithAuthCode(req),
 			TE.fold(
@@ -59,7 +60,7 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 				}
 			)
 		)()
-	);
+	});
 
 	app.get('/oauth/logout', (req, res, next) =>
 		pipe(

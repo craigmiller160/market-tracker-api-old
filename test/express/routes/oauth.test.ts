@@ -84,10 +84,19 @@ describe('oauth routes', () => {
 
 			// TODO delete below here
 
+			console.log(res.headers);
+			const cookieHeaders: string[] = res.headers['set-cookie'] ?? [];
+
 			const state = urlRegex.exec(res.body.url)?.groups?.state;
 
-			const res2 = await request(fullTestServer.expressServer.server)
-				.get(`/oauth/authcode/code?code=12345&state=${state}`)
+			const req = request(fullTestServer.expressServer.server)
+				.get(`/oauth/authcode/code?code=12345&state=${state}`);
+			const reqWithCookies = cookieHeaders.reduce((newReq, cookie) => {
+				console.log('Cookie', cookie);
+				return newReq.set('Cookie', cookie);
+			}, req);
+
+			const res2 = await reqWithCookies
 				.set('Origin', 'origin')
 				.timeout(2000)
 				.expect(200);
