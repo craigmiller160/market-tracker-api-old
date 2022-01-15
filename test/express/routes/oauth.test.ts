@@ -6,6 +6,8 @@ import {
 	stopFullTestServer
 } from '../../testutils/fullTestServer';
 import request from 'supertest';
+import { restClient } from '../../../src/services/RestClient';
+import MockAdapter from 'axios-mock-adapter';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
@@ -21,6 +23,8 @@ const setEnv = () => {
 	process.env.AUTH_LOGIN_BASE_URI = '/authLoginBaseUri';
 };
 
+const mockApi = new MockAdapter(restClient);
+
 describe('oauth routes', () => {
 	let fullTestServer: FullTestServer;
 	beforeAll(async () => {
@@ -33,6 +37,7 @@ describe('oauth routes', () => {
 
 	beforeEach(() => {
 		clearEnv();
+		mockApi.reset();
 	});
 
 	afterEach(() => {
@@ -67,7 +72,7 @@ describe('oauth routes', () => {
 
 		it('successfully gets the url', async () => {
 			const urlRegex =
-				/^origin\/authLoginBaseUri\/ui\/login\?response_type=code&client_id=clientKey&redirect_uri=origin%2FauthCodeRedirectUri&state=\d+$/;
+				/^origin\/authLoginBaseUri\/ui\/login\?response_type=code&client_id=clientKey&redirect_uri=origin%2FauthCodeRedirectUri&state=(?<state>\d+)$/;
 			const res = await request(fullTestServer.expressServer.server)
 				.post('/oauth/authcode/login')
 				.set('Origin', 'origin')
@@ -76,6 +81,17 @@ describe('oauth routes', () => {
 			expect(res.body).toEqual({
 				url: expect.stringMatching(urlRegex)
 			});
+
+			// TODO delete below here
+
+			const state = urlRegex.exec(res.body.url)?.groups?.state;
+
+			const res2 = await request(fullTestServer.expressServer.server)
+				.get(`/oauth/authcode/code?code=12345&state=${state}`)
+				.set('Origin', 'origin')
+				.timeout(2000)
+				.expect(200);
+			console.log(res2.body); // eslint-disable-line
 		});
 
 		it('has an error while getting the url', async () => {
