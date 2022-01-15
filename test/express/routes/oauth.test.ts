@@ -157,6 +157,10 @@ describe('oauth routes', () => {
 	});
 
 	describe('authenticate the auth code', () => {
+		beforeEach(() => {
+			setEnv();
+		});
+
 		it('successfully authenticates the auth code', async () => {
 			const code = 'ABCDEFG';
 			const state = 12345;
@@ -172,6 +176,7 @@ describe('oauth routes', () => {
 
 			const res = await request(fullTestServer.expressServer.server)
 				.get(`/oauth/authcode/code?code=${code}&state=${state}`)
+				.set('Cookie', sessionCookie)
 				.timeout(2000)
 				.expect(200);
 			// TODO validate redirect
