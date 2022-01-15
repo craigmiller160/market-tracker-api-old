@@ -46,7 +46,6 @@ const validateState = (
 	providedState: number
 ): E.Either<Error, number> => {
 	const { state } = getMarketTrackerSession(req);
-	console.log('ReceivedSession', req.session);
 	return pipe(
 		O.fromNullable(state),
 		E.fromOption(() => new Error('Cannot find auth code state in session')),
@@ -206,9 +205,8 @@ const getCodeAndState = (req: Request): E.Either<Error, [string, number]> => {
 
 export const authenticateWithAuthCode = (
 	req: Request
-): TE.TaskEither<Error, AuthCodeSuccess> => {
-	console.log('InitSession2', req.session);
-	return pipe(
+): TE.TaskEither<Error, AuthCodeSuccess> =>
+	pipe(
 		getCodeAndState(req),
 		E.bindTo('codeAndState'),
 		E.chainFirst(({ codeAndState: [, state] }) =>
@@ -230,4 +228,3 @@ export const authenticateWithAuthCode = (
 		TE.bindTo('cookie'),
 		TE.bind('postAuthRedirect', () => TE.fromEither(prepareRedirect()))
 	);
-};

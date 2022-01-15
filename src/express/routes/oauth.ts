@@ -36,14 +36,12 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 			TE.chain((url) =>
 				TEU.tryCatch(
 					() =>
+						// TODO once it is working, see if this is actually doing anything
 						new Promise<string>((resolve, reject) => {
-							console.log('SessionBeforeSave', req.session);
 							req.session.save((err) => {
 								if (err) {
-									console.log('SessionSaveFailed', err);
 									reject(err);
 								} else {
-									console.log('SessionSaveSucceeded');
 									resolve(url);
 								}
 							});
@@ -66,9 +64,7 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 		)();
 	});
 
-	app.get('/oauth/authcode/code', (req, res, next) => {
-		// TODO it is here!!!
-		console.log('InitialReceivedSession', req.session);
+	app.get('/oauth/authcode/code', (req, res, next) =>
 		pipe(
 			authenticateWithAuthCode(req),
 			TE.fold(
@@ -83,8 +79,8 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 					return T.of('');
 				}
 			)
-		)();
-	});
+		)()
+	);
 
 	app.get('/oauth/logout', (req, res, next) =>
 		pipe(
