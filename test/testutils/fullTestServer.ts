@@ -12,6 +12,7 @@ import { createKeyPair, TokenKeyPair } from './keyPair';
 import { TokenKey } from '../../src/auth/TokenKey';
 import { AccessToken } from '../../src/express/TokenValidation';
 import jwt, { SignOptions } from 'jsonwebtoken';
+import { createSessionRoute } from './sessionRoute';
 
 export interface FullTestServer {
 	readonly keyPair: TokenKeyPair;
@@ -26,7 +27,8 @@ export const accessToken: AccessToken = {
 	lastName: 'Saget',
 	roles: [],
 	sub: 'bob@gmail.com',
-	clientName: 'the-app'
+	clientName: 'the-app',
+	jti: 'tokenId'
 };
 
 export const createAccessToken = (
@@ -56,6 +58,10 @@ export const createFullTestServer = (): Promise<FullTestServer> =>
 		TE.bind('expressServer', ({ keyPair }) =>
 			createExpressServerWithKey(keyPair.publicKey)
 		),
+		TE.map((fullTestServer) => {
+			createSessionRoute(fullTestServer.expressServer.app);
+			return fullTestServer;
+		}),
 		TEU.throwIfLeft
 	)();
 

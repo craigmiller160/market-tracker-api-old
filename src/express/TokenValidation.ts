@@ -1,7 +1,8 @@
 import {
 	Strategy as JwtStrategy,
 	ExtractJwt,
-	StrategyOptions
+	StrategyOptions,
+	JwtFromRequestFunction
 } from 'passport-jwt';
 import { TokenKey } from '../auth/TokenKey';
 import passport from 'passport';
@@ -19,6 +20,7 @@ export interface AccessToken {
 	readonly userId: number;
 	readonly userEmail: string;
 	readonly roles: string[];
+	readonly jti: string;
 }
 
 type Route = (req: Request, res: Response, next: NextFunction) => void;
@@ -54,12 +56,23 @@ export const secure =
 		)(req, res, next);
 	};
 
+const getJwtFromCookie = (req: Request): O.Option<string> =>
+	pipe(
+		O.fromNullable(process.env.COOKIE_NAME),
+		O.chain((_) => O.fromNullable(req.cookies[_]))
+	);
+
+const jwtFromRequest: JwtFromRequestFunction = (req) =>
+	pipe(
+		getJwtFromCookie(req),
+		O.getOrElse(() => ExtractJwt.fromAuthHeaderAsBearerToken()(req))
+	);
+
 export const createPassportValidation = (tokenKey: TokenKey) => {
 	logger.debug('Creating passport JWT validation strategy');
 	const options: StrategyOptions = {
 		secretOrKey: tokenKey.key,
-		// TODO need to add cookie support as well
-		jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+		jwtFromRequest
 	};
 
 	passport.use(

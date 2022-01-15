@@ -14,7 +14,11 @@ interface ErrorResponse {
 }
 
 const NO_AUTH_TOKEN_REGEX = /^.*No auth token.*$/;
-const UNAUTHORIZED_ERROR_NAMES = ['JsonWebTokenError', 'TokenExpiredError'];
+const UNAUTHORIZED_ERROR_NAMES = [
+	'JsonWebTokenError',
+	'TokenExpiredError',
+	'UnauthorizedError'
+];
 
 const isUnauthorizedError: P.Predicate<Error> = pipe(
 	(_: Error) => UNAUTHORIZED_ERROR_NAMES.includes(_.name),

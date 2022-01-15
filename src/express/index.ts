@@ -17,6 +17,9 @@ import nocache from 'nocache';
 import { TokenKey } from '../auth/TokenKey';
 import passport from 'passport';
 import { createPassportValidation } from './TokenValidation';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import { nanoid } from 'nanoid';
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
@@ -60,6 +63,14 @@ export interface ExpressServer {
 
 const createExpressApp = (tokenKey: TokenKey): Express => {
 	const app = express();
+	app.use(cookieParser());
+	app.use(
+		session({
+			secret: nanoid(),
+			resave: true,
+			saveUninitialized: true
+		})
+	);
 	app.use(nocache());
 	app.disable('x-powered-by');
 	app.use(bodyParer.json());

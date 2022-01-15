@@ -8,6 +8,7 @@ import {
 	watchlistToModel
 } from '../../mongo/models/WatchlistModel';
 import { pipe } from 'fp-ts/function';
+import { logger } from '../../logger';
 
 export const findWatchlistsForUser = (
 	userId: number
@@ -51,7 +52,12 @@ export const saveWatchlistsForUser = (
 
 	pipe(
 		sessionTE,
-		TE.chain((session) => TEU.tryCatch(() => session.endSession()))
+		TE.chain((session) => TEU.tryCatch(() => session.endSession())),
+		TE.mapLeft((ex) => {
+			logger.error('Error closing session');
+			logger.error(ex);
+			return ex;
+		})
 	);
 
 	return postTxnTE;
