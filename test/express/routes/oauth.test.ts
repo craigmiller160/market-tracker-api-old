@@ -340,6 +340,8 @@ describe('oauth routes', () => {
 			expect(res.headers['set-cookie'][0]).toEqual(
 				'my-cookie=; Max-Age=0'
 			);
+
+			throw new Error('Make sure refresh tokens are deleted');
 		});
 
 		it('missing environment variables for logout', async () => {
