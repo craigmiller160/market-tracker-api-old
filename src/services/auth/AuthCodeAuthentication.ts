@@ -58,16 +58,23 @@ const validateState = (
 
 const validateStateExpiration = (req: Request): E.Either<Error, Date> => {
 	const { stateExpiration } = getMarketTrackerSession(req);
-	return pipe(
-		O.fromNullable(stateExpiration),
-		E.fromOption(
-			() => new Error('Cannot find auth code state expiration in session')
-		),
-		E.filterOrElse(
-			(_) => compareAsc(new Date(), _) <= 0,
-			() => new Error('Auth code state has expired')
-		)
-	);
+	if (!!stateExpiration) {
+		return E.right(new Date());
+	} else {
+		return E.left(new Error('Fix this'))
+	}
+
+	// TODO fix this
+	// return pipe(
+	// 	O.fromNullable(stateExpiration),
+	// 	E.fromOption(
+	// 		() => new Error('Cannot find auth code state expiration in session')
+	// 	),
+	// 	E.filterOrElse(
+	// 		(_) => compareAsc(new Date(), _) <= 0,
+	// 		() => new Error('Auth code state has expired')
+	// 	)
+	// );
 };
 
 const getAndValidateOrigin = (req: Request): E.Either<Error, string> => {
@@ -78,12 +85,11 @@ const getAndValidateOrigin = (req: Request): E.Either<Error, string> => {
 	);
 };
 
-const removeAuthCodeSessionAttributes = (req: Request): IO.IO<void> => {
+const removeAuthCodeSessionAttributes = (req: Request): IO.IO<void> => () => {
 	const session = getMarketTrackerSession(req);
 	delete session.stateExpiration;
 	delete session.state;
 	delete session.origin;
-	return IO.of(null);
 };
 
 const createAuthenticateBody = (
@@ -228,3 +234,26 @@ export const authenticateWithAuthCode = (
 		TE.bindTo('cookie'),
 		TE.bind('postAuthRedirect', () => TE.fromEither(prepareRedirect()))
 	);
+
+// export const authenticateWithAuthCode = (req: Request): TE.TaskEither<Error, AuthCodeSuccess> => {
+// 	const result = pipe(
+// 		getCodeAndState(req),
+// 		E.bindTo('codeAndState'),
+// 		E.chainFirst(({ codeAndState: [, state] }) => validateState(req, state)),
+// 		E.chainFirst(() => validateStateExpiration(req)),
+// 		E.bind('origin', () => getAndValidateOrigin(req)),
+// 		E.map(
+// 			({ codeAndState: [code], origin }): CodeAndOrigin => ({
+// 				code,
+// 				origin
+// 			})
+// 		),
+// 		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req)))
+// 	);
+// 	console.log('Result', result);
+//
+// 	return TE.right({
+// 		cookie: '',
+// 		postAuthRedirect: ''
+// 	});
+// }
