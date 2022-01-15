@@ -8,6 +8,7 @@ import request from 'supertest';
 import { createKeyPair } from '../testutils/keyPair';
 import { pipe } from 'fp-ts/function';
 import * as EU from '../../src/function/EitherUtils';
+import { createTokenCookie } from '../../src/services/auth/Cookie';
 
 describe('TokenValidation', () => {
 	let fullTestServer: FullTestServer;
@@ -30,7 +31,14 @@ describe('TokenValidation', () => {
 	});
 
 	it('has valid access token from cookie', async () => {
-		throw new Error();
+		const token = createAccessToken(fullTestServer.keyPair.privateKey);
+		const tokenCookie = pipe(createTokenCookie(token), EU.throwIfLeft);
+		const res = await request(fullTestServer.expressServer.server)
+			.get('/portfolios')
+			.timeout(2000)
+			.set('Cookie', tokenCookie)
+			.expect(200);
+		expect(res.body).toEqual([]);
 	});
 
 	it('access token is expired', async () => {
