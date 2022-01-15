@@ -19,6 +19,7 @@ import passport from 'passport';
 import { createPassportValidation } from './TokenValidation';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import { nanoid } from 'nanoid';
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
@@ -65,8 +66,7 @@ const createExpressApp = (tokenKey: TokenKey): Express => {
 	app.use(cookieParser());
 	app.use(
 		session({
-			// TODO set new secret and proper production store
-			secret: 'secret',
+			secret: nanoid(),
 			resave: true,
 			saveUninitialized: true
 		})
