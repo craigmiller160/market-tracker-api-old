@@ -8,7 +8,8 @@ import * as IO from 'fp-ts/IO';
 import * as IOE from 'fp-ts/IOEither';
 import { encodeForUri } from '../../function/UriEncoding';
 import { getHeader, getMarketTrackerSession } from '../../function/HttpRequest';
-import { addMinutes } from 'date-fns';
+import { addMinutes, format } from '../../function/DateFns';
+import { STATE_EXP_FORMAT } from './constants';
 
 // TODO 401 exception
 
@@ -30,7 +31,11 @@ const storeAuthCodeLoginSessionValues =
 		const session = getMarketTrackerSession(req);
 		session.state = state;
 		session.origin = origin;
-		session.stateExpiration = addMinutes(new Date(), 10);
+		session.stateExpiration = pipe(
+			new Date(),
+			addMinutes(10),
+			format(STATE_EXP_FORMAT)
+		);
 	};
 
 const createUrl = (

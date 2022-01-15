@@ -6,7 +6,7 @@ import * as EU from './EitherUtils';
 export interface MarketTrackerSession {
 	state?: number;
 	origin?: string;
-	stateExpiration?: Date;
+	stateExpiration?: string;
 }
 
 export const getHeader = (req: Request, key: string): O.Option<string> =>
