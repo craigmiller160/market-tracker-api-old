@@ -10,6 +10,7 @@ import { NextFunction, Request, Response } from 'express';
 import { errorHandler } from './errorHandler';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
+import * as E from 'fp-ts/Either';
 
 export interface AccessToken {
 	readonly sub: string;
@@ -53,6 +54,17 @@ export const secure =
 			secureCallback(req, res, next, fn)
 		)(req, res, next);
 	};
+
+const getJwtFromCookie = (req: Request) => {
+	pipe(
+		O.fromNullable(process.env.COOKIE_NAME),
+		O.map((cookieName) => {
+			const regex = `^${cookieName}=(?<token>.*);.*$`;
+			const cookieHeaders = (req.headers['cookie'] as string[] | undefined ?? []);
+			req.cookies
+		})
+	);
+};
 
 export const createPassportValidation = (tokenKey: TokenKey) => {
 	logger.debug('Creating passport JWT validation strategy');
