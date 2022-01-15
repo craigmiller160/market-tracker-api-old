@@ -29,6 +29,10 @@ describe('TokenValidation', () => {
 		expect(res.body).toEqual([]);
 	});
 
+	it('has valid access token from cookie', async () => {
+		throw new Error();
+	});
+
 	it('access token is expired', async () => {
 		const token = createAccessToken(fullTestServer.keyPair.privateKey, {
 			expiresIn: '-10m'
