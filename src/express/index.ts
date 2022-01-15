@@ -63,7 +63,7 @@ const createExpressApp = (tokenKey: TokenKey): Express => {
 	const app = express();
 	app.use(
 		session({
-			// TODO improve this
+			// TODO set new secret and proper production store
 			secret: 'secret',
 			resave: true,
 			saveUninitialized: true
