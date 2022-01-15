@@ -9,12 +9,14 @@ import request from 'supertest';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
+	delete process.env.CLIENT_SECRET;
 	delete process.env.AUTH_CODE_REDIRECT_URI;
 	delete process.env.AUTH_LOGIN_BASE_URI;
 };
 
 const setEnv = () => {
 	process.env.CLIENT_KEY = 'clientKey';
+	process.env.CLIENT_SECRET = 'clientSecret';
 	process.env.AUTH_CODE_REDIRECT_URI = '/authCodeRedirectUri';
 	process.env.AUTH_LOGIN_BASE_URI = '/authLoginBaseUri';
 };
