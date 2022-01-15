@@ -210,7 +210,10 @@ describe('oauth routes', () => {
 				.timeout(2000)
 				.expect(302);
 			expect(res.headers['location']).toEqual('/postAuthRedirect');
-			expect(res.headers['set-cookie']).toEqual('');
+			expect(res.headers['set-cookie']).toHaveLength(1);
+			expect(res.headers['set-cookie'][0]).toEqual(
+				'my-cookie=accessToken; Max-Age=8600; Secure; HttpOnly; SameSite=strict; Path=/the-path'
+			);
 		});
 
 		it('missing environment variables for authentication', async () => {
