@@ -30,10 +30,15 @@ export interface AuthCodeSuccess {
 }
 
 interface AuthenticateBody {
-	grant_type: string;
-	client_id: string;
-	code: string;
-	redirect_uri: string;
+	readonly grant_type: string;
+	readonly client_id: string;
+	readonly code: string;
+	readonly redirect_uri: string;
+}
+
+interface CodeAndOrigin {
+	readonly code: string;
+	readonly origin: string;
 }
 
 const validateState = (
@@ -65,7 +70,7 @@ const validateStateExpiration = (req: Request): E.Either<Error, Date> => {
 	);
 };
 
-const validateOrigin = (req: Request): E.Either<Error, string> => {
+const getAndValidateOrigin = (req: Request): E.Either<Error, string> => {
 	const { origin } = getMarketTrackerSession(req);
 	return pipe(
 		O.fromNullable(origin),
@@ -203,12 +208,21 @@ export const authenticateWithAuthCode = (
 ): TE.TaskEither<Error, AuthCodeSuccess> =>
 	pipe(
 		getCodeAndState(req),
-		E.chainFirst(([, state]) => validateState(req, state)),
+		E.bindTo('codeAndState'),
+		E.chainFirst(({ codeAndState: [, state] }) =>
+			validateState(req, state)
+		),
 		E.chainFirst(() => validateStateExpiration(req)),
-		E.chainFirst(() => validateOrigin(req)),
+		E.bind('origin', () => getAndValidateOrigin(req)),
+		E.map(
+			({ codeAndState: [code], origin }): CodeAndOrigin => ({
+				code,
+				origin
+			})
+		),
 		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req))),
 		TE.fromEither,
-		TE.chain(([code]) => authenticateCode(_, code)),
+		TE.chain(({ code, origin }) => authenticateCode(origin, code)),
 		TE.chainFirst(handleRefreshToken),
 		TE.chain((_) => TE.fromEither(createTokenCookie(_.accessToken))),
 		TE.bindTo('cookie'),
