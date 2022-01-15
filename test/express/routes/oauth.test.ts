@@ -84,15 +84,15 @@ describe('oauth routes', () => {
 
 			// TODO delete below here
 
-			console.log(res.headers);
 			const cookieHeaders: string[] = res.headers['set-cookie'] ?? [];
 
 			const state = urlRegex.exec(res.body.url)?.groups?.state;
 
-			const req = request(fullTestServer.expressServer.server)
-				.get(`/oauth/authcode/code?code=12345&state=${state}`);
+			const req = request(fullTestServer.expressServer.server).get(
+				`/oauth/authcode/code?code=12345&state=${state}`
+			);
 			const reqWithCookies = cookieHeaders.reduce((newReq, cookie) => {
-				console.log('Cookie', cookie);
+				console.log('Cookie', cookie); // eslint-disable-line
 				return newReq.set('Cookie', cookie);
 			}, req);
 

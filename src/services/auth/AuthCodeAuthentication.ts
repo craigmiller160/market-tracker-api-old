@@ -230,4 +230,4 @@ export const authenticateWithAuthCode = (
 		TE.bindTo('cookie'),
 		TE.bind('postAuthRedirect', () => TE.fromEither(prepareRedirect()))
 	);
-}
+};

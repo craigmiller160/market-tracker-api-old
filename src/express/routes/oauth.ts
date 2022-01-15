@@ -7,7 +7,7 @@ import {
 } from '../../services/auth/AuthCodeLogin';
 import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
-import * as TEU from '../../function/TaskEitherUtils'
+import * as TEU from '../../function/TaskEitherUtils';
 import * as T from 'fp-ts/Task';
 import { authenticateWithAuthCode } from '../../services/auth/AuthCodeAuthentication';
 import { getEmptyCookie } from '../../services/auth/Cookie';
@@ -33,18 +33,23 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 		pipe(
 			prepareAuthCodeLogin(req),
 			TE.fromEither,
-			TE.chain((url) => TEU.tryCatch(() => new Promise<string>((resolve, reject) => {
-				console.log('SessionBeforeSave', req.session);
-				req.session.save((err) => {
-					if (err) {
-						console.log('SessionSaveFailed', err);
-						reject(err);
-					} else {
-						console.log('SessionSaveSucceeded');
-						resolve(url);
-					}
-				});
-			}))),
+			TE.chain((url) =>
+				TEU.tryCatch(
+					() =>
+						new Promise<string>((resolve, reject) => {
+							console.log('SessionBeforeSave', req.session);
+							req.session.save((err) => {
+								if (err) {
+									console.log('SessionSaveFailed', err);
+									reject(err);
+								} else {
+									console.log('SessionSaveSucceeded');
+									resolve(url);
+								}
+							});
+						})
+				)
+			),
 			TE.fold(
 				(ex) => {
 					next(ex);
@@ -78,7 +83,7 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 					return T.of('');
 				}
 			)
-		)()
+		)();
 	});
 
 	app.get('/oauth/logout', (req, res, next) =>
