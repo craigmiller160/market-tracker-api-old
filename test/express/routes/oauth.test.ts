@@ -67,7 +67,7 @@ describe('oauth routes', () => {
 
 		it('successfully gets the url', async () => {
 			const urlRegex =
-				/^origin\/authLoginBaseUri\/ui\/login\?response_type=code&client_id=clientKey&redirect_uri=origin%2FauthCodeRedirectUri&state=.+$/;
+				/^origin\/authLoginBaseUri\/ui\/login\?response_type=code&client_id=clientKey&redirect_uri=origin%2FauthCodeRedirectUri&state=\d+$/;
 			const res = await request(fullTestServer.expressServer.server)
 				.post('/oauth/authcode/login')
 				.set('Origin', 'origin')
