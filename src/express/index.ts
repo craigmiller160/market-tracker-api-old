@@ -4,6 +4,7 @@ import * as TE from 'fp-ts/TaskEither';
 import * as TEU from '../function/TaskEitherUtils';
 
 import bodyParer from 'body-parser';
+import cookieParser from 'cookie-parser';
 import { logError, logger, logInfo } from '../logger';
 import { pipe } from 'fp-ts/function';
 import express, { Express } from 'express';
@@ -61,6 +62,7 @@ export interface ExpressServer {
 
 const createExpressApp = (tokenKey: TokenKey): Express => {
 	const app = express();
+	app.use(cookieParser());
 	app.use(
 		session({
 			// TODO improve this
