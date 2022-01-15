@@ -6,7 +6,7 @@ import {
 	prepareAuthCodeLogin
 } from '../../services/auth/AuthCodeLogin';
 import * as TE from 'fp-ts/TaskEither';
-import * as TEU from '../../function/TaskEitherUtils';
+import * as E from 'fp-ts/Either';
 import * as T from 'fp-ts/Task';
 import { authenticateWithAuthCode } from '../../services/auth/AuthCodeAuthentication';
 import { logout } from '../../services/auth/Logout';
@@ -28,26 +28,10 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 		})
 	);
 
-	app.post('/oauth/authcode/login', (req, res, next) => {
+	app.post('/oauth/authcode/login', (req, res, next) =>
 		pipe(
 			prepareAuthCodeLogin(req),
-			TE.fromEither,
-			TE.chain((url) =>
-				TEU.tryCatch(
-					() =>
-						// TODO once it is working, see if this is actually doing anything
-						new Promise<string>((resolve, reject) => {
-							req.session.save((err) => {
-								if (err) {
-									reject(err);
-								} else {
-									resolve(url);
-								}
-							});
-						})
-				)
-			),
-			TE.fold(
+			E.fold(
 				(ex) => {
 					next(ex);
 					return T.of('');
@@ -60,8 +44,8 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 					return T.of('');
 				}
 			)
-		)();
-	});
+		)
+	);
 
 	app.get('/oauth/authcode/code', (req, res, next) =>
 		pipe(
