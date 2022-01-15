@@ -13,6 +13,8 @@ import { MarketTrackerSession } from '../../../src/function/HttpRequest';
 import { pipe } from 'fp-ts/function';
 import { addMinutes, format } from '../../../src/function/DateFns';
 import { STATE_EXP_FORMAT } from '../../../src/services/auth/constants';
+import {TokenResponse} from '../../../src/types/TokenResponse';
+import {AuthenticateBody} from '../../../src/services/auth/AuthCodeAuthentication';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
@@ -170,8 +172,25 @@ describe('oauth routes', () => {
 		});
 
 		it('successfully authenticates the auth code', async () => {
+			// TODO check DB for refresh token
 			const code = 'ABCDEFG';
 			const state = 12345;
+
+			const body: AuthenticateBody = {
+				grant_type: 'authorization_code',
+				client_id: 'clientKey',
+				code,
+				redirect_uri: encodeURIComponent('/authCodeRedirectUri')
+			};
+
+			const tokenResponse: TokenResponse = {
+				accessToken: 'accessToken',
+				refreshToken: 'refreshToken',
+				tokenId: 'tokenId'
+			};
+			mockApi.onPost('https://localhost:7003/oauth/token', body)
+				.reply(200, tokenResponse);
+
 			const sessionCookie = await prepareSession({
 				origin: 'origin',
 				state,
@@ -187,7 +206,6 @@ describe('oauth routes', () => {
 				.set('Cookie', sessionCookie)
 				.timeout(2000)
 				.expect(200);
-			// TODO validate redirect
 		});
 
 		it('missing environment variables for authentication', async () => {

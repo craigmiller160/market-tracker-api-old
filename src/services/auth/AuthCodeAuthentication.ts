@@ -24,7 +24,7 @@ export interface AuthCodeSuccess {
 	readonly postAuthRedirect: string;
 }
 
-interface AuthenticateBody {
+export interface AuthenticateBody {
 	readonly grant_type: string;
 	readonly client_id: string;
 	readonly code: string;
