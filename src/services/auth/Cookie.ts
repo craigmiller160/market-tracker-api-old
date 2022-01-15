@@ -5,6 +5,13 @@ import * as A from 'fp-ts/Array';
 
 // TODO 401 exception
 
+export const getEmptyCookie = (): E.Either<Error, string> =>
+	pipe(
+		O.fromNullable(process.env.COOKIE_NAME),
+		E.fromOption(() => new Error('No cookie name environment variable')),
+		E.map((_) => `${_}=; Max-Age=0`)
+	);
+
 const getCookieEnv = (): E.Either<Error, readonly string[]> => {
 	const nullableEnvArray: Array<string | undefined> = [
 		process.env.COOKIE_NAME,
