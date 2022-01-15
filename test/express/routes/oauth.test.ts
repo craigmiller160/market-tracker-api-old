@@ -84,25 +84,33 @@ describe('oauth routes', () => {
 				url: expect.stringMatching(urlRegex)
 			});
 
-			// TODO delete below here
-
 			const cookieHeaders: string[] = res.headers['set-cookie'] ?? [];
-
-			const state = urlRegex.exec(res.body.url)?.groups?.state;
-
 			const req = request(fullTestServer.expressServer.server).get(
-				`/oauth/authcode/code?code=12345&state=${state}`
+				'/session'
 			);
 			const reqWithCookies = cookieHeaders.reduce((newReq, cookie) => {
-				console.log('Cookie', cookie); // eslint-disable-line
 				return newReq.set('Cookie', cookie);
 			}, req);
+			const res3 = await reqWithCookies.timeout(2000).expect(200);
+			console.log('Session', res3.body); // eslint-disable-line
 
-			const res2 = await reqWithCookies
-				.set('Origin', 'origin')
-				.timeout(2000)
-				.expect(200);
-			console.log(res2.body); // eslint-disable-line
+			// TODO delete below here
+
+			// const state = urlRegex.exec(res.body.url)?.groups?.state;
+			//
+			// const req = request(fullTestServer.expressServer.server).get(
+			// 	`/oauth/authcode/code?code=12345&state=${state}`
+			// );
+			// const reqWithCookies = cookieHeaders.reduce((newReq, cookie) => {
+			// 	console.log('Cookie', cookie); // eslint-disable-line
+			// 	return newReq.set('Cookie', cookie);
+			// }, req);
+			//
+			// const res2 = await reqWithCookies
+			// 	.set('Origin', 'origin')
+			// 	.timeout(2000)
+			// 	.expect(200);
+			// console.log(res2.body); // eslint-disable-line
 		});
 
 		it('has an error while getting the url', async () => {
