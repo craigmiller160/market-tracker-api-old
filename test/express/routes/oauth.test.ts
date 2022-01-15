@@ -333,15 +333,17 @@ describe('oauth routes', () => {
 		});
 
 		it('logs out', async () => {
+			const token = createAccessToken(fullTestServer.keyPair.privateKey);
 			const sessionCookie = await prepareSession();
 			const res = await request(fullTestServer.expressServer.server)
 				.get('/oauth/logout')
 				.timeout(2000)
 				.set('Cookie', sessionCookie)
+				.set('Authorization', `Bearer ${token}`)
 				.expect(204);
 			expect(res.headers['set-cookie']).toHaveLength(1);
 			expect(res.headers['set-cookie'][0]).toEqual(
-				'my-cookie=; Max-Age=0'
+				'my-cookie=; Max-Age=0; Secure; HttpOnly; SameSite=strict; Path=/the-path'
 			);
 
 			throw new Error('Make sure refresh tokens are deleted');
