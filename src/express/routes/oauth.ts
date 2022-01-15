@@ -34,6 +34,7 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 			prepareAuthCodeLogin(req),
 			TE.fromEither,
 			TE.chain((url) => TEU.tryCatch(() => new Promise<string>((resolve, reject) => {
+				console.log('SessionBeforeSave', req.session);
 				req.session.save((err) => {
 					if (err) {
 						console.log('SessionSaveFailed', err);
@@ -61,6 +62,8 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 	});
 
 	app.get('/oauth/authcode/code', (req, res, next) => {
+		// TODO it is here!!!
+		console.log('InitialReceivedSession', req.session);
 		pipe(
 			authenticateWithAuthCode(req),
 			TE.fold(
