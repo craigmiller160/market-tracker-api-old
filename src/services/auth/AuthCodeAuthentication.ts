@@ -19,11 +19,6 @@ import { compareAsc, parse } from '../../function/DateFns';
 import { STATE_EXP_FORMAT } from './constants';
 import { UnauthorizedError } from '../../error/UnauthorizedError';
 
-// TODO need test for successful login
-// TODO need test for login rejected
-// TODO need test for invalid state
-// TODO need test for expired state
-
 export interface AuthCodeSuccess {
 	readonly cookie: string;
 	readonly postAuthRedirect: string;
