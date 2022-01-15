@@ -21,7 +21,7 @@ const setEnv = () => {
 	process.env.AUTH_LOGIN_BASE_URI = '/authLoginBaseUri';
 };
 
-describe('user details route', () => {
+describe('oauth routes', () => {
 	let fullTestServer: FullTestServer;
 	beforeAll(async () => {
 		fullTestServer = await createFullTestServer();
