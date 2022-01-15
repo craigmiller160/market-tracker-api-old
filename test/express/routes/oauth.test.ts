@@ -113,20 +113,17 @@ describe('oauth routes', () => {
 			});
 		});
 
+		it('missing origin header', async () => {
+			throw new Error();
+		});
+
 		it('missing environment variables for login', async () => {
 			delete process.env.CLIENT_KEY;
-			const res = await request(fullTestServer.expressServer.server)
+			await request(fullTestServer.expressServer.server)
 				.post('/oauth/authcode/login')
 				.set('Origin', 'origin')
 				.timeout(2000)
-				.expect(500);
-			expect(res.body).toEqual({
-				timestamp: expect.any(String),
-				status: 500,
-				message:
-					'Missing environment variables for auth code login URL: ,/authCodeRedirectUri,/authLoginBaseUri',
-				request: 'POST /oauth/authcode/login'
-			});
+				.expect(401);
 		});
 	});
 

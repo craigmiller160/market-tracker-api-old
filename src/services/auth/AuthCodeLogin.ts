@@ -10,6 +10,7 @@ import { encodeForUri } from '../../function/UriEncoding';
 import { getHeader, getMarketTrackerSession } from '../../function/HttpRequest';
 import { addMinutes, format } from '../../function/DateFns';
 import { STATE_EXP_FORMAT } from './constants';
+import { UnauthorizedError } from '../../error/UnauthorizedError';
 
 // TODO 401 exception
 
@@ -77,7 +78,7 @@ const buildAuthCodeLoginUrl = (
 		O.sequenceArray,
 		E.fromOption(
 			() =>
-				new Error(
+				new UnauthorizedError(
 					`Missing environment variables for auth code login URL: ${nullableEnvArray}`
 				)
 		),
