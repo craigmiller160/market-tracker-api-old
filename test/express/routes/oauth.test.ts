@@ -16,6 +16,7 @@ import { STATE_EXP_FORMAT } from '../../../src/services/auth/constants';
 import { TokenResponse } from '../../../src/types/TokenResponse';
 import { AuthenticateBody } from '../../../src/services/auth/AuthCodeAuthentication';
 import { AppRefreshTokenModel } from '../../../src/mongo/models/AppRefreshTokenModel';
+import qs from 'qs';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
@@ -83,7 +84,7 @@ const mockTokenRequest = (code: string, responseStatus = 200) => {
 		grant_type: 'authorization_code',
 		client_id: 'clientKey',
 		code,
-		redirect_uri: encodeURIComponent('/authCodeRedirectUri')
+		redirect_uri: 'origin/authCodeRedirectUri'
 	};
 
 	const tokenResponse: TokenResponse = {
@@ -92,7 +93,7 @@ const mockTokenRequest = (code: string, responseStatus = 200) => {
 		tokenId: 'tokenId'
 	};
 	mockApi
-		.onPost('https://localhost:7003/oauth/token', body)
+		.onPost('https://localhost:7003/oauth/token', qs.stringify(body))
 		.reply(responseStatus, tokenResponse);
 };
 
