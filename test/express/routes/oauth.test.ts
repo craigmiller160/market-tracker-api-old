@@ -78,7 +78,7 @@ const createPrepareSession =
 		return getSessionCookie(sessionPrepRes);
 	};
 
-const mockTokenRequest = (code: string) => {
+const mockTokenRequest = (code: string, responseStatus = 200) => {
 	const body: AuthenticateBody = {
 		grant_type: 'authorization_code',
 		client_id: 'clientKey',
@@ -93,7 +93,7 @@ const mockTokenRequest = (code: string) => {
 	};
 	mockApi
 		.onPost('https://localhost:7003/oauth/token', body)
-		.reply(200, tokenResponse);
+		.reply(responseStatus, tokenResponse);
 };
 
 const createStateExp = (mins: number): string =>
@@ -305,7 +305,21 @@ describe('oauth routes', () => {
 		});
 
 		it('authentication rejected by auth server', async () => {
-			throw new Error();
+			mockTokenRequest(code, 401);
+			const sessionCookie = await prepareSession({
+				origin: 'origin',
+				state,
+				stateExpiration: createStateExp(10)
+			});
+
+			await request(fullTestServer.expressServer.server)
+				.get(`/oauth/authcode/code?code=${code}&state=${state}`)
+				.set('Cookie', sessionCookie)
+				.timeout(2000)
+				.expect(401);
+
+			const count = await AppRefreshTokenModel.count().exec();
+			expect(count).toEqual(0);
 		});
 	});
 
