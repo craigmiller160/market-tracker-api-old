@@ -234,26 +234,3 @@ export const authenticateWithAuthCode = (
 		TE.bindTo('cookie'),
 		TE.bind('postAuthRedirect', () => TE.fromEither(prepareRedirect()))
 	);
-
-// export const authenticateWithAuthCode = (req: Request): TE.TaskEither<Error, AuthCodeSuccess> => {
-// 	const result = pipe(
-// 		getCodeAndState(req),
-// 		E.bindTo('codeAndState'),
-// 		E.chainFirst(({ codeAndState: [, state] }) => validateState(req, state)),
-// 		E.chainFirst(() => validateStateExpiration(req)),
-// 		E.bind('origin', () => getAndValidateOrigin(req)),
-// 		E.map(
-// 			({ codeAndState: [code], origin }): CodeAndOrigin => ({
-// 				code,
-// 				origin
-// 			})
-// 		),
-// 		E.chainFirst(IOE.fromIO(removeAuthCodeSessionAttributes(req)))
-// 	);
-// 	console.log('Result', result);
-//
-// 	return TE.right({
-// 		cookie: '',
-// 		postAuthRedirect: ''
-// 	});
-// }
