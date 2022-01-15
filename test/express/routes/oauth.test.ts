@@ -78,6 +78,27 @@ const createPrepareSession =
 		return getSessionCookie(sessionPrepRes);
 	};
 
+const mockTokenRequest = (code: string) => {
+	const body: AuthenticateBody = {
+		grant_type: 'authorization_code',
+		client_id: 'clientKey',
+		code,
+		redirect_uri: encodeURIComponent('/authCodeRedirectUri')
+	};
+
+	const tokenResponse: TokenResponse = {
+		accessToken: 'accessToken',
+		refreshToken: 'refreshToken',
+		tokenId: 'tokenId'
+	};
+	mockApi
+		.onPost('https://localhost:7003/oauth/token', body)
+		.reply(200, tokenResponse);
+};
+
+const createStateExp = (mins: number): string =>
+	pipe(new Date(), addMinutes(mins), format(STATE_EXP_FORMAT));
+
 describe('oauth routes', () => {
 	let fullTestServer: FullTestServer;
 	let validateSessionData: (
@@ -173,38 +194,18 @@ describe('oauth routes', () => {
 	});
 
 	describe('authenticate the auth code', () => {
+		const code = 'ABCDEFG';
+		const state = 12345;
 		beforeEach(() => {
 			setEnv();
 		});
 
 		it('successfully authenticates the auth code', async () => {
-			const code = 'ABCDEFG';
-			const state = 12345;
-
-			const body: AuthenticateBody = {
-				grant_type: 'authorization_code',
-				client_id: 'clientKey',
-				code,
-				redirect_uri: encodeURIComponent('/authCodeRedirectUri')
-			};
-
-			const tokenResponse: TokenResponse = {
-				accessToken: 'accessToken',
-				refreshToken: 'refreshToken',
-				tokenId: 'tokenId'
-			};
-			mockApi
-				.onPost('https://localhost:7003/oauth/token', body)
-				.reply(200, tokenResponse);
-
+			mockTokenRequest(code);
 			const sessionCookie = await prepareSession({
 				origin: 'origin',
 				state,
-				stateExpiration: pipe(
-					new Date(),
-					addMinutes(10),
-					format(STATE_EXP_FORMAT)
-				)
+				stateExpiration: createStateExp(10)
 			});
 
 			const res = await request(fullTestServer.expressServer.server)
@@ -229,7 +230,8 @@ describe('oauth routes', () => {
 		});
 
 		it('missing environment variables for authentication', async () => {
-			throw new Error();
+			delete process.env.CLIENT_KEY;
+			mockTokenRequest(code);
 		});
 
 		it('missing environment variables for cookie creation', async () => {
