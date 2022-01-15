@@ -9,6 +9,7 @@ import {
 import request from 'supertest';
 import { restClient } from '../../../src/services/RestClient';
 import MockAdapter from 'axios-mock-adapter';
+import { MarketTrackerSession } from '../../../src/function/HttpRequest';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
@@ -33,10 +34,32 @@ const setEnv = () => {
 const mockApi = new MockAdapter(restClient);
 const EXPIRATION_REGEX = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/;
 
+const getSessionCookie = (res: request.Response): string => {
+	const cookieHeaders: string[] = res.headers['set-cookie'] ?? [];
+	expect(cookieHeaders).toHaveLength(1);
+	return cookieHeaders[0];
+};
+
+const createValidateSessionData =
+	(fullTestServer: FullTestServer) =>
+	async (sessionCookie: string, expectedSession: MarketTrackerSession) => {
+		const sessionRes = await request(fullTestServer.expressServer.server)
+			.get('/session')
+			.set('Cookie', sessionCookie)
+			.timeout(2000)
+			.expect(200);
+		expect(sessionRes.body).toEqual(expectedSession);
+	};
+
 describe('oauth routes', () => {
 	let fullTestServer: FullTestServer;
+	let validateSessionData: (
+		sessionCookie: string,
+		expectedSession: MarketTrackerSession
+	) => Promise<void>;
 	beforeAll(async () => {
 		fullTestServer = await createFullTestServer();
+		validateSessionData = createValidateSessionData(fullTestServer);
 	});
 
 	afterAll(async () => {
@@ -93,18 +116,8 @@ describe('oauth routes', () => {
 			const state = urlRegex.exec(loginRes.body.url)?.groups?.state;
 			expect(state).not.toBeUndefined();
 
-			const cookieHeaders: string[] =
-				loginRes.headers['set-cookie'] ?? [];
-			expect(cookieHeaders).toHaveLength(1);
-
-			const sessionRes = await request(
-				fullTestServer.expressServer.server
-			)
-				.get('/session')
-				.set('Cookie', cookieHeaders[0])
-				.timeout(2000)
-				.expect(200);
-			expect(sessionRes.body).toEqual({
+			const sessionCookie = getSessionCookie(loginRes);
+			await validateSessionData(sessionCookie, {
 				state: parseInt(state!),
 				origin: 'origin',
 				stateExpiration: expect.stringMatching(EXPIRATION_REGEX)
