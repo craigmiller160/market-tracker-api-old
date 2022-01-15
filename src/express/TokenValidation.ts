@@ -20,6 +20,7 @@ export interface AccessToken {
 	readonly userId: number;
 	readonly userEmail: string;
 	readonly roles: string[];
+	readonly jti: string;
 }
 
 type Route = (req: Request, res: Response, next: NextFunction) => void;

@@ -4,13 +4,20 @@ import * as O from 'fp-ts/Option';
 import * as A from 'fp-ts/Array';
 import { UnauthorizedError } from '../../error/UnauthorizedError';
 
+const createCookie = (
+	cookieName: string,
+	value: string,
+	maxAgeSecs: string,
+	cookiePath: string
+): string =>
+	`${cookieName}=${value}; Max-Age=${maxAgeSecs}; Secure; HttpOnly; SameSite=strict; Path=${cookiePath}`;
+
 export const getEmptyCookie = (): E.Either<Error, string> =>
 	pipe(
-		O.fromNullable(process.env.COOKIE_NAME),
-		E.fromOption(
-			() => new UnauthorizedError('No cookie name environment variable')
-		),
-		E.map((_) => `${_}=; Max-Age=0`)
+		getCookieEnv(),
+		E.map(([cookieName, , cookiePath]) =>
+			createCookie(cookieName, '', 0, cookiePath)
+		)
 	);
 
 const getCookieEnv = (): E.Either<Error, readonly string[]> => {
@@ -38,8 +45,7 @@ export const createTokenCookie = (
 ): E.Either<Error, string> =>
 	pipe(
 		getCookieEnv(),
-		E.map(
-			([cookieName, cookieMaxAgeSecs, cookiePath]) =>
-				`${cookieName}=${accessToken}; Max-Age=${cookieMaxAgeSecs}; Secure; HttpOnly; SameSite=strict; Path=${cookiePath}`
+		E.map(([cookieName, cookieMaxAgeSecs, cookiePath]) =>
+			createCookie(cookieName, accessToken, cookieMaxAgeSecs, cookiePath)
 		)
 	);

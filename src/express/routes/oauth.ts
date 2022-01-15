@@ -5,12 +5,11 @@ import {
 	AuthCodeLoginResponse,
 	prepareAuthCodeLogin
 } from '../../services/auth/AuthCodeLogin';
-import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as TEU from '../../function/TaskEitherUtils';
 import * as T from 'fp-ts/Task';
 import { authenticateWithAuthCode } from '../../services/auth/AuthCodeAuthentication';
-import { getEmptyCookie } from '../../services/auth/Cookie';
+import { logout } from '../../services/auth/Logout';
 
 export const createOAuthRoutes: RouteCreator = (app) => {
 	app.get(
@@ -84,17 +83,24 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 	);
 
 	// TODO logout is not working for some reason
-	app.get('/oauth/logout', (req, res, next) =>
-		pipe(
-			getEmptyCookie(),
-			E.fold(
-				(ex) => next(ex),
-				(cookie) => {
-					res.setHeader('Set-Cookie', cookie);
-					res.status(204);
-					res.end();
-				}
-			)
+	app.get(
+		'/oauth/logout',
+		secure((req, res, next) =>
+			pipe(
+				logout(req),
+				TE.fold(
+					(ex) => {
+						next(ex);
+						return T.of('');
+					},
+					(cookie) => {
+						res.setHeader('Set-Cookie', cookie);
+						res.status(204);
+						res.end();
+						return T.of('');
+					}
+				)
+			)()
 		)
 	);
 };
