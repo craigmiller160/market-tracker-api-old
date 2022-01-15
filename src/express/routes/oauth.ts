@@ -9,6 +9,7 @@ import * as E from 'fp-ts/Either';
 import * as TE from 'fp-ts/TaskEither';
 import * as T from 'fp-ts/Task';
 import { authenticateWithAuthCode } from '../../services/auth/AuthCodeAuthentication';
+import { getEmptyCookie } from '../../services/auth/Cookie';
 
 export const createOAuthRoutes: RouteCreator = (app) => {
 	app.get(
@@ -60,7 +61,16 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 		)
 	);
 
-	app.get('/oauth/logout', () => {
-		throw new Error('Finish this');
-	});
+	app.get('/oauth/logout', (req, res, next) =>
+		pipe(
+			getEmptyCookie(),
+			E.fold(
+				(ex) => next(ex),
+				(cookie) => {
+					res.setHeader('Set-Cookie', cookie);
+					res.status(200);
+				}
+			)
+		)
+	);
 };
