@@ -26,7 +26,8 @@ export const createSessionRoute: RouteCreator = (app) => {
 			session.origin = req.body.origin;
 			session.stateExpiration = req.body.stateExpiration;
 			session.state = req.body.state;
-			res.status(200);
+			res.status(204);
+			res.end();
 		}
 	);
 };

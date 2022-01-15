@@ -10,6 +10,9 @@ import request from 'supertest';
 import { restClient } from '../../../src/services/RestClient';
 import MockAdapter from 'axios-mock-adapter';
 import { MarketTrackerSession } from '../../../src/function/HttpRequest';
+import {pipe} from 'fp-ts/function';
+import { addMinutes, format } from '../../../src/function/DateFns';
+import {STATE_EXP_FORMAT} from '../../../src/services/auth/constants';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
@@ -55,8 +58,9 @@ const createPrepareSession = (fullTestServer: FullTestServer) => async (expected
 	const sessionPrepRes = await request(fullTestServer.expressServer.server)
 		.post('/session')
 		.timeout(2000)
+		.set('Content-Type', 'application/json')
 		.send(expectedSession)
-		.expect(200);
+		.expect(204);
 	return getSessionCookie(sessionPrepRes);
 }
 
@@ -154,7 +158,23 @@ describe('oauth routes', () => {
 
 	describe('authenticate the auth code', () => {
 		it('successfully authenticates the auth code', async () => {
-			throw new Error();
+			const code = 'ABCDEFG';
+			const state = 12345;
+			const sessionCookie = await prepareSession({
+				origin: 'origin',
+				state,
+				stateExpiration: pipe(
+					new Date(),
+					addMinutes(10),
+					format(STATE_EXP_FORMAT)
+				)
+			});
+
+			const res = await request(fullTestServer.expressServer.server)
+				.get(`/oauth/authcode/code?code=${code}&state=${state}`)
+				.timeout(2000)
+				.expect(200);
+			// TODO validate redirect
 		});
 
 		it('missing environment variables for authentication', async () => {
@@ -177,4 +197,8 @@ describe('oauth routes', () => {
 			throw new Error();
 		});
 	});
+
+	it('logs out', async () => {
+		throw new Error()
+	})
 });
