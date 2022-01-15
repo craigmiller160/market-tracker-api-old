@@ -51,15 +51,26 @@ const createValidateSessionData =
 		expect(sessionRes.body).toEqual(expectedSession);
 	};
 
+const createPrepareSession = (fullTestServer: FullTestServer) => async (expectedSession: MarketTrackerSession): Promise<string> => {
+	const sessionPrepRes = await request(fullTestServer.expressServer.server)
+		.post('/session')
+		.timeout(2000)
+		.send(expectedSession)
+		.expect(200);
+	return getSessionCookie(sessionPrepRes);
+}
+
 describe('oauth routes', () => {
 	let fullTestServer: FullTestServer;
 	let validateSessionData: (
 		sessionCookie: string,
 		expectedSession: MarketTrackerSession
 	) => Promise<void>;
+	let prepareSession: (expectedSession: MarketTrackerSession) => Promise<string>;
 	beforeAll(async () => {
 		fullTestServer = await createFullTestServer();
 		validateSessionData = createValidateSessionData(fullTestServer);
+		prepareSession = createPrepareSession(fullTestServer);
 	});
 
 	afterAll(async () => {
