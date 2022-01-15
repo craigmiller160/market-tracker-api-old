@@ -58,11 +58,7 @@ export const secure =
 const getJwtFromCookie = (req: Request) => {
 	pipe(
 		O.fromNullable(process.env.COOKIE_NAME),
-		O.map((cookieName) => {
-			const regex = `^${cookieName}=(?<token>.*);.*$`;
-			const cookieHeaders = (req.headers['cookie'] as string[] | undefined ?? []);
-			req.cookies
-		})
+		O.chain((_) => O.fromNullable(req.cookies[_]))
 	);
 };
 

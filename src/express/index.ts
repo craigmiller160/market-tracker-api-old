@@ -18,6 +18,7 @@ import { TokenKey } from '../auth/TokenKey';
 import passport from 'passport';
 import { createPassportValidation } from './TokenValidation';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 
 const safeParseInt = (text: string): O.Option<number> =>
 	pipe(
@@ -61,6 +62,7 @@ export interface ExpressServer {
 
 const createExpressApp = (tokenKey: TokenKey): Express => {
 	const app = express();
+	app.use(cookieParser());
 	app.use(
 		session({
 			// TODO set new secret and proper production store
