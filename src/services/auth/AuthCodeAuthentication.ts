@@ -206,8 +206,9 @@ const getCodeAndState = (req: Request): E.Either<Error, [string, number]> => {
 
 export const authenticateWithAuthCode = (
 	req: Request
-): TE.TaskEither<Error, AuthCodeSuccess> =>
-	pipe(
+): TE.TaskEither<Error, AuthCodeSuccess> => {
+	console.log('InitSession2', req.session);
+	return pipe(
 		getCodeAndState(req),
 		E.bindTo('codeAndState'),
 		E.chainFirst(({ codeAndState: [, state] }) =>
@@ -229,3 +230,4 @@ export const authenticateWithAuthCode = (
 		TE.bindTo('cookie'),
 		TE.bind('postAuthRedirect', () => TE.fromEither(prepareRedirect()))
 	);
+}
