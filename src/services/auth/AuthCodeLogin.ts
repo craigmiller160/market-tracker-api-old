@@ -24,16 +24,14 @@ const getOrigin = (req: Request): E.Either<Error, string> =>
 		E.fromOption(() => new Error('Missing origin header on request'))
 	);
 
-const storeAuthCodeLoginSessionValues = (
-	req: Request,
-	state: number,
-	origin: string
-): IO.IO<void> => () => {
-	const session = getMarketTrackerSession(req);
-	session.state = state;
-	session.origin = origin;
-	session.stateExpiration = addMinutes(new Date(), 10);
-};
+const storeAuthCodeLoginSessionValues =
+	(req: Request, state: number, origin: string): IO.IO<void> =>
+	() => {
+		const session = getMarketTrackerSession(req);
+		session.state = state;
+		session.origin = origin;
+		session.stateExpiration = addMinutes(new Date(), 10);
+	};
 
 const createUrl = (
 	envVariables: readonly string[],
