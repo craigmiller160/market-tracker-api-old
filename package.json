@@ -18,6 +18,9 @@
     "prepare": "husky install",
     "validate": "yarn lint && yarn test"
   },
+  "lint-staged": {
+    "*.{ts,tsx}": "yarn lint"
+  },
   "resolutions": {
     "@babel/code-frame": "^7.16.0",
     "@babel/helper-validator-identifier": "^7.15.7"
@@ -46,6 +49,7 @@
     "husky": "^7.0.4",
     "jsonwebtoken": "^8.5.1",
     "key-encoder": "^2.0.3",
+    "lint-staged": "^12.1.7",
     "mongodb-memory-server": "^8.1.0",
     "supertest": "^6.1.6",
     "ts-node": "^10.4.0",
