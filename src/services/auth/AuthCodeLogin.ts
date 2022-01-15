@@ -12,8 +12,6 @@ import { addMinutes, format } from '../../function/DateFns';
 import { STATE_EXP_FORMAT } from './constants';
 import { UnauthorizedError } from '../../error/UnauthorizedError';
 
-// TODO 401 exception
-
 export interface AuthCodeLoginResponse {
 	readonly url: string;
 }
@@ -23,7 +21,9 @@ const AUTH_CODE_LOGIN_PATH = '/ui/login';
 const getOrigin = (req: Request): E.Either<Error, string> =>
 	pipe(
 		getHeader(req, 'Origin'),
-		E.fromOption(() => new Error('Missing origin header on request'))
+		E.fromOption(
+			() => new UnauthorizedError('Missing origin header on request')
+		)
 	);
 
 const storeAuthCodeLoginSessionValues =
