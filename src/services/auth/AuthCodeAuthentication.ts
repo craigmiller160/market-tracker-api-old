@@ -17,8 +17,7 @@ import { saveRefreshToken } from '../mongo/RefreshTokenService';
 import { createTokenCookie } from './Cookie';
 import { compareAsc, parse } from '../../function/DateFns';
 import { STATE_EXP_FORMAT } from './constants';
-
-// TODO need special exception type to return 401s
+import { UnauthorizedError } from '../../error/UnauthorizedError';
 
 // TODO need test for successful login
 // TODO need test for login rejected
@@ -49,10 +48,13 @@ const validateState = (
 	const { state } = getMarketTrackerSession(req);
 	return pipe(
 		O.fromNullable(state),
-		E.fromOption(() => new Error('Cannot find auth code state in session')),
+		E.fromOption(
+			() =>
+				new UnauthorizedError('Cannot find auth code state in session')
+		),
 		E.filterOrElse(
 			(_) => _ === providedState,
-			() => new Error('Invalid auth code state')
+			() => new UnauthorizedError('Invalid auth code state')
 		)
 	);
 };
@@ -65,11 +67,14 @@ const validateStateExpiration = (req: Request): E.Either<Error, string> => {
 	return pipe(
 		O.fromNullable(stateExpiration),
 		E.fromOption(
-			() => new Error('Cannot find auth code state expiration in session')
+			() =>
+				new UnauthorizedError(
+					'Cannot find auth code state expiration in session'
+				)
 		),
 		E.filterOrElse(
 			parseAndValidateNotExpired,
-			() => new Error('Auth code state has expired')
+			() => new UnauthorizedError('Auth code state has expired')
 		)
 	);
 };
@@ -78,7 +83,9 @@ const getAndValidateOrigin = (req: Request): E.Either<Error, string> => {
 	const { origin } = getMarketTrackerSession(req);
 	return pipe(
 		O.fromNullable(origin),
-		E.fromOption(() => new Error('Cannot find origin in session'))
+		E.fromOption(
+			() => new UnauthorizedError('Cannot find origin in session')
+		)
 	);
 };
 
@@ -136,7 +143,7 @@ const authenticateCode = (
 		O.map((_) => _ as string[]),
 		E.fromOption(
 			() =>
-				new Error(
+				new UnauthorizedError(
 					`Missing environment variables to authenticate auth code: ${nullableEnvArray}`
 				)
 		),
@@ -180,7 +187,9 @@ const prepareRedirect = (): E.Either<Error, string> =>
 		O.fromNullable(process.env.POST_AUTH_REDIRECT),
 		E.fromOption(
 			() =>
-				new Error('No post-auth redirect available for auth code login')
+				new UnauthorizedError(
+					'No post-auth redirect available for auth code login'
+				)
 		)
 	);
 
@@ -196,7 +205,7 @@ const getCodeAndState = (req: Request): E.Either<Error, [string, number]> => {
 		O.sequenceArray,
 		E.fromOption(
 			() =>
-				new Error(
+				new UnauthorizedError(
 					`Missing required query params for authentication: ${nullableQueryArray}`
 				)
 		),
