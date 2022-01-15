@@ -15,7 +15,11 @@ import { addMinutes, format } from '../../../src/function/DateFns';
 import { STATE_EXP_FORMAT } from '../../../src/services/auth/constants';
 import { TokenResponse } from '../../../src/types/TokenResponse';
 import { AuthenticateBody } from '../../../src/services/auth/AuthCodeAuthentication';
-import { AppRefreshTokenModel } from '../../../src/mongo/models/AppRefreshTokenModel';
+import {
+	AppRefreshToken,
+	AppRefreshTokenModel,
+	appRefreshTokenToModel
+} from '../../../src/mongo/models/AppRefreshTokenModel';
 import qs from 'qs';
 import { AccessToken } from '../../../src/express/TokenValidation';
 
@@ -333,6 +337,12 @@ describe('oauth routes', () => {
 		});
 
 		it('logs out', async () => {
+			const refreshToken: AppRefreshToken = {
+				tokenId: accessToken.jti,
+				refreshToken: 'refreshToken'
+			};
+			await appRefreshTokenToModel(refreshToken).save();
+
 			const token = createAccessToken(fullTestServer.keyPair.privateKey);
 			const sessionCookie = await prepareSession();
 			const res = await request(fullTestServer.expressServer.server)
@@ -346,7 +356,8 @@ describe('oauth routes', () => {
 				'my-cookie=; Max-Age=0; Secure; HttpOnly; SameSite=strict; Path=/the-path'
 			);
 
-			throw new Error('Make sure refresh tokens are deleted');
+			const count = await AppRefreshTokenModel.count();
+			expect(count).toEqual(0);
 		});
 
 		it('missing environment variables for logout', async () => {
