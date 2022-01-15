@@ -36,8 +36,10 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 			TE.chain((url) => TEU.tryCatch(() => new Promise<string>((resolve, reject) => {
 				req.session.save((err) => {
 					if (err) {
+						console.log('SessionSaveFailed', err);
 						reject(err);
 					} else {
+						console.log('SessionSaveSucceeded');
 						resolve(url);
 					}
 				});
