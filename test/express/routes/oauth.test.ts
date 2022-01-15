@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
 	accessToken,
 	createAccessToken,
@@ -26,6 +27,7 @@ const setEnv = () => {
 };
 
 const mockApi = new MockAdapter(restClient);
+const EXPIRATION_REGEX = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/;
 
 describe('oauth routes', () => {
 	let fullTestServer: FullTestServer;
@@ -75,51 +77,34 @@ describe('oauth routes', () => {
 		it('successfully gets the url', async () => {
 			const urlRegex =
 				/^origin\/authLoginBaseUri\/ui\/login\?response_type=code&client_id=clientKey&redirect_uri=origin%2FauthCodeRedirectUri&state=(?<state>\d+)$/;
-			const res = await request(fullTestServer.expressServer.server)
+			const loginRes = await request(fullTestServer.expressServer.server)
 				.post('/oauth/authcode/login')
 				.set('Origin', 'origin')
 				.timeout(2000)
 				.expect(200);
-			expect(res.body).toEqual({
+			expect(loginRes.body).toEqual({
 				url: expect.stringMatching(urlRegex)
 			});
 
-			const cookieHeaders: string[] = res.headers['set-cookie'] ?? [];
-			const res3 = await request(fullTestServer.expressServer.server)
+			const state = urlRegex.exec(loginRes.body.url)?.groups?.state;
+			expect(state).not.toBeUndefined();
+
+			const cookieHeaders: string[] =
+				loginRes.headers['set-cookie'] ?? [];
+			expect(cookieHeaders).toHaveLength(1);
+
+			const sessionRes = await request(
+				fullTestServer.expressServer.server
+			)
 				.get('/session')
 				.set('Cookie', cookieHeaders[0])
 				.timeout(2000)
 				.expect(200);
-			console.log(res3.body);
-
-
-
-			// const req = request(fullTestServer.expressServer.server).get(
-			// 	'/session'
-			// );
-			// const reqWithCookies = cookieHeaders.reduce((newReq, cookie) => {
-			// 	return newReq.set('Cookie', cookie);
-			// }, req);
-			// const res3 = await reqWithCookies.timeout(2000).expect(200);
-			// console.log('Session', res3.body); // eslint-disable-line
-
-			// TODO delete below here
-
-			// const state = urlRegex.exec(res.body.url)?.groups?.state;
-			//
-			// const req = request(fullTestServer.expressServer.server).get(
-			// 	`/oauth/authcode/code?code=12345&state=${state}`
-			// );
-			// const reqWithCookies = cookieHeaders.reduce((newReq, cookie) => {
-			// 	console.log('Cookie', cookie); // eslint-disable-line
-			// 	return newReq.set('Cookie', cookie);
-			// }, req);
-			//
-			// const res2 = await reqWithCookies
-			// 	.set('Origin', 'origin')
-			// 	.timeout(2000)
-			// 	.expect(200);
-			// console.log(res2.body); // eslint-disable-line
+			expect(sessionRes.body).toEqual({
+				state: parseInt(state!),
+				origin: 'origin',
+				stateExpiration: expect.stringMatching(EXPIRATION_REGEX)
+			});
 		});
 
 		it('has an error while getting the url', async () => {
