@@ -28,12 +28,11 @@ const storeAuthCodeLoginSessionValues = (
 	req: Request,
 	state: number,
 	origin: string
-): IO.IO<void> => {
+): IO.IO<void> => () => {
 	const session = getMarketTrackerSession(req);
 	session.state = state;
 	session.origin = origin;
 	session.stateExpiration = addMinutes(new Date(), 10);
-	return IO.of(null);
 };
 
 const createUrl = (
