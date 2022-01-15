@@ -123,8 +123,9 @@ describe('oauth routes', () => {
 		mockApi.reset();
 	});
 
-	afterEach(() => {
+	afterEach(async () => {
 		clearEnv();
+		await AppRefreshTokenModel.deleteMany().exec();
 	});
 
 	describe('get user details', () => {
@@ -232,18 +233,75 @@ describe('oauth routes', () => {
 		it('missing environment variables for authentication', async () => {
 			delete process.env.CLIENT_KEY;
 			mockTokenRequest(code);
+			const sessionCookie = await prepareSession({
+				origin: 'origin',
+				state,
+				stateExpiration: createStateExp(10)
+			});
+
+			await request(fullTestServer.expressServer.server)
+				.get(`/oauth/authcode/code?code=${code}&state=${state}`)
+				.set('Cookie', sessionCookie)
+				.timeout(2000)
+				.expect(401);
+
+			const count = await AppRefreshTokenModel.count().exec();
+			expect(count).toEqual(0);
 		});
 
 		it('missing environment variables for cookie creation', async () => {
-			throw new Error();
+			delete process.env.COOKIE_NAME;
+			mockTokenRequest(code);
+			const sessionCookie = await prepareSession({
+				origin: 'origin',
+				state,
+				stateExpiration: createStateExp(10)
+			});
+
+			await request(fullTestServer.expressServer.server)
+				.get(`/oauth/authcode/code?code=${code}&state=${state}`)
+				.set('Cookie', sessionCookie)
+				.timeout(2000)
+				.expect(401);
+
+			const count = await AppRefreshTokenModel.count().exec();
+			expect(count).toEqual(1);
 		});
 
 		it('invalid state for authentication', async () => {
-			throw new Error();
+			mockTokenRequest(code);
+			const sessionCookie = await prepareSession({
+				origin: 'origin',
+				state: 8765,
+				stateExpiration: createStateExp(10)
+			});
+
+			await request(fullTestServer.expressServer.server)
+				.get(`/oauth/authcode/code?code=${code}&state=${state}`)
+				.set('Cookie', sessionCookie)
+				.timeout(2000)
+				.expect(401);
+
+			const count = await AppRefreshTokenModel.count().exec();
+			expect(count).toEqual(0);
 		});
 
 		it('expired state for authentication', async () => {
-			throw new Error();
+			mockTokenRequest(code);
+			const sessionCookie = await prepareSession({
+				origin: 'origin',
+				state,
+				stateExpiration: createStateExp(-10)
+			});
+
+			await request(fullTestServer.expressServer.server)
+				.get(`/oauth/authcode/code?code=${code}&state=${state}`)
+				.set('Cookie', sessionCookie)
+				.timeout(2000)
+				.expect(401);
+
+			const count = await AppRefreshTokenModel.count().exec();
+			expect(count).toEqual(0);
 		});
 
 		it('authentication rejected by auth server', async () => {
