@@ -10,6 +10,12 @@ import { pipe } from 'fp-ts/function';
 import * as EU from '../../src/function/EitherUtils';
 import { createTokenCookie } from '../../src/services/auth/Cookie';
 
+const clearEnv = () => {
+	delete process.env.COOKIE_NAME;
+	delete process.env.COOKIE_MAX_AGE_SECS;
+	delete process.env.COOKIE_PATH;
+};
+
 describe('TokenValidation', () => {
 	let fullTestServer: FullTestServer;
 	beforeAll(async () => {
@@ -18,6 +24,14 @@ describe('TokenValidation', () => {
 
 	afterAll(async () => {
 		await stopFullTestServer(fullTestServer);
+	});
+
+	beforeEach(() => {
+		clearEnv();
+	});
+
+	afterEach(() => {
+		clearEnv();
 	});
 
 	it('has valid access token', async () => {
@@ -31,6 +45,9 @@ describe('TokenValidation', () => {
 	});
 
 	it('has valid access token from cookie', async () => {
+		process.env.COOKIE_NAME = 'cookieName';
+		process.env.COOKIE_MAX_AGE_SECS = '8600';
+		process.env.COOKIE_PATH = '/cookie-path';
 		const token = createAccessToken(fullTestServer.keyPair.privateKey);
 		const tokenCookie = pipe(createTokenCookie(token), EU.throwIfLeft);
 		const res = await request(fullTestServer.expressServer.server)
