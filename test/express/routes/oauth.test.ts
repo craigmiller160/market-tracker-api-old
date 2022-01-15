@@ -15,6 +15,7 @@ import { addMinutes, format } from '../../../src/function/DateFns';
 import { STATE_EXP_FORMAT } from '../../../src/services/auth/constants';
 import { TokenResponse } from '../../../src/types/TokenResponse';
 import { AuthenticateBody } from '../../../src/services/auth/AuthCodeAuthentication';
+import { AppRefreshTokenModel } from '../../../src/mongo/models/AppRefreshTokenModel';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
@@ -174,7 +175,6 @@ describe('oauth routes', () => {
 		});
 
 		it('successfully authenticates the auth code', async () => {
-			// TODO check DB for refresh token
 			const code = 'ABCDEFG';
 			const state = 12345;
 
@@ -213,6 +213,15 @@ describe('oauth routes', () => {
 			expect(res.headers['set-cookie']).toHaveLength(1);
 			expect(res.headers['set-cookie'][0]).toEqual(
 				'my-cookie=accessToken; Max-Age=8600; Secure; HttpOnly; SameSite=strict; Path=/the-path'
+			);
+
+			const results = await AppRefreshTokenModel.find().exec();
+			expect(results).toHaveLength(1);
+			expect(results[0]).toEqual(
+				expect.objectContaining({
+					tokenId: 'tokenId',
+					refreshToken: 'refreshToken'
+				})
 			);
 		});
 
