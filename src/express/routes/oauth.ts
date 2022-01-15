@@ -76,6 +76,7 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 					res.setHeader('Set-Cookie', authCodeSuccess.cookie);
 					res.setHeader('Location', authCodeSuccess.postAuthRedirect);
 					res.status(302);
+					res.end();
 					return T.of('');
 				}
 			)

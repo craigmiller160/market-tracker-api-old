@@ -155,15 +155,25 @@ const authenticateCode = (
 			)
 		),
 		TE.fromEither,
-		TE.chain(({ requestBody, basicAuth, envVariables: [,,,authServerHost] }) =>
-			TEU.tryCatch(() =>
-				restClient.post<TokenResponse>(`${authServerHost}${TOKEN_PATH}`, requestBody, {
-					headers: {
-						'content-type': 'application/x-www-form-urlencoded',
-						authorization: `Basic ${basicAuth}`
-					}
-				})
-			)
+		TE.chain(
+			({
+				requestBody,
+				basicAuth,
+				envVariables: [, , , authServerHost]
+			}) =>
+				TEU.tryCatch(() =>
+					restClient.post<TokenResponse>(
+						`${authServerHost}${TOKEN_PATH}`,
+						requestBody,
+						{
+							headers: {
+								'content-type':
+									'application/x-www-form-urlencoded',
+								authorization: `Basic ${basicAuth}`
+							}
+						}
+					)
+				)
 		),
 		TE.map((_) => _.data)
 	);

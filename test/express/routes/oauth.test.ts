@@ -13,8 +13,8 @@ import { MarketTrackerSession } from '../../../src/function/HttpRequest';
 import { pipe } from 'fp-ts/function';
 import { addMinutes, format } from '../../../src/function/DateFns';
 import { STATE_EXP_FORMAT } from '../../../src/services/auth/constants';
-import {TokenResponse} from '../../../src/types/TokenResponse';
-import {AuthenticateBody} from '../../../src/services/auth/AuthCodeAuthentication';
+import { TokenResponse } from '../../../src/types/TokenResponse';
+import { AuthenticateBody } from '../../../src/services/auth/AuthCodeAuthentication';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
@@ -25,6 +25,7 @@ const clearEnv = () => {
 	delete process.env.COOKIE_MAX_AGE_SECS;
 	delete process.env.COOKIE_PATH;
 	delete process.env.AUTH_SERVER_HOST;
+	delete process.env.POST_AUTH_REDIRECT;
 };
 
 const setEnv = () => {
@@ -35,7 +36,8 @@ const setEnv = () => {
 	process.env.COOKIE_NAME = 'my-cookie';
 	process.env.COOKIE_MAX_AGE_SECS = '8600';
 	process.env.COOKIE_PATH = '/the-path';
-	process.env.AUTH_SERVER_HOST = 'https://localhost:7003'
+	process.env.AUTH_SERVER_HOST = 'https://localhost:7003';
+	process.env.POST_AUTH_REDIRECT = '/postAuthRedirect';
 };
 
 const mockApi = new MockAdapter(restClient);
@@ -188,7 +190,8 @@ describe('oauth routes', () => {
 				refreshToken: 'refreshToken',
 				tokenId: 'tokenId'
 			};
-			mockApi.onPost('https://localhost:7003/oauth/token', body)
+			mockApi
+				.onPost('https://localhost:7003/oauth/token', body)
 				.reply(200, tokenResponse);
 
 			const sessionCookie = await prepareSession({
@@ -205,7 +208,9 @@ describe('oauth routes', () => {
 				.get(`/oauth/authcode/code?code=${code}&state=${state}`)
 				.set('Cookie', sessionCookie)
 				.timeout(2000)
-				.expect(200);
+				.expect(302);
+			expect(res.headers['location']).toEqual('/postAuthRedirect');
+			expect(res.headers['set-cookie']).toEqual('');
 		});
 
 		it('missing environment variables for authentication', async () => {
