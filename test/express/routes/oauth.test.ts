@@ -10,9 +10,9 @@ import request from 'supertest';
 import { restClient } from '../../../src/services/RestClient';
 import MockAdapter from 'axios-mock-adapter';
 import { MarketTrackerSession } from '../../../src/function/HttpRequest';
-import {pipe} from 'fp-ts/function';
+import { pipe } from 'fp-ts/function';
 import { addMinutes, format } from '../../../src/function/DateFns';
-import {STATE_EXP_FORMAT} from '../../../src/services/auth/constants';
+import { STATE_EXP_FORMAT } from '../../../src/services/auth/constants';
 
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
@@ -22,6 +22,7 @@ const clearEnv = () => {
 	delete process.env.COOKIE_NAME;
 	delete process.env.COOKIE_MAX_AGE_SECS;
 	delete process.env.COOKIE_PATH;
+	delete process.env.AUTH_SERVER_HOST;
 };
 
 const setEnv = () => {
@@ -32,6 +33,7 @@ const setEnv = () => {
 	process.env.COOKIE_NAME = 'my-cookie';
 	process.env.COOKIE_MAX_AGE_SECS = '8600';
 	process.env.COOKIE_PATH = '/the-path';
+	process.env.AUTH_SERVER_HOST = 'https://localhost:7003'
 };
 
 const mockApi = new MockAdapter(restClient);
@@ -54,15 +56,19 @@ const createValidateSessionData =
 		expect(sessionRes.body).toEqual(expectedSession);
 	};
 
-const createPrepareSession = (fullTestServer: FullTestServer) => async (expectedSession: MarketTrackerSession): Promise<string> => {
-	const sessionPrepRes = await request(fullTestServer.expressServer.server)
-		.post('/session')
-		.timeout(2000)
-		.set('Content-Type', 'application/json')
-		.send(expectedSession)
-		.expect(204);
-	return getSessionCookie(sessionPrepRes);
-}
+const createPrepareSession =
+	(fullTestServer: FullTestServer) =>
+	async (expectedSession: MarketTrackerSession): Promise<string> => {
+		const sessionPrepRes = await request(
+			fullTestServer.expressServer.server
+		)
+			.post('/session')
+			.timeout(2000)
+			.set('Content-Type', 'application/json')
+			.send(expectedSession)
+			.expect(204);
+		return getSessionCookie(sessionPrepRes);
+	};
 
 describe('oauth routes', () => {
 	let fullTestServer: FullTestServer;
@@ -70,7 +76,9 @@ describe('oauth routes', () => {
 		sessionCookie: string,
 		expectedSession: MarketTrackerSession
 	) => Promise<void>;
-	let prepareSession: (expectedSession: MarketTrackerSession) => Promise<string>;
+	let prepareSession: (
+		expectedSession: MarketTrackerSession
+	) => Promise<string>;
 	beforeAll(async () => {
 		fullTestServer = await createFullTestServer();
 		validateSessionData = createValidateSessionData(fullTestServer);
@@ -204,6 +212,6 @@ describe('oauth routes', () => {
 	});
 
 	it('logs out', async () => {
-		throw new Error()
-	})
+		throw new Error();
+	});
 });

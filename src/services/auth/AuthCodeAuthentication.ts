@@ -36,6 +36,8 @@ interface CodeAndOrigin {
 	readonly origin: string;
 }
 
+const TOKEN_PATH = '/oauth/token';
+
 const validateState = (
 	req: Request,
 	providedState: number
@@ -128,7 +130,8 @@ const authenticateCode = (
 	const nullableEnvArray: Array<string | undefined> = [
 		process.env.CLIENT_KEY,
 		process.env.CLIENT_SECRET,
-		process.env.AUTH_CODE_REDIRECT_URI
+		process.env.AUTH_CODE_REDIRECT_URI,
+		process.env.AUTH_SERVER_HOST
 	];
 
 	return pipe(
@@ -146,16 +149,15 @@ const authenticateCode = (
 		E.bind('requestBody', ({ envVariables }) =>
 			createAuthenticateBody(origin, code, envVariables)
 		),
-		E.bind('basicAuth', ({ envVariables }) => {
-			const [clientKey, clientSecret] = envVariables;
-			return EU.tryCatch(() =>
+		E.bind('basicAuth', ({ envVariables: [clientKey, clientSecret] }) =>
+			EU.tryCatch(() =>
 				Buffer.from(`${clientKey}:${clientSecret}`).toString('base64')
-			);
-		}),
+			)
+		),
 		TE.fromEither,
-		TE.chain(({ requestBody, basicAuth }) =>
+		TE.chain(({ requestBody, basicAuth, envVariables: [,,,authServerHost] }) =>
 			TEU.tryCatch(() =>
-				restClient.post<TokenResponse>('', requestBody, {
+				restClient.post<TokenResponse>(`${authServerHost}${TOKEN_PATH}`, requestBody, {
 					headers: {
 						'content-type': 'application/x-www-form-urlencoded',
 						authorization: `Basic ${basicAuth}`
