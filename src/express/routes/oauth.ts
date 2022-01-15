@@ -83,6 +83,7 @@ export const createOAuthRoutes: RouteCreator = (app) => {
 		)()
 	);
 
+	// TODO logout is not working for some reason
 	app.get('/oauth/logout', (req, res, next) =>
 		pipe(
 			getEmptyCookie(),

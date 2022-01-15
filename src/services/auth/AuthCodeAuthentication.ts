@@ -10,7 +10,6 @@ import * as TE from 'fp-ts/TaskEither';
 import { restClient } from '../RestClient';
 import { TokenResponse } from '../../types/TokenResponse';
 import * as A from 'fp-ts/Array';
-import { encodeForUri } from '../../function/UriEncoding';
 import * as EU from '../../function/EitherUtils';
 import { AppRefreshToken } from '../../mongo/models/AppRefreshTokenModel';
 import { saveRefreshToken } from '../mongo/RefreshTokenService';
@@ -101,28 +100,15 @@ const createAuthenticateBody = (
 	origin: string,
 	code: string,
 	envVariables: string[]
-): E.Either<Error, AuthenticateBody> => {
+): AuthenticateBody => {
 	const [clientKey, , authCodeRedirectUri] = envVariables;
 
-	return pipe(
-		E.sequenceArray([
-			encodeForUri(code),
-			encodeForUri(clientKey),
-			encodeForUri(authCodeRedirectUri)
-		]),
-		E.map(
-			([
-				encodedCode,
-				encodedClientKey,
-				encodedAuthCodeRedirectUri
-			]): AuthenticateBody => ({
-				grant_type: 'authorization_code',
-				client_id: encodedClientKey,
-				code: encodedCode,
-				redirect_uri: encodedAuthCodeRedirectUri
-			})
-		)
-	);
+	return {
+		grant_type: 'authorization_code',
+		client_id: clientKey,
+		code: code,
+		redirect_uri: `${origin}${authCodeRedirectUri}`
+	};
 };
 
 const sendTokenRequest = (
@@ -189,7 +175,7 @@ const authenticateCode = (
 		),
 		E.bindTo('envVariables'),
 		E.bind('requestBody', ({ envVariables }) =>
-			createAuthenticateBody(origin, code, envVariables)
+			E.right(createAuthenticateBody(origin, code, envVariables))
 		),
 		E.bind('basicAuth', ({ envVariables: [clientKey, clientSecret] }) =>
 			createBasicAuth(clientKey, clientSecret)
