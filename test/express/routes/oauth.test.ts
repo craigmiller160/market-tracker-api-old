@@ -10,8 +10,6 @@ import request from 'supertest';
 import { restClient } from '../../../src/services/RestClient';
 import MockAdapter from 'axios-mock-adapter';
 
-// TODO validate session for all tests
-
 const clearEnv = () => {
 	delete process.env.CLIENT_KEY;
 	delete process.env.CLIENT_SECRET;
