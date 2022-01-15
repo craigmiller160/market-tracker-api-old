@@ -58,23 +58,16 @@ const validateState = (
 
 const validateStateExpiration = (req: Request): E.Either<Error, Date> => {
 	const { stateExpiration } = getMarketTrackerSession(req);
-	if (!!stateExpiration) {
-		return E.right(new Date());
-	} else {
-		return E.left(new Error('Fix this'))
-	}
-
-	// TODO fix this
-	// return pipe(
-	// 	O.fromNullable(stateExpiration),
-	// 	E.fromOption(
-	// 		() => new Error('Cannot find auth code state expiration in session')
-	// 	),
-	// 	E.filterOrElse(
-	// 		(_) => compareAsc(new Date(), _) <= 0,
-	// 		() => new Error('Auth code state has expired')
-	// 	)
-	// );
+	return pipe(
+		O.fromNullable(stateExpiration),
+		E.fromOption(
+			() => new Error('Cannot find auth code state expiration in session')
+		),
+		E.filterOrElse(
+			(_) => compareAsc(new Date(), _) <= 0,
+			() => new Error('Auth code state has expired')
+		)
+	);
 };
 
 const getAndValidateOrigin = (req: Request): E.Either<Error, string> => {
@@ -85,12 +78,14 @@ const getAndValidateOrigin = (req: Request): E.Either<Error, string> => {
 	);
 };
 
-const removeAuthCodeSessionAttributes = (req: Request): IO.IO<void> => () => {
-	const session = getMarketTrackerSession(req);
-	delete session.stateExpiration;
-	delete session.state;
-	delete session.origin;
-};
+const removeAuthCodeSessionAttributes =
+	(req: Request): IO.IO<void> =>
+	() => {
+		const session = getMarketTrackerSession(req);
+		delete session.stateExpiration;
+		delete session.state;
+		delete session.origin;
+	};
 
 const createAuthenticateBody = (
 	origin: string,
