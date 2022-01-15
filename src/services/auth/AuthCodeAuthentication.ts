@@ -18,6 +18,7 @@ import { createTokenCookie } from './Cookie';
 import { compareAsc, parse } from '../../function/DateFns';
 import { STATE_EXP_FORMAT } from './constants';
 import { UnauthorizedError } from '../../error/UnauthorizedError';
+import { logError } from '../../logger';
 
 export interface AuthCodeSuccess {
 	readonly cookie: string;
@@ -123,6 +124,46 @@ const createAuthenticateBody = (
 	);
 };
 
+const sendTokenRequest = (
+	requestBody: AuthenticateBody,
+	basicAuth: string,
+	authServerHost: string
+): TE.TaskEither<Error, TokenResponse> =>
+	pipe(
+		TEU.tryCatch(() =>
+			restClient.post<TokenResponse>(
+				`${authServerHost}${TOKEN_PATH}`,
+				requestBody,
+				{
+					headers: {
+						'content-type': 'application/x-www-form-urlencoded',
+						authorization: `Basic ${basicAuth}`
+					}
+				}
+			)
+		),
+		TE.map((_) => _.data),
+		TE.mapLeft((_) =>
+			pipe(
+				logError('Auth server returned error response', _),
+				IO.map(
+					() =>
+						new UnauthorizedError(
+							'Error authenticating with Auth Server'
+						)
+				)
+			)()
+		)
+	);
+
+const createBasicAuth = (
+	clientKey: string,
+	clientSecret: string
+): E.Either<Error, string> =>
+	EU.tryCatch(() =>
+		Buffer.from(`${clientKey}:${clientSecret}`).toString('base64')
+	);
+
 const authenticateCode = (
 	origin: string,
 	code: string
@@ -150,9 +191,7 @@ const authenticateCode = (
 			createAuthenticateBody(origin, code, envVariables)
 		),
 		E.bind('basicAuth', ({ envVariables: [clientKey, clientSecret] }) =>
-			EU.tryCatch(() =>
-				Buffer.from(`${clientKey}:${clientSecret}`).toString('base64')
-			)
+			createBasicAuth(clientKey, clientSecret)
 		),
 		TE.fromEither,
 		TE.chain(
@@ -160,22 +199,8 @@ const authenticateCode = (
 				requestBody,
 				basicAuth,
 				envVariables: [, , , authServerHost]
-			}) =>
-				TEU.tryCatch(() =>
-					restClient.post<TokenResponse>(
-						`${authServerHost}${TOKEN_PATH}`,
-						requestBody,
-						{
-							headers: {
-								'content-type':
-									'application/x-www-form-urlencoded',
-								authorization: `Basic ${basicAuth}`
-							}
-						}
-					)
-				)
-		),
-		TE.map((_) => _.data)
+			}) => sendTokenRequest(requestBody, basicAuth, authServerHost)
+		)
 	);
 };
 
