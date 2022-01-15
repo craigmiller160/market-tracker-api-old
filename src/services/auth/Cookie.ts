@@ -16,7 +16,7 @@ export const getEmptyCookie = (): E.Either<Error, string> =>
 	pipe(
 		getCookieEnv(),
 		E.map(([cookieName, , cookiePath]) =>
-			createCookie(cookieName, '', 0, cookiePath)
+			createCookie(cookieName, '', '0', cookiePath)
 		)
 	);
 
