@@ -2,7 +2,6 @@ import * as EU from '../function/EitherUtils';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import * as E from 'fp-ts/Either';
-import { match } from 'ts-pattern';
 import { logDebug } from '../logger';
 import * as A from 'fp-ts/Array';
 
@@ -19,12 +18,14 @@ const createConnectionString = (env: MongoEnv): string =>
 	`mongodb://${env.user}:${env.password}@${env.hostname}:${env.port}/${env.db}?authSource=${env.adminDb}&tls=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true`;
 
 const logConnectionStringInDev = (connectionString: string): string =>
-	match(process.env.NODE_ENV)
-		.with('development', () => {
-			logDebug(`Mongo Connection String: ${connectionString}`)();
-			return connectionString;
-		})
-		.otherwise(() => connectionString);
+	logDebug(`Mongo Connection String: ${connectionString}`)();
+// TODO eventually restore below
+// match(process.env.NODE_ENV)
+// 	.with('production', () => {
+// 		logDebug(`Mongo Connection String: ${connectionString}`)();
+// 		return connectionString;
+// 	})
+// 	.otherwise(() => connectionString);
 
 const envToMongoEnv = ([
 	hostname,
