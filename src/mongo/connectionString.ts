@@ -17,8 +17,10 @@ interface MongoEnv {
 const createConnectionString = (env: MongoEnv): string =>
 	`mongodb://${env.user}:${env.password}@${env.hostname}:${env.port}/${env.db}?authSource=${env.adminDb}&tls=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true`;
 
-const logConnectionStringInDev = (connectionString: string): string =>
+const logConnectionStringInDev = (connectionString: string): string => {
 	logDebug(`Mongo Connection String: ${connectionString}`)();
+	return connectionString;
+};
 // TODO eventually restore below
 // match(process.env.NODE_ENV)
 // 	.with('production', () => {
