@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "start": "env-cmd ts-node src",
-    "build": "yarn lint && yarn test && yarn forceBuild",
+    "build": "yarn forceBuild",
     "start:prod": "node build",
     "lint": "craig-lint",
     "test": "craig-test --runInBand",
@@ -26,6 +26,8 @@
     "mongoose": "^6.1.6"
   },
   "devDependencies": {
+    "@types/cross-spawn": "^6.0.2",
+    "cross-spawn": "^7.0.3",
     "env-cmd": "^10.1.0",
     "husky": "^7.0.4",
     "ts-node": "^10.4.0",
