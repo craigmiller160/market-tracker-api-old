@@ -39,7 +39,6 @@ kind: Service
 metadata:
   name: market-tracker-api-service
 spec:
-  # TODO ultimately make it ClusterIP
   type: NodePort
   selector:
     app: market-tracker-api
