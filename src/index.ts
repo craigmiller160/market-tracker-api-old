@@ -1,4 +1,4 @@
-export {}
+import mongoose from 'mongoose';
 
 interface MongoEnv {
     readonly hostname: string;
@@ -25,3 +25,12 @@ const mongoEnv: MongoEnv = {
 
 const connectionString = createConnectionString(mongoEnv);
 console.log('Connection String', connectionString);
+
+mongoose.connect(connectionString)
+    .then(() => {
+        console.log('Mongoose is connected')
+    })
+    .catch((ex) => {
+        console.error('Error connecting to Mongoose');
+        console.error(ex);
+    })
