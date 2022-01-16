@@ -16,11 +16,7 @@
     "lint": "craig-lint",
     "test": "craig-test --runInBand",
     "forceBuild": "ts-node scripts/build.ts",
-    "prepare": "husky install",
     "validate": "yarn lint && yarn test"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": "yarn lint"
   },
   "resolutions": {
     "@babel/code-frame": "^7.16.0",
@@ -32,7 +28,6 @@
   "devDependencies": {
     "env-cmd": "^10.1.0",
     "husky": "^7.0.4",
-    "lint-staged": "^12.1.7",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4"
   }
